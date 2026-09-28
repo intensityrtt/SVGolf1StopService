@@ -314,12 +314,12 @@
                             </a>
                         </li>
                         <li>
-                            <a href="<?= url ?>?page=supervision" target="_top" class="system-link" onclick="window.top.location.href='<?= url ?>?page=supervision'; return false;">
+                            <a href="<?= url ?>?page=supervision" class="system-link" onclick="return navigateSystem('supervision', event);">
                                 การนิเทศเตรียมความพร้อมเปิดภาคเรียนที่ 1/2569 ➔
                             </a>
                         </li>
                         <li>
-                            <a href="<?= url ?>?page=classroom_obs" target="_top" class="system-link" onclick="window.top.location.href='<?= url ?>?page=classroom_obs'; return false;">
+                            <a href="<?= url ?>?page=classroom_obs" class="system-link" onclick="return navigateSystem('classroom_obs', event);">
                                 การนิเทศชั้นเรียน (Classroom Observation) ➔
                             </a>
                         </li>
@@ -335,13 +335,13 @@
                     <span>Area Based</span>
                 </div>
                 <div class="card-body">
-                    <a href="<?= url ?>?page=onet_nanoy2" target="_top" class="system-link" onclick="window.top.location.href='<?= url ?>?page=onet_nanoy2'; return false;" style="font-weight: bold; margin-bottom: 0.5rem; display: block; color: var(--pink-primary);">
+                    <a href="<?= url ?>?page=onet_nanoy2" class="system-link" onclick="return navigateSystem('onet_nanoy2', event);" style="font-weight: bold; margin-bottom: 0.5rem; display: block; color: var(--pink-primary); cursor: pointer;">
                         รายงานวิเคราะห์ผลสอบ O-NET ➔
                     </a>
-                    <a href="<?= url ?>?page=rt_nanoy2" target="_top" class="system-link" onclick="window.top.location.href='<?= url ?>?page=rt_nanoy2'; return false;" style="font-weight: bold; margin-bottom: 0.5rem; display: block; color: var(--pink-primary);">
+                    <a href="<?= url ?>?page=rt_nanoy2" class="system-link" onclick="return navigateSystem('rt_nanoy2', event);" style="font-weight: bold; margin-bottom: 0.5rem; display: block; color: var(--pink-primary); cursor: pointer;">
                         รายงานวิเคราะห์ผลการประเมิน RT ป.1 ➔
                     </a>
-                    <a href="<?= url ?>?page=nt_nanoy2" target="_top" class="system-link" onclick="window.top.location.href='<?= url ?>?page=nt_nanoy2'; return false;" style="font-weight: bold; margin-bottom: 0.8rem; display: block; color: var(--pink-primary);">
+                    <a href="<?= url ?>?page=nt_nanoy2" class="system-link" onclick="return navigateSystem('nt_nanoy2', event);" style="font-weight: bold; margin-bottom: 0.8rem; display: block; color: var(--pink-primary); cursor: pointer;">
                         รายงานวิเคราะห์ผลการประเมิน NT ป.3 ➔
                     </a>
                     <p style="font-weight: bold; margin-bottom: 0.5rem;">กลุ่มโรงเรียนนาน้อย 2 ประกอบด้วย 8 โรงเรียน ได้แก่</p>
@@ -369,7 +369,7 @@
                     <p style="font-weight: bold; margin-bottom: 0.5rem;">กลุ่มสาระการเรียนรู้</p>
                     <ul>
                         <li>
-                            <a href="<?= url ?>?page=system5" target="_top" class="system-link">
+                            <a href="<?= url ?>?page=system5" class="system-link" onclick="return navigateSystem('system5', event);">
                                 สุขศึกษาและพลศึกษา (เพื่อนคู่คิด ครูพละ น่าน1) ➔
                             </a>
                         </li>
@@ -383,11 +383,33 @@
     </div>
 
     <div class="footer-nav">
-        <a href="<?= url ?>?page=dashboard" class="back-btn" target="_top">
+        <a href="<?= url ?>?page=dashboard" class="back-btn" onclick="return navigateSystem('dashboard', event);">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
             กลับสู่หน้าหลัก Dashboard
         </a>
     </div>
 
+    <script>
+        function navigateSystem(pageName, e) {
+            if (e) {
+                if (e.preventDefault) e.preventDefault();
+                if (e.stopPropagation) e.stopPropagation();
+            }
+            try {
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({ type: 'NAVIGATE', page: pageName }, '*');
+                    return false;
+                }
+            } catch (err) {}
+            if (window.top && window.top !== window) {
+                try {
+                    window.top.location.href = '<?= url ?>?page=' + pageName;
+                    return false;
+                } catch (err) {}
+            }
+            window.location.href = '?page=' + pageName;
+            return false;
+        }
+    </script>
 </body>
 </html>

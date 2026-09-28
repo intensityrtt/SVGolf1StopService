@@ -821,7 +821,7 @@
         <iframe id="app-frame"
             src=""
             allow="camera; microphone; fullscreen; clipboard-read; clipboard-write; autoplay"
-            sandbox="allow-downloads allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
+            sandbox="allow-downloads allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation">
         </iframe>
     </div>
 
@@ -1115,12 +1115,16 @@
 
         // รับฟัง Message จาก Iframe กรณีมีปุ่มส่งข้อมูลข้ามเฟรม
         window.addEventListener('message', function(event) {
-            if (event.data && typeof event.data === 'object') {
-                if (event.data.type === 'NAVIGATE' && event.data.page) {
-                    if (event.data.page === 'dashboard') {
+            let data = event.data;
+            if (typeof data === 'string') {
+                try { data = JSON.parse(data); } catch (e) {}
+            }
+            if (data && typeof data === 'object') {
+                if (data.type === 'NAVIGATE' && data.page) {
+                    if (data.page === 'dashboard') {
                         backToDashboard();
                     } else {
-                        openTool(event.data.page);
+                        openTool(data.page);
                     }
                 }
             }

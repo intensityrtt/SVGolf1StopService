@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -256,7 +256,7 @@
 
   <div class="app-container" id="app">
     <header style="position: relative;">
-      <a href="<?= url ?>?page=system6" target="_top" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); border: none; background: #e2e8f0; padding: 8px 15px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px; text-decoration: none; color: #1e293b; font-weight: 600;">
+      <a href="<?= url ?>?page=system6" onclick="return navigateSystem('system6', event);" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); border: none; background: #e2e8f0; padding: 8px 15px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px; text-decoration: none; color: #1e293b; font-weight: 600;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         เมนูหลัก
       </a>
@@ -995,6 +995,27 @@
     function showDetails(id) {
       const url = '<?= url ?>?page=classroom_obs_report&id=' + id;
       window.open(url, '_blank');
+    }
+
+    function navigateSystem(pageName, e) {
+      if (e) {
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+      }
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'NAVIGATE', page: pageName }, '*');
+          return false;
+        }
+      } catch (err) {}
+      if (window.top && window.top !== window) {
+        try {
+          window.top.location.href = '<?= url ?>?page=' + pageName;
+          return false;
+        } catch (err) {}
+      }
+      window.location.href = '?page=' + pageName;
+      return false;
     }
   </script>
 </body>

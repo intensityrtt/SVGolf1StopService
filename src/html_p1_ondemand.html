@@ -547,7 +547,7 @@
         <div class="brand-subtitle">สำนักงานเขตพื้นที่การศึกษาประถมศึกษาน่าน เขต 1 | On-Demand Learning System</div>
       </div>
       <div class="header-actions">
-        <a href="<?= url ?>?page=dashboard" target="_top" class="btn-header"><i class="fa-solid fa-house"></i> หน้าหลัก SV.GOLF</a>
+        <a href="<?= url ?>?page=dashboard" onclick="return navigateSystem('dashboard', event);" class="btn-header"><i class="fa-solid fa-house"></i> หน้าหลัก SV.GOLF</a>
         <button class="btn-header" onclick="showUserManual()"><i class="fa-solid fa-book"></i> คู่มือการใช้งาน</button>
         <button class="btn-header" onclick="showAboutModal()"><i class="fa-solid fa-circle-info"></i> เกี่ยวกับระบบ</button>
         
@@ -1874,6 +1874,27 @@
             .p1SetSystemStatus(newStatus);
         }
       });
+    }
+
+    function navigateSystem(pageName, e) {
+      if (e) {
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+      }
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'NAVIGATE', page: pageName }, '*');
+          return false;
+        }
+      } catch (err) {}
+      if (window.top && window.top !== window) {
+        try {
+          window.top.location.href = '<?= url ?>?page=' + pageName;
+          return false;
+        } catch (err) {}
+      }
+      window.location.href = '?page=' + pageName;
+      return false;
     }
   </script>
 </body>

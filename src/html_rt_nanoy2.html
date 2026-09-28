@@ -697,11 +697,11 @@
 
     <!-- ===== BACK BUTTONS FOOTER ===== -->
     <div style="margin-top: 2rem; text-align: center; margin-bottom: 2rem; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
-        <a href="<?= url ?>?page=system6" class="back-btn" target="_top" style="background: #1f4e7a;">
+        <a href="<?= url ?>?page=system6" class="back-btn" onclick="return navigateSystem('system6', event);" style="background: #1f4e7a; cursor: pointer;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
             กลับหน้าภารกิจ (งานพื้นที่)
         </a>
-        <a href="<?= url ?>?page=dashboard" class="back-btn" target="_top" style="background: #1e3a8a;">
+        <a href="<?= url ?>?page=dashboard" class="back-btn" onclick="return navigateSystem('dashboard', event);" style="background: #1e3a8a; cursor: pointer;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
             กลับสู่หน้าหลัก Dashboard
         </a>
@@ -710,6 +710,27 @@
 </div>
 
 <script>
+    function navigateSystem(pageName, e) {
+        if (e) {
+            if (e.preventDefault) e.preventDefault();
+            if (e.stopPropagation) e.stopPropagation();
+        }
+        try {
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ type: 'NAVIGATE', page: pageName }, '*');
+                return false;
+            }
+        } catch (err) {}
+        if (window.top && window.top !== window) {
+            try {
+                window.top.location.href = '<?= url ?>?page=' + pageName;
+                return false;
+            } catch (err) {}
+        }
+        window.location.href = '?page=' + pageName;
+        return false;
+    }
+
     // ── DATA ──────────────────────────────────────────────────
     const schools = ['ชุมชนบ้านอ้อย','บ้านเชตวัน','บ้านทัพม่าน','บ้านนาไค้','บ้านสันทะ','บ้านส้าน','บ้านห้วยส้ม','ประกิตเวชศักดิ์'];
 

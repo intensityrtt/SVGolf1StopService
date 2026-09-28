@@ -17,8 +17,29 @@
   </a>
   <div class="card">
     <h1>ระบบใหม่ (Slot 5)</h1>
-    <p>กำลังอยู่ระหว่างการพัฒนา...</p>
-    <a href="<?= url ?>?page=dashboard" target="_top" class="home-btn">กลับหน้าหลัก</a>
+    <a href="<?= url ?>?page=dashboard" onclick="return navigateSystem('dashboard', event);" class="home-btn">กลับหน้าหลัก</a>
   </div>
+  <script>
+    function navigateSystem(pageName, e) {
+      if (e) {
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+      }
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'NAVIGATE', page: pageName }, '*');
+          return false;
+        }
+      } catch (err) {}
+      if (window.top && window.top !== window) {
+        try {
+          window.top.location.href = '<?= url ?>?page=' + pageName;
+          return false;
+        } catch (err) {}
+      }
+      window.location.href = '?page=' + pageName;
+      return false;
+    }
+  </script>
 </body>
 </html>
