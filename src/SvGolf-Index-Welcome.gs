@@ -64,7 +64,7 @@ function processRequest(e) {
       template.manualUrls = getManualUrls();
       return template.evaluate().setTitle('Admin Control - SV.GOLF').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     } else {
-      return HtmlService.createHtmlOutput("<div style='text-align:center; padding:50px;'><h2>🔒 รหัสผ่านไม่ถูกต้อง</h2><a href='?page=dashboard'>กลับหน้าหลัก</a></div>").setTitle('Access Denied');
+      return HtmlService.createHtmlOutput("<div style='text-align:center; padding:50px; font-family:sans-serif;'><h2>🔒 รหัสผ่านไม่ถูกต้อง</h2><p>กรุณาระบุรหัสผ่านให้ถูกต้องเพื่อเข้าใช้งานหน้า Admin</p><a href='?page=dashboard' style='display:inline-block; margin-top:15px; padding:10px 20px; background:#4f46e5; color:white; text-decoration:none; border-radius:8px;'>กลับหน้าหลัก</a></div>").setTitle('Access Denied').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     }
   }
 

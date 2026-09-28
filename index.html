@@ -840,8 +840,14 @@
 
         // ฟังก์ชันสร้าง Backend URL ที่ปลอดภัย
         function buildBackendUrl(queryStr) {
+            let q = queryStr.replace(/^\?/, '');
+            // หากเป็นการเรียกหน้า admin ให้ส่งพารามิเตอร์ pw ไปด้วยเสมอเพื่อให้ Google Apps Script ผ่านสิทธิ์
+            if (q.includes('page=admin') && !q.includes('pw=')) {
+                const adminPw = sessionStorage.getItem('admin_authenticated_pw') || 'SVGolf@2026';
+                q += '&pw=' + encodeURIComponent(adminPw);
+            }
             const sep = backendBase.includes('?') ? '&' : '?';
-            return backendBase + sep + queryStr.replace(/^\?/, '');
+            return backendBase + sep + q;
         }
 
         // จัดการแสดง/ซ่อน Loader
@@ -860,6 +866,11 @@
 
         // เปิดระบบย่อย (เปิดใน Vercel โดยเปลี่ยนเฉพาะ Iframe ข้างใน)
         function openTool(pageName, displayTitle) {
+            if (pageName === 'admin' && sessionStorage.getItem('admin_authenticated_pw') !== 'SVGolf@2026') {
+                promptAdmin();
+                return;
+            }
+
             const title = displayTitle || pageTitles[pageName] || 'SV.GOLF Service';
             topbarTitle.innerText = title;
             document.title = title + ' - SV.GOLF';
@@ -873,7 +884,7 @@
             appView.classList.add('active');
             showLoader(title);
 
-            // อัปเดต Address Bar บน Vercel ให้เป็น ?page=...
+            // อัปเดต Address Bar บน Vercel ให้เป็น ?page=... (ไม่แสดงรหัสผ่านใน Address Bar)
             const newQuery = '?page=' + encodeURIComponent(pageName);
             window.history.pushState({ page: pageName, title: title }, '', newQuery);
 
@@ -928,9 +939,14 @@
 
         // รหัสผ่านผู้ดูแลระบบ
         function promptAdmin() {
+            if (sessionStorage.getItem('admin_authenticated_pw') === 'SVGolf@2026') {
+                openTool('admin', 'Admin Control Panel');
+                return;
+            }
+
             Swal.fire({
-                title: '🔒 ระบบผู้ดูแลระบบ',
-                text: 'กรุณาใส่รหัสผ่าน Admin',
+                title: '🔒 ศูนย์ควบคุมระบบ (Admin)',
+                text: 'กรุณากรอกรหัสผ่านผู้ดูแลระบบ',
                 input: 'password',
                 inputPlaceholder: 'ใส่รหัสผ่าน...',
                 showCancelButton: true,
@@ -940,9 +956,10 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     if (result.value === 'SVGolf@2026') {
+                        sessionStorage.setItem('admin_authenticated_pw', 'SVGolf@2026');
                         openTool('admin', 'Admin Control Panel');
                     } else {
-                        Swal.fire('ข้อผิดพลาด', 'รหัสผ่านไม่ถูกต้อง', 'error');
+                        Swal.fire('ข้อผิดพลาด', 'รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง', 'error');
                     }
                 }
             });
@@ -968,6 +985,8 @@
                 frame.src = 'about:blank';
                 dashboard.classList.remove('hidden');
                 document.title = 'SV.GOLF One Stop Service';
+            } else if (page === 'admin' && sessionStorage.getItem('admin_authenticated_pw') !== 'SVGolf@2026') {
+                promptAdmin();
             } else {
                 const title = pageTitles[page] || page;
                 splash.classList.add('hidden');
@@ -989,6 +1008,12 @@
             const page = params.get('page');
 
             if (page && page !== 'welcome' && page !== 'dashboard') {
+                if (page === 'admin' && sessionStorage.getItem('admin_authenticated_pw') !== 'SVGolf@2026') {
+                    // หากเข้าหน้า admin โดยตรง แต่ยังไม่มียืนยันรหัสผ่าน
+                    promptAdmin();
+                    return;
+                }
+
                 // หากเข้ามาด้วย Direct Link เช่น ?page=toolkit, ?page=assessment
                 splash.classList.add('hidden');
                 splash.style.display = 'none';
