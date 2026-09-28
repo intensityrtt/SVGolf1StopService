@@ -29,6 +29,12 @@ function processRequest(e) {
   var page = (e && e.parameter) ? e.parameter.page : null;
   var pw = (e && e.parameter) ? e.parameter.pw : null;
   
+  if (page === 'api_statuses') {
+    var statuses = getSystemStatuses();
+    return ContentService.createTextOutput(JSON.stringify({ status: 'success', data: statuses }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
   if (!page) {
     var template = HtmlService.createTemplateFromFile('html_welcome');
     template.url = getSystemUrl();
@@ -626,7 +632,7 @@ function getSystemStatuses() {
     system6: props.getProperty('status_system6') || 'open',
     onet_bank: props.getProperty('status_onet_bank') || 'open',
     classroom_obs: props.getProperty('status_classroom_obs') || 'open',
-    p1_ondemand: props.getProperty('status_p1_ondemand') || 'open'
+    p1_ondemand: props.getProperty('status_p1_ondemand') || (props.getProperty('P1_SYSTEM_STATUS') === 'OFFLINE' ? 'closed' : 'open')
   };
 }
 
@@ -727,6 +733,9 @@ function getUsageStats() {
 
 function toggleSystemStatus(key, status) {
   PropertiesService.getScriptProperties().setProperty('status_' + key, status);
+  if (key === 'p1_ondemand') {
+    PropertiesService.getScriptProperties().setProperty('P1_SYSTEM_STATUS', status === 'open' ? 'ONLINE' : 'OFFLINE');
+  }
   return true;
 }
 

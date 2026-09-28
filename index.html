@@ -269,6 +269,22 @@
             border-color: #93c5fd;
         }
 
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            padding: 0.35rem 1rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            z-index: 10;
+        }
+
         .icon-box {
             width: 56px;
             height: 56px;
@@ -584,7 +600,8 @@
             <div class="grid-container">
 
                 <!-- Highlight Card: P.1 Active Learning On-Demand -->
-                <div class="card" onclick="openTool('p1_ondemand', 'On-Demand Learning ภาษาไทย ป.1')" style="grid-column: 1 / -1; background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%); border: 2px solid #3b82f6; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15);">
+                <div class="card" onclick="openTool('p1_ondemand', 'On-Demand Learning ภาษาไทย ป.1')" style="grid-column: 1 / -1; background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%); border: 2px solid #3b82f6; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15); position: relative;">
+                    <div class="status-badge" id="badge-p1_ondemand" style="display: none;">ปิดระบบ</div>
                     <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
                         <div style="display: flex; align-items: center; gap: 1.2rem;">
                             <div class="icon-box" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); width: 64px; height: 64px; margin-bottom: 0;">
@@ -611,6 +628,7 @@
 
                 <!-- Card 1: RT Toolkit -->
                 <div class="card" onclick="openTool('toolkit', 'NAN1 RT Toolkit')" aria-label="เข้าสู่ระบบ สร้างใบงาน RT">
+                    <div class="status-badge" id="badge-toolkit" style="display: none;">ปิดระบบ</div>
                     <div class="icon-box">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -626,6 +644,7 @@
 
                 <!-- Card 2: RT Assessment -->
                 <div class="card" onclick="openTool('assessment', 'Pre-RT Online NAN1')" aria-label="เข้าสู่ระบบ ประเมินและจัดสอบออนไลน์">
+                    <div class="status-badge" id="badge-assessment" style="display: none;">ปิดระบบ</div>
                     <div class="icon-box">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -638,6 +657,7 @@
 
                 <!-- Card 3: RT-NT Management -->
                 <div class="card" onclick="openTool('management', 'RT-NT Management')" aria-label="เข้าสู่ระบบ จัดการเฉลยและบันทึกผู้เข้าสอบ">
+                    <div class="status-badge" id="badge-management" style="display: none;">ปิดระบบ</div>
                     <div class="icon-box">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -651,6 +671,7 @@
 
                 <!-- Card 4: Online Meeting -->
                 <div class="card" onclick="openTool('meeting', 'ระบบกิจกรรมประชุมออนไลน์')" aria-label="เข้าสู่ระบบ เช็คอินและประชุมชี้แจงออนไลน์">
+                    <div class="status-badge" id="badge-meeting" style="display: none;">ปิดระบบ</div>
                     <div class="icon-box">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M15.6 11.6L22 7v10l-6.4-4.5v-1zM4 5h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7c0-1.1.9-2 2-2z"></path>
@@ -662,6 +683,7 @@
 
                 <!-- Card 5: เพื่อคู่คิด ครูพละ น่าน1 -->
                 <div class="card" onclick="openTool('system5', 'เพื่อนคู่คิด ครูพละ น่าน 1')" aria-label="เพื่อคู่คิด ครูพละ น่าน1">
+                    <div class="status-badge" id="badge-system5" style="display: none;">ปิดระบบ</div>
                     <div class="icon-box">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -676,6 +698,7 @@
 
                 <!-- Card 6: ระบบ นิเทศออนไลน์ By SV.Golf -->
                 <div class="card" onclick="openTool('system6', 'นิเทศออนไลน์ By SV.GOLF')" aria-label="ระบบ นิเทศออนไลน์ By SV.Golf">
+                    <div class="status-badge" id="badge-system6" style="display: none;">ปิดระบบ</div>
                     <div class="icon-box">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
@@ -692,6 +715,7 @@
 
                 <!-- Card 7: คลังข้อสอบ O-NET อัจฉริยะ -->
                 <div class="card" onclick="openTool('onet_bank', 'คลังข้อสอบ O-NET อัจฉริยะ')" aria-label="คลังข้อสอบ O-NET อัจฉริยะ">
+                    <div class="status-badge" id="badge-onet_bank" style="display: none;">ปิดระบบ</div>
                     <div class="icon-box">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
@@ -864,10 +888,52 @@
             hideLoader();
         };
 
+        let systemStatuses = {};
+
+        function updateStatusBadges(statuses) {
+            systemStatuses = statuses || {};
+            for (const key in systemStatuses) {
+                const badge = document.getElementById('badge-' + key);
+                if (badge) {
+                    if (systemStatuses[key] === 'closed') {
+                        badge.style.display = 'block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        // ดึงข้อมูลสถานะล่าสุดจาก Backend
+        function fetchSystemStatuses() {
+            try {
+                const url = buildBackendUrl('?page=api_statuses');
+                fetch(url)
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res && res.data) {
+                            updateStatusBadges(res.data);
+                        }
+                    })
+                    .catch(() => {});
+            } catch (e) {}
+        }
+
         // เปิดระบบย่อย (เปิดใน Vercel โดยเปลี่ยนเฉพาะ Iframe ข้างใน)
         function openTool(pageName, displayTitle) {
             if (pageName === 'admin' && sessionStorage.getItem('admin_authenticated_pw') !== 'SVGolf@2026') {
                 promptAdmin();
+                return;
+            }
+
+            // ตรวจสอบว่าระบบถูกสั่งปิดหรือไม่
+            if (systemStatuses[pageName] === 'closed') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '🔒 ปิดระบบชั่วคราว',
+                    text: 'ขออภัย ระบบนี้ปิดให้บริการชั่วคราว อยู่ระหว่างการปรับปรุงข้อมูล',
+                    confirmButtonColor: '#4f46e5'
+                });
                 return;
             }
 
@@ -899,6 +965,9 @@
             frame.src = 'about:blank'; // เคลียร์ memory
             dashboard.classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // โหลดสถานะล่าสุดเมื่อกลับสู่ Dashboard
+            fetchSystemStatuses();
 
             window.history.pushState({ page: 'dashboard' }, '', '?page=dashboard');
         }
@@ -1030,10 +1099,12 @@
                 splash.classList.add('hidden');
                 splash.style.display = 'none';
                 dashboard.classList.remove('hidden');
+                fetchSystemStatuses();
             } else {
                 // เข้าหน้าแรกสุด แสดง Splash Screen บน Vercel
                 splash.classList.remove('hidden');
                 dashboard.classList.add('hidden');
+                fetchSystemStatuses();
             }
         })();
 
