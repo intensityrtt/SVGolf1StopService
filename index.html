@@ -16,12 +16,12 @@
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body,
         html {
-            margin: 0;
-            padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
@@ -29,7 +29,7 @@
             font-family: 'Sarabun', sans-serif;
         }
 
-        /* ตั้งค่า iframe ให้เต็มหน้าจอ ไม่มีขอบ */
+        /* Iframe แสดงผลระบบหลัก */
         #app-frame {
             width: 100%;
             height: 100%;
@@ -38,6 +38,112 @@
             z-index: 10;
             position: relative;
             background-color: transparent;
+        }
+
+        /* หน้าต่าง Splash Screen ต้อนรับบน Vercel โดยตรง (โหลดทันที ไม่ต้องผ่าน GAS) */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 500;
+            cursor: pointer;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .splash-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .splash-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.12));
+            display: block;
+            min-width: 320px;
+            min-height: 320px;
+            user-select: none;
+        }
+
+        .instruction {
+            position: absolute;
+            bottom: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background: rgba(30, 58, 138, 0.88);
+            backdrop-filter: blur(12px);
+            padding: 0.85rem 2.2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: pulse 2s infinite;
+            font-size: 1.05rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+            z-index: 550;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s;
+        }
+
+        .instruction:hover {
+            background: #2563eb;
+            transform: translateX(-50%) scale(1.06);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.95;
+                transform: translateX(-50%) scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1.04);
+            }
+        }
+
+        .sponsor-footer {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+            text-align: center;
+            width: 90%;
+            z-index: 520;
+            pointer-events: auto;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .sponsor-footer a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .sponsor-footer a:hover {
+            text-decoration: underline;
+            color: #93c5fd;
         }
 
         /* รูปแบบหน้าจอโหลดดิ้ง (Loading Screen) */
@@ -51,7 +157,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 999;
+            z-index: 400;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: #f8fafc;
             transition: opacity 0.4s ease, visibility 0.4s ease;
@@ -65,22 +171,18 @@
 
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.1);
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             border-left-color: #38bdf8;
             border-top-color: #38bdf8;
             animation: spin 0.8s linear infinite;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .loading-title {
@@ -88,7 +190,6 @@
             font-weight: 600;
             color: #f1f5f9;
             margin-bottom: 6px;
-            letter-spacing: 0.02em;
         }
 
         .loading-sub {
@@ -100,98 +201,133 @@
 
 <body>
 
-    <!-- หน้าต่างแสดงสถานะการโหลด -->
+    <!-- 1. Splash Screen ต้อนรับแสดงบน Vercel ทันที (ไม่หลุดไป Apps Script) -->
+    <div id="splash-screen" onclick="enterDashboard(event)">
+        <div class="splash-container">
+            <img src="assets/images/INDEX.png" class="splash-image" alt="SV.GOLF Welcome">
+            <div class="instruction" onclick="enterDashboard(event)">คลิกที่นี่เพื่อเข้าใช้งานระบบ</div>
+        </div>
+        <div class="sponsor-footer">
+            สนับสนุนโดย <a href="https://www.facebook.com/IntensityStudio" target="_blank" rel="noopener noreferrer">intensity studio & insurance</a> บริการประกันรถ พรบ. และวินาศภัยทุกชนิด เลือกได้กว่า 30 บริษัท
+        </div>
+    </div>
+
+    <!-- 2. หน้าจอหมุนโหลดระหว่างเชื่อมต่อ Backend -->
     <div id="loader">
         <div class="spinner"></div>
         <div class="loading-title">SV.GOLF One Stop Service</div>
         <div class="loading-sub">กำลังเชื่อมต่อระบบ กรุณารอสักครู่...</div>
     </div>
 
-    <!-- ส่วน Iframe สำหรับแสดงผล Headless Backend ของ Google Apps Script (ไม่ใส่ sandbox เพื่อความสมบูรณ์ในการทำงาน) -->
+    <!-- 3. Iframe ครอบ Backend Google Apps Script -->
     <iframe id="app-frame"
         src=""
         allow="camera; microphone; fullscreen; clipboard-read; clipboard-write; autoplay">
     </iframe>
 
     <script>
-        (function() {
-            // URL ของ Google Apps Script Headless Backend
-            const encodedBackendUrl = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9hL2VkbmFuMS5nby50aC9tYWNyb3Mvcy9BS2Z5Y2J4RENnd3E5anI0aE5MZVc1QkJNeWxEaVlVMXRBeFk5Uk5zSGFMNjRxeWs2QTV2eXBOMFlfOTF6NzZlVHlnY2tabEVHUS9leGVj";
-            const backendBase = atob(encodedBackendUrl);
+        // URL ของ Google Apps Script Headless Backend
+        const encodedBackendUrl = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9hL2VkbmFuMS5nby50aC9tYWNyb3Mvcy9BS2Z5Y2J4RENnd3E5anI0aE5MZVc1QkJNeWxEaVlVMXRBeFk5Uk5zSGFMNjRxeWs2QTV2eXBOMFlfOTF6NzZlVHlnY2tabEVHUS9leGVj";
+        const backendBase = atob(encodedBackendUrl);
 
-            const frame = document.getElementById('app-frame');
-            const loader = document.getElementById('loader');
+        const frame = document.getElementById('app-frame');
+        const loader = document.getElementById('loader');
+        const splash = document.getElementById('splash-screen');
 
-            function showLoader() {
-                if (loader) {
-                    loader.style.display = 'flex';
-                    loader.classList.remove('fade-out');
-                }
+        function showLoader() {
+            if (loader) {
+                loader.style.display = 'flex';
+                loader.classList.remove('fade-out');
+            }
+        }
+
+        function hideLoader() {
+            if (loader) {
+                loader.classList.add('fade-out');
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 400);
+            }
+        }
+
+        frame.onload = function() {
+            hideLoader();
+        };
+
+        // ฟังก์ชันสร้าง Backend URL
+        function buildBackendUrl(queryStr) {
+            let q = queryStr !== undefined ? queryStr : window.location.search;
+            // หากไม่มีพารามิเตอร์ ให้เริ่มต้นที่หน้า dashboard เพื่อป้องกันไม่ให้ GAS โหลด splash ซ้ำซ้อน
+            if (!q || q === '' || q === '?') {
+                q = '?page=dashboard';
+            }
+            const sep = backendBase.includes('?') ? '&' : '?';
+            return backendBase + sep + q.replace(/^\?/, '') + window.location.hash;
+        }
+
+        // ตรวจสอบว่าต้องแสดง Splash Screen หรือไม่
+        const currentSearch = window.location.search;
+        const isDirectPage = currentSearch && currentSearch.includes('page=') && !currentSearch.includes('page=welcome');
+
+        if (isDirectPage) {
+            // หากผู้ใช้เข้าลิงก์ตรง เช่น ?page=dashboard, ?page=toolkit ให้ซ่อน Splash ทันที
+            splash.classList.add('hidden');
+            splash.style.display = 'none';
+            frame.src = buildBackendUrl(currentSearch);
+        } else {
+            // หากเข้าหน้าแรก ให้แสดง Splash บน Vercel และพรีโหลด Dashboard ไว้เบื้องหลัง
+            splash.classList.remove('hidden');
+            frame.src = buildBackendUrl('?page=dashboard');
+        }
+
+        // เมื่อผู้ใช้คลิกเข้าสู่ระบบจาก Splash Screen บน Vercel
+        function enterDashboard(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
             }
 
-            function hideLoader() {
-                if (loader) {
-                    loader.classList.add('fade-out');
-                    setTimeout(() => {
-                        loader.style.display = 'none';
-                    }, 400);
+            // ซ่อน Splash Screen ด้วย Animation
+            splash.classList.add('hidden');
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 500);
+
+            // อัปเดต Address Bar บน Vercel เป็น ?page=dashboard
+            window.history.pushState({ page: 'dashboard' }, '', '?page=dashboard');
+        }
+
+        // ระบบรับคำสั่ง Navigation & Sync จาก Iframe
+        window.addEventListener('message', function(event) {
+            if (event.data && typeof event.data === 'object') {
+                if (event.data.type === 'NAVIGATE' && event.data.page) {
+                    const page = event.data.page;
+                    const newQuery = '?page=' + encodeURIComponent(page);
+                    
+                    window.history.pushState({ page: page }, '', newQuery);
+                    showLoader();
+                    frame.src = buildBackendUrl(newQuery);
+                } else if (event.data.type === 'SYNC_PAGE' && event.data.page) {
+                    const page = event.data.page;
+                    const newQuery = '?page=' + encodeURIComponent(page);
+                    window.history.replaceState({ page: page }, '', newQuery);
                 }
             }
+        });
 
-            // ซ่อน Loader เมื่อ Iframe โหลดเสร็จสิ้น
-            frame.onload = function() {
-                hideLoader();
-            };
-
-            // สร้าง URL ปลายทางสำหรับ Backend
-            function buildBackendUrl(searchStr, hashStr) {
-                let url = backendBase;
-                const search = searchStr || window.location.search;
-                const hash = hashStr || window.location.hash;
-
-                if (search) {
-                    const sep = url.includes('?') ? '&' : '?';
-                    url += sep + search.replace(/^\?/, '');
-                }
-                if (hash) {
-                    url += hash;
-                }
-                return url;
-            }
-
-            // โหลดหน้าแรกตาม Parameters ที่เข้ามาบน Vercel URL
-            frame.src = buildBackendUrl();
-
-            // ระบบรับคำสั่ง Navigation & Sync จาก Iframe
-            window.addEventListener('message', function(event) {
-                if (event.data && typeof event.data === 'object') {
-                    // กรณีขอเปลี่ยนหน้า (NAVIGATE)
-                    if (event.data.type === 'NAVIGATE' && event.data.page) {
-                        const page = event.data.page;
-                        const newQuery = '?page=' + encodeURIComponent(page);
-                        
-                        // อัปเดต Address Bar บน Vercel
-                        window.history.pushState({ page: page }, '', newQuery);
-                        
-                        // โหลดหน้าใหม่ใน Iframe
-                        showLoader();
-                        frame.src = buildBackendUrl(newQuery);
-                    }
-                    // กรณีต้องการอัปเดตเฉพาะ Address Bar (SYNC_PAGE)
-                    else if (event.data.type === 'SYNC_PAGE' && event.data.page) {
-                        const page = event.data.page;
-                        const newQuery = '?page=' + encodeURIComponent(page);
-                        window.history.replaceState({ page: page }, '', newQuery);
-                    }
-                }
-            });
-
-            // รองรับปุ่ม Back / Forward ของเบราว์เซอร์
-            window.addEventListener('popstate', function(event) {
+        // รองรับปุ่ม Back / Forward ของเบราว์เซอร์
+        window.addEventListener('popstate', function(event) {
+            const search = window.location.search;
+            if (!search || search === '' || search.includes('page=welcome')) {
+                splash.style.display = 'flex';
+                splash.classList.remove('hidden');
+            } else {
+                splash.classList.add('hidden');
+                splash.style.display = 'none';
                 showLoader();
-                frame.src = buildBackendUrl();
-            });
-        })();
+                frame.src = buildBackendUrl(search);
+            }
+        });
     </script>
 
 </body>
