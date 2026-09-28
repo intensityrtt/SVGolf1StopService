@@ -14,7 +14,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* รีเซ็ตค่าเริ่มต้นของเบราว์เซอร์ */
         *, *::before, *::after {
             box-sizing: border-box;
         }
@@ -30,8 +29,8 @@
             font-family: 'Sarabun', sans-serif;
         }
 
-        /* ตั้งค่า iframe ให้เต็มหน้าจอ */
-        iframe {
+        /* ตั้งค่า iframe ให้เต็มหน้าจอ ไม่มีขอบ */
+        #app-frame {
             width: 100%;
             height: 100%;
             border: none;
@@ -55,7 +54,7 @@
             z-index: 999;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: #f8fafc;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
         }
 
         #loader.fade-out {
@@ -66,8 +65,8 @@
 
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.1);
-            width: 54px;
-            height: 54px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             border-left-color: #38bdf8;
             border-top-color: #38bdf8;
@@ -108,60 +107,89 @@
         <div class="loading-sub">กำลังเชื่อมต่อระบบ กรุณารอสักครู่...</div>
     </div>
 
-    <!-- ส่วน Iframe สำหรับแสดงผล Headless Backend ของ Google Apps Script -->
+    <!-- ส่วน Iframe สำหรับแสดงผล Headless Backend ของ Google Apps Script (ไม่ใส่ sandbox เพื่อความสมบูรณ์ในการทำงาน) -->
     <iframe id="app-frame"
         src=""
-        allow="camera; microphone; fullscreen; clipboard-read; clipboard-write; autoplay"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads">
+        allow="camera; microphone; fullscreen; clipboard-read; clipboard-write; autoplay">
     </iframe>
 
     <script>
         (function() {
-            // URL ของ Google Apps Script Backend (แปลงเป็น Base64 เพื่อไม่ให้แสดง URL ตรงๆ ในซอร์สโค้ด)
+            // URL ของ Google Apps Script Headless Backend
             const encodedBackendUrl = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9hL2VkbmFuMS5nby50aC9tYWNyb3Mvcy9BS2Z5Y2J4RENnd3E5anI0aE5MZVc1QkJNeWxEaVlVMXRBeFk5Uk5zSGFMNjRxeWs2QTV2eXBOMFlfOTF6NzZlVHlnY2tabEVHUS9leGVj";
             const backendBase = atob(encodedBackendUrl);
 
-            // ดึง Query Parameters และ Hash จาก Vercel URL
-            const currentSearch = window.location.search;
-            const currentHash = window.location.hash;
-
-            let finalBackendUrl = backendBase;
-
-            // ส่งต่อ Parameters ทั้งหมดไปยัง Backend
-            if (currentSearch) {
-                const separator = finalBackendUrl.includes('?') ? '&' : '?';
-                finalBackendUrl += separator + currentSearch.substring(1);
-            }
-
-            if (currentHash) {
-                finalBackendUrl += currentHash;
-            }
-
             const frame = document.getElementById('app-frame');
+            const loader = document.getElementById('loader');
 
-            // ซ่อน Loader เมื่อ Iframe โหลดเสร็จ
-            frame.onload = function() {
-                const loader = document.getElementById('loader');
+            function showLoader() {
+                if (loader) {
+                    loader.style.display = 'flex';
+                    loader.classList.remove('fade-out');
+                }
+            }
+
+            function hideLoader() {
                 if (loader) {
                     loader.classList.add('fade-out');
                     setTimeout(() => {
                         loader.style.display = 'none';
-                    }, 500);
+                    }, 400);
                 }
+            }
+
+            // ซ่อน Loader เมื่อ Iframe โหลดเสร็จสิ้น
+            frame.onload = function() {
+                hideLoader();
             };
 
-            // ตั้งค่า src ให้ Iframe
-            frame.src = finalBackendUrl;
+            // สร้าง URL ปลายทางสำหรับ Backend
+            function buildBackendUrl(searchStr, hashStr) {
+                let url = backendBase;
+                const search = searchStr || window.location.search;
+                const hash = hashStr || window.location.hash;
 
-            // รองรับการสื่อสาร PostMessage ระหว่าง Iframe และหน้าต่างหลักเพื่อ Sync URL บน Address Bar
+                if (search) {
+                    const sep = url.includes('?') ? '&' : '?';
+                    url += sep + search.replace(/^\?/, '');
+                }
+                if (hash) {
+                    url += hash;
+                }
+                return url;
+            }
+
+            // โหลดหน้าแรกตาม Parameters ที่เข้ามาบน Vercel URL
+            frame.src = buildBackendUrl();
+
+            // ระบบรับคำสั่ง Navigation & Sync จาก Iframe
             window.addEventListener('message', function(event) {
                 if (event.data && typeof event.data === 'object') {
-                    if (event.data.type === 'SYNC_PAGE' && event.data.page) {
-                        const newPage = event.data.page;
-                        const newUrl = window.location.pathname + '?page=' + encodeURIComponent(newPage);
-                        window.history.replaceState({ page: newPage }, '', newUrl);
+                    // กรณีขอเปลี่ยนหน้า (NAVIGATE)
+                    if (event.data.type === 'NAVIGATE' && event.data.page) {
+                        const page = event.data.page;
+                        const newQuery = '?page=' + encodeURIComponent(page);
+                        
+                        // อัปเดต Address Bar บน Vercel
+                        window.history.pushState({ page: page }, '', newQuery);
+                        
+                        // โหลดหน้าใหม่ใน Iframe
+                        showLoader();
+                        frame.src = buildBackendUrl(newQuery);
+                    }
+                    // กรณีต้องการอัปเดตเฉพาะ Address Bar (SYNC_PAGE)
+                    else if (event.data.type === 'SYNC_PAGE' && event.data.page) {
+                        const page = event.data.page;
+                        const newQuery = '?page=' + encodeURIComponent(page);
+                        window.history.replaceState({ page: page }, '', newQuery);
                     }
                 }
+            });
+
+            // รองรับปุ่ม Back / Forward ของเบราว์เซอร์
+            window.addEventListener('popstate', function(event) {
+                showLoader();
+                frame.src = buildBackendUrl();
             });
         })();
     </script>

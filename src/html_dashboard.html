@@ -795,6 +795,30 @@
           });
       }
 
+      // ซิงค์สถานะหน้าเว็บกับ Parent Vercel Window
+      if (window.top !== window.self) {
+        try {
+          window.top.postMessage({ type: 'SYNC_PAGE', page: 'dashboard' }, '*');
+        } catch (e) {}
+      }
+
+      // ดักการคลิกการ์ดระบบทั้งหมด เพื่อให้ Vercel นำทางได้อย่างราบรื่น 100%
+      document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('a[href*="?page="]').forEach(function (anchor) {
+          anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href') || '';
+            const match = href.match(/[?&]page=([^&]+)/);
+            if (match && match[1]) {
+              const pageName = match[1];
+              if (window.top !== window.self) {
+                e.preventDefault();
+                window.top.postMessage({ type: 'NAVIGATE', page: pageName }, '*');
+              }
+            }
+          });
+        });
+      });
+
     </script>
   </div>
 </body>

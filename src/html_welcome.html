@@ -40,7 +40,7 @@
     }
 
     .splash-container:hover {
-      transform: scale(1.01);
+      transform: scale(1.008);
     }
 
     .splash-image {
@@ -59,29 +59,34 @@
       left: 50%;
       transform: translateX(-50%);
       color: white;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(30, 58, 138, 0.85);
       backdrop-filter: blur(10px);
-      padding: 0.8rem 1.5rem;
+      padding: 0.85rem 2rem;
       border-radius: 9999px;
-      font-weight: 500;
+      font-weight: 600;
       letter-spacing: 0.05em;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       animation: pulse 2s infinite;
-      pointer-events: none;
-      font-size: 0.9rem;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      z-index: 50;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .instruction:hover {
+      background: #2563eb;
+      transform: translateX(-50%) scale(1.05);
     }
 
     @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 0.6;
+      0%, 100% {
+        opacity: 0.9;
         transform: translateX(-50%) scale(1);
       }
-
       50% {
         opacity: 1;
-        transform: translateX(-50%) scale(1.05);
+        transform: translateX(-50%) scale(1.04);
       }
     }
 
@@ -114,11 +119,16 @@
 
 <body>
 
-  <div class="splash-container" onclick="enterSystem()">
-    <!-- เพิ่ม ID เพื่อให้ JS เข้ามาเปลี่ยนภาพได้ และมีตัวอย่างภาพระหว่างโหลด -->
-    <div id="loading-spinner" style="position: absolute; color: white; opacity: 0.5;">กำลังโหลดภาพ...</div>
-    <img id="main-splash" src="" class="splash-image" alt="SV.GOLF Welcome" style="display: none;">
-    <div class="instruction">คลิกที่นี่เพื่อเข้าใช้งานระบบ</div>
+  <div class="splash-container" onclick="enterSystem(event)">
+    <div id="loading-spinner" style="position: absolute; color: white; opacity: 0.6; font-size: 1rem;">กำลังโหลดภาพ...</div>
+    <img id="main-splash" 
+         src="https://svgolf-1-stop-service.vercel.app/assets/images/INDEX.png" 
+         class="splash-image" 
+         alt="SV.GOLF Welcome"
+         onload="handleImageLoaded()" 
+         onerror="loadFallbackDriveImage()"
+         style="display: none;">
+    <div class="instruction" onclick="enterSystem(event)">คลิกที่นี่เพื่อเข้าใช้งานระบบ</div>
   </div>
 
   <div class="sponsor-footer">
@@ -127,20 +137,50 @@
   </div>
 
   <script>
-    // ดึงภาพจาก Server เมื่อหน้าเว็บโหลดเสร็จ
-    window.onload = function () {
-      google.script.run.withSuccessHandler(function (base64Data) {
-        if (base64Data) {
-          const img = document.getElementById('main-splash');
-          img.src = base64Data;
-          img.style.display = 'block';
-          document.getElementById('loading-spinner').style.display = 'none';
-        }
-      }).getImageBase64('INDEX.png');
-    };
+    function handleImageLoaded() {
+      const spinner = document.getElementById('loading-spinner');
+      const img = document.getElementById('main-splash');
+      if (spinner) spinner.style.display = 'none';
+      if (img) img.style.display = 'block';
+    }
 
-    function enterSystem() {
-      window.top.location.href = "<?= url ?>?page=dashboard";
+    function loadFallbackDriveImage() {
+      // โหลดรูปสำรองจาก Google Drive หากดึงจาก CDN ขัดข้อง
+      try {
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run.withSuccessHandler(function (base64Data) {
+            if (base64Data) {
+              const img = document.getElementById('main-splash');
+              img.src = base64Data;
+              handleImageLoaded();
+            }
+          }).getImageBase64('INDEX.png');
+        }
+      } catch (err) {}
+    }
+
+    function enterSystem(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      // 1. ส่งสัญญาณ PostMessage ให้ Parent Vercel Window เปลี่ยนหน้าสู่ Dashboard
+      if (window.top !== window.self) {
+        try {
+          window.top.postMessage({ type: 'NAVIGATE', page: 'dashboard' }, '*');
+          window.top.postMessage({ type: 'SYNC_PAGE', page: 'dashboard' }, '*');
+        } catch (err) {}
+      }
+
+      // 2. นำทางโดยตรง (ครอบคลุมทั้งกรณีใน iframe และเปิดเดี่ยว)
+      const vercelUrl = "https://svgolf-1-stop-service.vercel.app/?page=dashboard";
+      try {
+        window.top.location.href = vercelUrl;
+      } catch (err) {
+        // Fallback เปลี่ยนภายใน Frame ปัจจุบัน
+        window.location.href = "?page=dashboard";
+      }
     }
   </script>
 
