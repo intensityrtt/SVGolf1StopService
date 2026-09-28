@@ -245,12 +245,35 @@ git push -u origin main
    - ไฟล์เหล่านี้เป็นไอคอนเชื่อมโยงของ Google Drive for Desktop หากกดลบจากเครื่อง ไฟล์ชีตจริงใน Cloud จะถูกย้ายไปถังขยะ
    - ขณะนี้ระบบได้ใส่ไฟล์เหล่านี้ไว้ใน `.gitignore` เรียบร้อยแล้ว จึงปลอดภัยและจะไม่ถูกนำขึ้น Git แน่นอน
 2. **การอัปเดตโค้ดบน Google Apps Script:**
-   - นำโค้ดใน `src/*.gs` และ `src/*.html` ไปอัปเดตใน Google Apps Script Web Editor หรือใช้ `clasp push`
+   - นำโค้ดใน `src/*.gs` และ `src/*.html` ไปอัปเดตใน Google Apps Script Web Editor
    - ตัวแปร `VERCEL_FRONTEND_URL` ใน `src/SvGolf-Index-Welcome.gs` ได้ถูกตั้งค่าเริ่มต้นเป็น `https://svgolf-1-stop-service.vercel.app` เรียบร้อยแล้ว หากมีการเปลี่ยนโดเมนในอนาคต สามารถแก้ไขได้ที่จุดนี้จุดเดียว
 3. **การเปลี่ยนรหัสผ่านผู้ดูแลระบบ (Admin Password):**
    - รหัสผ่านถูกกำหนดไว้ที่ตัวแปร `ADMIN_PASSWORD` ในไฟล์ `src/SvGolf-Index-Welcome.gs`
    - หากนำโครงการขึ้นเป็น Public บน GitHub แนะนำให้เปลี่ยนค่านี้หรือย้ายไปเก็บไว้ใน **Script Properties** เพื่อความปลอดภัยสูงสุด
 
 ---
+
+## 🚀 8. ขั้นตอนการ Deploy บน Google Apps Script เพื่อให้ลิงก์ทั้งหมดเป็น Vercel 100%
+
+เนื่องจากการ Push โค้ดขึ้น GitHub จะอัปเดตไปยัง Vercel อัตโนมัติ แต่ **Google Apps Script จะไม่ดึงโค้ดจาก GitHub เอง** จึงต้องทำการอัปเดตโค้ดในโปรเจกต์ Apps Script และกดสร้าง Version ใหม่ดังนี้:
+
+1. **เปิดโปรเจกต์ Google Apps Script:**
+   - ไปที่ Google Drive ดับเบิ้ลคลิกไฟล์ `SV.Golf One Stop Service1` หรือเข้าผ่านลิงก์:
+     [Google Apps Script Editor](https://script.google.com/a/ednan1.go.th/macros/s/AKfycbxDCgwq9jr4hNLeW5BBMylDiYU1tAxY9RNsHaL64qyk6A5vypN0Y_91z76eTygckZlEGQ/edit)
+2. **อัปเดตไฟล์สำคัญ:**
+   - **ไฟล์ `SvGolf-Index-Welcome.gs`**: คัดลอกโค้ดจาก `src/SvGolf-Index-Welcome.gs` ไปวางแทนที่ (มีตัวแปร `VERCEL_FRONTEND_URL = "https://svgolf-1-stop-service.vercel.app"` และ `getSystemUrl()` ที่บังคับส่ง URL เป็น Vercel)
+   - **ไฟล์ `html_dashboard.html`**: คัดลอกโค้ดจาก `src/html_dashboard.html` ไปวางแทนที่ (มีโค้ดดักจับการคลิกการ์ดและส่งคำสั่งนำทางผ่าน PostMessage เพื่อความราบรื่น)
+3. **กด Deploy เวอร์ชันใหม่ (New Version):**
+   - ที่มุมบนขวา คลิกปุ่มสีน้ำเงิน **"การทำให้ใช้งานได้" (Deploy)** > เลือก **"จัดการการทำให้ใช้งานได้" (Manage Deployments)**
+   - คลิกไอคอน **ดินสอ (แก้ไข / Edit)** ที่รายการ Web App ล่าสุด
+   - ที่ช่อง **เวอร์ชัน (Version)** ให้เลือกคลิกเปลี่ยนเป็น **"เวอร์ชันใหม่" (New version)**
+   - คลิกปุ่ม **"ทำให้ใช้งานได้" (Deploy)**
+4. **ผลลัพธ์ที่ได้:**
+   - ทุกปุ่ม/การ์ดใน Dashboard จะสร้างลิงก์เป็น `https://svgolf-1-stop-service.vercel.app/?page=...` ทั้งหมด
+   - เมื่อคลิกเปิดระบบย่อยใดๆ จะทำงานอยู่บนโดเมน Vercel ตลอดเวลา
+   - ปราศจาก URL ของ `script.google.com` และไม่มีแถบแจ้งเตือนของ Google กวนใจ 100%
+
+---
 **จัดทำเอกสารโดย:** Antigravity AI Assistant  
 **ร่วมกับ:** นายพุฒิพงษ์ วงศ์นันท์ (ศึกษานิเทศก์ สพป.น่าน เขต 1)
+
