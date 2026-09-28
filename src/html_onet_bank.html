@@ -189,8 +189,8 @@
       พร้อมใช้งานแล้วในหน้าต่างใหม่ เพื่อความปลอดภัยและความเป็นส่วนตัวในการเข้าทำข้อสอบ กรุณาคลิกปุ่มด้านล่างเพื่อเปิดระบบ
     </p>
 
-    <a href="https://script.google.com/a/macros/ednan1.go.th/s/AKfycbyDZUs_QoGGoasOAgo_4t5ygjEWMQJT4dnQ8z0VvDBDernrr5hxAeCz2xwSlIbhLq1PrA/exec" 
-       target="_top" 
+    <a href="javascript:void(0)" 
+       onclick="openOnetBank()"
        class="launch-btn">
       <span>เข้าสู่คลังข้อสอบ O-NET</span>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -206,9 +206,16 @@
     </a>
 
     <div class="security-note">
-      * ระบบความปลอดภัยของเบราว์เซอร์บล็อกการนำทางอัตโนมัติจากภายในเฟรมระบบหลัก จึงจำเป็นต้องคลิกปุ่มเพื่อเปิดใช้งาน
+      * ระบบจะเปิดคลังข้อสอบในแท็บใหม่เพื่อความปลอดภัยและเสถียรภาพสูงสุด
     </div>
   </div>
 
+  <script>
+    function openOnetBank() {
+      // ซ่อน URL ป้องกันการแสดงผลลิงก์ Apps Script โดยตรง
+      const encoded = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9hL21hY3Jvcy9lZG5hbjEuZ28udGgvcy9BS2Z5Y2J5RFpVc19Rb0dHb2FzT0Fnb180dDV5Z2pFV01RSlQ0ZG5ROHowVnZEQkRlcm5ycjFoeEFlQ3oyeHdTbEliaExxMVByQS9leGVj";
+      window.open(atob(encoded), '_blank');
+    }
+  </script>
 </body>
 </html>

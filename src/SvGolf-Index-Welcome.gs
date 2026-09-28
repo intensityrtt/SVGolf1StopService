@@ -1,6 +1,13 @@
 // กำหนดรหัสผ่านสำหรับ Admin ที่นี่
 const ADMIN_PASSWORD = "SVGolf@2026"; 
 
+// กำหนด URL ของระบบ Frontend หลักบน Vercel (GAS ทำหน้าที่เป็น Headless Backend Server เท่านั้น)
+const VERCEL_FRONTEND_URL = "https://svgolf-1-stop-service.vercel.app";
+
+function getSystemUrl() {
+  return PropertiesService.getScriptProperties().getProperty('FRONTEND_URL') || VERCEL_FRONTEND_URL;
+}
+
 function doGet(e) {
   var startTime = Date.now();
   var page = (e && e.parameter) ? e.parameter.page : 'welcome';
@@ -24,7 +31,7 @@ function processRequest(e) {
   
   if (!page) {
     var template = HtmlService.createTemplateFromFile('html_welcome');
-    template.url = ScriptApp.getService().getUrl();
+    template.url = getSystemUrl();
     template.imageData = getImageBase64('INDEX.png');
     return template.evaluate().setTitle('ยินดีต้อนรับสู่ SV.GOLF One Stop Service').addMetaTag('viewport', 'width=device-width, initial-scale=1').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
@@ -32,7 +39,7 @@ function processRequest(e) {
   if (page === 'dashboard') {
     logVisit('dashboard');
     var template = HtmlService.createTemplateFromFile('html_dashboard');
-    template.url = ScriptApp.getService().getUrl();
+    template.url = getSystemUrl();
     template.statuses = getSystemStatuses();
     template.manualUrls = getManualUrls();
     template.totalVisits = PropertiesService.getScriptProperties().getProperty('stats_dashboard') || '0';
@@ -53,7 +60,7 @@ function processRequest(e) {
   if (page === 'admin') {
     if (pw === ADMIN_PASSWORD) {
       var template = HtmlService.createTemplateFromFile('html_admin');
-      template.url = ScriptApp.getService().getUrl();
+      template.url = getSystemUrl();
       template.manualUrls = getManualUrls();
       return template.evaluate().setTitle('Admin Control - SV.GOLF').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     } else {
@@ -79,7 +86,7 @@ function processRequest(e) {
   
   if (page === 'manual') {
     var template = HtmlService.createTemplateFromFile('html_manual');
-    template.url = ScriptApp.getService().getUrl();
+    template.url = getSystemUrl();
     template.activeTab = (e && e.parameter && e.parameter.tab) ? e.parameter.tab : 'main';
     template.statuses = getSystemStatuses();
     return template.evaluate()
@@ -96,7 +103,7 @@ function serveProtectedPage(e, systemKey, fileName, fallbackFunc) {
   var isAdmin = (e && e.parameter && e.parameter.admin === 'true');
   if (status === 'closed' && !isAdmin) {
     var template = HtmlService.createTemplateFromFile('html_closed');
-    template.url = ScriptApp.getService().getUrl();
+    template.url = getSystemUrl();
     return template.evaluate().setTitle('System Closed - SV.GOLF').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
   logVisit(systemKey);
@@ -106,7 +113,7 @@ function serveProtectedPage(e, systemKey, fileName, fallbackFunc) {
   }
 
   var template = HtmlService.createTemplateFromFile(fileName);
-  template.url = ScriptApp.getService().getUrl();
+  template.url = getSystemUrl();
   var manualUrlProp = PropertiesService.getScriptProperties().getProperty('manual_' + systemKey);
   var tabName = systemKey;
   if (systemKey === 'classroom_obs' || systemKey === 'system6') tabName = 'supervision';
@@ -177,7 +184,7 @@ function getExecutionStats() {
 
 function doGetSupervision(e) {
   var template = HtmlService.createTemplateFromFile('html_supervision');
-  template.url = ScriptApp.getService().getUrl();
+  template.url = getSystemUrl();
   return template.evaluate().setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
@@ -625,7 +632,7 @@ function getSystemStatuses() {
 
 function getManualUrls() {
   var props = PropertiesService.getScriptProperties();
-  var baseUrl = ScriptApp.getService().getUrl() + '?page=manual';
+  var baseUrl = getSystemUrl() + '?page=manual';
   return {
     dashboard: props.getProperty('manual_dashboard') || (baseUrl + '&tab=main'),
     supervision: props.getProperty('manual_supervision') || (baseUrl + '&tab=supervision'),
@@ -644,7 +651,7 @@ function serveSupervisionReport(e) {
   const id = e.parameter.id;
   const template = HtmlService.createTemplateFromFile('html_supervision_report');
   template.inspectionId = id;
-  template.url = ScriptApp.getService().getUrl();
+  template.url = getSystemUrl();
   return template.evaluate()
     .setTitle('รายงานผลการนิเทศ - SV.GOLF')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
@@ -655,7 +662,7 @@ function serveClassroomObsReport(e) {
   const id = e.parameter.id;
   const template = HtmlService.createTemplateFromFile('html_classroom_obs_report');
   template.obsId = id;
-  template.url = ScriptApp.getService().getUrl();
+  template.url = getSystemUrl();
   return template.evaluate()
     .setTitle('รายงานการนิเทศชั้นเรียน - SV.GOLF')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
@@ -669,7 +676,7 @@ function serveClassroomObsReport(e) {
 function getAdminContent(pw) {
   if (pw !== ADMIN_PASSWORD) return "INVALID";
   var template = HtmlService.createTemplateFromFile('html_admin');
-  template.url = ScriptApp.getService().getUrl();
+  template.url = getSystemUrl();
   template.manualUrls = getManualUrls();
   return template.evaluate().getContent();
 }

@@ -3,7 +3,7 @@ const MANAGEMENT_FOLDER_ID = "1aRf_Tz8bQuobLut_1XCPzgzgto4M79jr";
 
 function doGetManagement(e) {
   const tmp = HtmlService.createTemplateFromFile('html_management');
-  tmp.url = ScriptApp.getService().getUrl();
+  tmp.url = getSystemUrl();
   tmp.manualUrl = PropertiesService.getScriptProperties().getProperty('manual_management') || '#';
   return tmp.evaluate()
     .setTitle('ระบบ RT-NT สพป.น่าน เขต 1')
@@ -208,5 +208,5 @@ function uploadFiles(files, username, examType) {
 }
 
 function getServiceUrl() {
-  return ScriptApp.getService().getUrl();
+  return getSystemUrl();
 }

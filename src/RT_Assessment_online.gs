@@ -6,7 +6,7 @@ const ASSESSMENT_SPREADSHEET_ID = '1HsXF1_m_EUMQ8SsnFYSHTZrU_Ztdx2zWXcnyG-SYnOk'
 
 function doGetAssessment() {
   const tmp = HtmlService.createTemplateFromFile('html_assessment');
-  tmp.url = ScriptApp.getService().getUrl();
+  tmp.url = getSystemUrl();
   tmp.manualUrl = PropertiesService.getScriptProperties().getProperty('manual_assessment') || '#';
   return tmp.evaluate()
       .setTitle('Pre-RT Online NAN1')

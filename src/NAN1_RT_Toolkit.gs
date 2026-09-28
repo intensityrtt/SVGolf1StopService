@@ -12,7 +12,7 @@ const SLIDE_TEMPLATES = {
 
 function doGetToolkit(e) {
   const tmp = HtmlService.createTemplateFromFile('html_toolkit');
-  tmp.url = ScriptApp.getService().getUrl();
+  tmp.url = getSystemUrl();
   tmp.manualUrl = PropertiesService.getScriptProperties().getProperty('manual_toolkit') || '#';
   tmp.isAdmin = (e && e.parameter && e.parameter.admin === 'true');
   return tmp.evaluate()

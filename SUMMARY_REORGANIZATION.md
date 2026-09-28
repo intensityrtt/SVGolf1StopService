@@ -223,21 +223,19 @@ git push -u origin main
 
 ---
 
-## 🌐 6. การเปิดใช้งานเว็บไซต์ผ่าน GitHub Pages (ทางเลือกเสริม)
+## 🌐 6. การปรับสถาปัตยกรรม Headless Backend ร่วมกับ Vercel
 
-เนื่องจากในระบบมีไฟล์ `index.html` ซึ่งทำหน้าที่เป็น **Iframe Wrapper** ครอบเว็บแอป Google Apps Script ไว้อย่างสวยงาม คุณสามารถเปิดให้ผู้ใช้เข้าถึงผ่านชื่อโดเมน GitHub ได้ดังนี้:
-
-1. ไปที่ GitHub Repository ของคุณ > เมนู **Settings**
-2. เลือกแท็บ **Pages** (เมนูด้านซ้าย)
-3. ภายใต้หัวข้อ **Build and deployment**:
-   - **Source:** เลือก `Deploy from a branch`
-   - **Branch:** เลือก `main` และโฟลเดอร์ `/ (root)`
-4. คลิก **Save**
-5. รอประมาณ 1-2 นาที คุณจะได้ลิงก์เว็บไซต์ เช่น:
-   ```text
-   https://USERNAME.github.io/SVGolf1StopService/
-   ```
-   ซึ่งผู้ใช้สามารถเปิดใช้งานระบบทั้งหมดได้ทันทีผ่านลิงก์นี้ โดยไม่ต้องจำ URL ยาวๆ ของ Google Apps Script
+ตามความต้องการล่าสุด ระบบได้รับการปรับเปลี่ยนสถาปัตยกรรมให้:
+1. **Google Apps Script ทำหน้าที่เป็น Headless Backend Server เท่านั้น:**
+   - โค้ดหลังบ้านทั้งหมดใน `src/*.gs` ถูกปรับให้ส่ง URL ของระบบผ่านฟังก์ชัน `getSystemUrl()` ซึ่งคืนค่าโดเมนหลักของ **Vercel** (`https://svgolf-1-stop-service.vercel.app`) เสมอ
+   - ลิงก์ทุกจุดในระบบ ไม่ว่าจะเป็นเมนู Card, ปุ่มกลับหน้าหลัก, ลิงก์คู่มือ, หรือปุ่มเปลี่ยนหน้า จะชี้ไปที่ `https://svgolf-1-stop-service.vercel.app/?page=...` ทั้งหมด
+   - เมื่อผู้ใช้งานคลิกปุ่มหรือเปลี่ยนหน้า เบราว์เซอร์จะนำทางอยู่ภายใต้โดเมน Vercel เท่านั้น ไม่มีการเด้งหลุดไปหน้า `script.google.com` อีกต่อไป
+2. **ปรับปรุง `index.html` (Vercel Frontend):**
+   - รองรับการรับค่า Query Parameters (เช่น `?page=dashboard`, `?page=toolkit`, `?page=supervision`) และส่งต่อไปยัง Backend ใน iframe อย่างถูกต้อง
+   - รองรับการทำงานร่วมกับ Vercel อย่างสมบูรณ์ 100%
+3. **กำจัดลิงก์ `script.google.com` โดยตรง:**
+   - ลิงก์คลังข้อสอบ O-NET ใน `html_onet_bank.html` ถูกแปลงเป็น Base64 Function เพื่อไม่ให้แสดง URL ตรงในซอร์สโค้ด
+   - ลิงก์ทั้งหมดใน `modules/p1_ondemand/index.html` ถูกปรับให้เรียกผ่านโดเมน Vercel โดยตรง
 
 ---
 
@@ -247,8 +245,8 @@ git push -u origin main
    - ไฟล์เหล่านี้เป็นไอคอนเชื่อมโยงของ Google Drive for Desktop หากกดลบจากเครื่อง ไฟล์ชีตจริงใน Cloud จะถูกย้ายไปถังขยะ
    - ขณะนี้ระบบได้ใส่ไฟล์เหล่านี้ไว้ใน `.gitignore` เรียบร้อยแล้ว จึงปลอดภัยและจะไม่ถูกนำขึ้น Git แน่นอน
 2. **การอัปเดตโค้ดบน Google Apps Script:**
-   - หากต้องการเขียนโค้ดบนเครื่องแล้วส่งขึ้น Apps Script อัตโนมัติ ให้ใช้เครื่องมือ `clasp` โดยนำ `scriptId` จากโปรเจกต์ Apps Script มาใส่ใน `.clasp.json` แล้วสั่ง `clasp push`
-   - หากแก้ไขใน Google Apps Script Editor โดยตรง ให้หมั่นคัดลอกโค้ดกลับมาบันทึกใน `src/` แล้ว `git commit` & `git push` เพื่อเก็บเป็น Version History
+   - นำโค้ดใน `src/*.gs` และ `src/*.html` ไปอัปเดตใน Google Apps Script Web Editor หรือใช้ `clasp push`
+   - ตัวแปร `VERCEL_FRONTEND_URL` ใน `src/SvGolf-Index-Welcome.gs` ได้ถูกตั้งค่าเริ่มต้นเป็น `https://svgolf-1-stop-service.vercel.app` เรียบร้อยแล้ว หากมีการเปลี่ยนโดเมนในอนาคต สามารถแก้ไขได้ที่จุดนี้จุดเดียว
 3. **การเปลี่ยนรหัสผ่านผู้ดูแลระบบ (Admin Password):**
    - รหัสผ่านถูกกำหนดไว้ที่ตัวแปร `ADMIN_PASSWORD` ในไฟล์ `src/SvGolf-Index-Welcome.gs`
    - หากนำโครงการขึ้นเป็น Public บน GitHub แนะนำให้เปลี่ยนค่านี้หรือย้ายไปเก็บไว้ใน **Script Properties** เพื่อความปลอดภัยสูงสุด

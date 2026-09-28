@@ -11,7 +11,7 @@ function doGetMeeting(e) {
   var mode = (e && e.parameter) ? e.parameter.mode : null;
   var templateName = (mode === 'admin') ? 'html_meeting_admin' : 'html_meeting';
   var tmp = HtmlService.createTemplateFromFile(templateName);
-  tmp.url = ScriptApp.getService().getUrl();
+  tmp.url = getSystemUrl();
   tmp.manualUrl = PropertiesService.getScriptProperties().getProperty('manual_meeting') || '#';
   tmp.config = getMeetingConfig();
   return tmp.evaluate()
@@ -20,7 +20,7 @@ function doGetMeeting(e) {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-function getScriptUrl() { return ScriptApp.getService().getUrl(); }
+function getScriptUrl() { return getSystemUrl(); }
 
 function getCurrentAllowedStep() {
   const ss = SpreadsheetApp.openById(MEETING_SHEET_ID);
@@ -118,7 +118,7 @@ function uploadData(data) {
 
 function getSuccessPage() { 
   const tmp = HtmlService.createTemplateFromFile('html_meeting_success');
-  tmp.url = ScriptApp.getService().getUrl();
+  tmp.url = getSystemUrl();
   tmp.config = getMeetingConfig();
   return tmp.evaluate().getContent();
 }

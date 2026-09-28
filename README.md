@@ -35,7 +35,7 @@
 - 📊 **Real-time Analytics & Data Visualization:** แสดงผลสถิติและผลการประเมินด้วย Radar Chart, Bar Chart แบบเรียลไทม์
 - 📄 **Official PDF Generator:** ระบบสร้างและส่งออกรายงานราชการมาตรฐาน พร้อมช่องลงนามและเว้นระยะขอบกระดาษ 15 มม.
 - 🛡️ **Role-Based Access Control:** ควบคุมสิทธิ์การเข้าใช้งานตามบทบาท (นักเรียน, ครู, ผู้บริหารสถานศึกษา, ศึกษานิเทศก์, ผู้ดูแลระบบ)
-- 🌐 **Clean URL Iframe Wrapper:** มีหน้า `index.html` พร้อม Loading Spinner สำหรับโฮสต์บน GitHub Pages หรือ Static Web Host เพื่อซ่อน URL ยาวๆ ของ Google Apps Script
+- 🌐 **Headless Backend & Vercel Frontend:** แยกการทำงานอย่างชัดเจน โดยใช้ **Vercel** (`https://svgolf-1-stop-service.vercel.app`) เป็นหน้าบ้านหลักเพียงแห่งเดียว และใช้ Google Apps Script เป็นเซิร์ฟเวอร์หลังบ้านแบบ Headless ปราศจากลิงก์ Apps Script หลุดรอดสู่สายตาผู้ใช้
 
 ---
 
@@ -43,8 +43,8 @@
 
 ```mermaid
 flowchart TD
-    User["ผู้ใช้งาน (ครู / นร. / ศน. / ผู้บริหาร)"] --> Portal["GitHub Pages (index.html)"]
-    Portal --> GAS["Google Apps Script Web App Engine"]
+    User["ผู้ใช้งาน (ครู / นร. / ศน. / ผู้บริหาร)"] --> Vercel["Vercel Frontend Platform<br>(svgolf-1-stop-service.vercel.app)"]
+    Vercel --> GAS["Google Apps Script Headless Engine<br>(Backend Server / API)"]
     
     subgraph Routing ["ระบบ Routing & Security (SvGolf-Index-Welcome.gs)"]
         GAS --> PageRouter{"Parameter ?page="}
@@ -171,18 +171,11 @@ SVGolf1StopService/
 
 ---
 
-### การเปิดใช้งาน Portal ผ่าน GitHub Pages
-
-1. นำ Web App URL ของ Apps Script ที่ได้จากขั้นตอน Deploy ไปแปลงเป็น Base64 หรือใส่ลงใน `index.html` (บรรทัดที่ 91):
-   ```javascript
-   const encodedAppUrl = btoa("https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec");
-   ```
-2. Push โค้ดทั้งหมดขึ้น GitHub Repository
-3. ไปที่ GitHub Repository ของคุณ > **Settings** > **Pages**
-4. ในส่วน **Build and deployment**:
-   - Source: **Deploy from a branch**
-   - Branch: **main** (หรือ `master`) / โฟลเดอร์: **/ (root)**
-5. คลิก **Save** ระบบจะสร้าง URL เว็บไซต์ เช่น `https://username.github.io/SVGolf1StopService/` เพื่อเข้าใช้งานได้อย่างสวยงาม
+### การเปิดใช้งาน Frontend ผ่าน Vercel (Official)
+ระบบใช้ **Vercel** เป็นหน้าบ้านหลักที่: [**https://svgolf-1-stop-service.vercel.app/**](https://svgolf-1-stop-service.vercel.app/)
+1. โค้ดหน้าบ้าน `index.html` จะทำหน้าที่รับค่า `window.location.search` (เช่น `?page=dashboard`, `?page=toolkit`) แล้วส่งต่อไปยัง Google Apps Script Headless Backend ในพื้นหลังโดยอัตโนมัติ
+2. โค้ดหลังบ้านจะสร้างลิงก์ทั้งหมดให้ชี้กลับมาที่ `https://svgolf-1-stop-service.vercel.app/?page=...` เสมอ
+3. ผู้ใช้งานจะเห็นเฉพาะโดเมน `svgolf-1-stop-service.vercel.app` ตลอดการใช้งาน โดยไม่มี URL ของ `script.google.com` แสดงให้เห็นเลย
 
 ---
 

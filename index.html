@@ -4,12 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SV.Golf 1 Stop Service</title>
-    <!-- สามารถเพิ่ม Meta tags สำหรับ SEO ได้ที่นี่ -->
-    <meta name="description" content="ระบบจัดการข้อมูล SV.Golf 1 Stop Service">
+    <title>SV.GOLF One Stop Service</title>
+    <meta name="description" content="ระบบศูนย์รวมบริการดิจิทัลทางการศึกษาและการนิเทศออนไลน์ สพป.น่าน เขต 1">
+    <meta property="og:title" content="SV.GOLF One Stop Service">
+    <meta property="og:description" content="ระบบศูนย์รวมบริการดิจิทัลทางการศึกษาและการนิเทศออนไลน์ สพป.น่าน เขต 1">
+    <meta property="og:url" content="https://svgolf-1-stop-service.vercel.app">
+    <link rel="icon" type="image/png" href="assets/images/INDEX.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         /* รีเซ็ตค่าเริ่มต้นของเบราว์เซอร์ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         body,
         html {
             margin: 0;
@@ -17,10 +26,8 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            /* ป้องกันการเลื่อนหน้าจอซ้อนกัน (scroll) */
-            background-color: #f3f4f6;
-            /* สีพื้นหลังระหว่างรอโหลด */
-            font-family: 'Sarabun', 'Prompt', sans-serif;
+            background-color: #0f172a;
+            font-family: 'Sarabun', sans-serif;
         }
 
         /* ตั้งค่า iframe ให้เต็มหน้าจอ */
@@ -31,67 +38,132 @@
             display: block;
             z-index: 10;
             position: relative;
+            background-color: transparent;
         }
 
         /* รูปแบบหน้าจอโหลดดิ้ง (Loading Screen) */
         #loader {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 1;
-            color: #4b5563;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #loader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
 
         .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 50px;
-            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
-            border-left-color: #3b82f6;
-            /* สีน้ำเงินฟ้า */
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px auto;
+            border-left-color: #38bdf8;
+            border-top-color: #38bdf8;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 20px;
         }
 
         @keyframes spin {
             0% {
                 transform: rotate(0deg);
             }
-
             100% {
                 transform: rotate(360deg);
             }
         }
 
-        .loading-text {
-            font-size: 1.1rem;
-            font-weight: 500;
+        .loading-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 6px;
+            letter-spacing: 0.02em;
+        }
+
+        .loading-sub {
+            font-size: 0.875rem;
+            color: #94a3b8;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- หน้าต่างแสดงการโหลด -->
+    <!-- หน้าต่างแสดงสถานะการโหลด -->
     <div id="loader">
         <div class="spinner"></div>
-        <div class="loading-text">กำลังโหลดระบบ...<br><small>กรุณารอสักครู่</small></div>
+        <div class="loading-title">SV.GOLF One Stop Service</div>
+        <div class="loading-sub">กำลังเชื่อมต่อระบบ กรุณารอสักครู่...</div>
     </div>
 
-    <!-- ซ่อนลิงก์ iframe โดยใช้ JavaScript + Base64 Encoding -->
+    <!-- ส่วน Iframe สำหรับแสดงผล Headless Backend ของ Google Apps Script -->
     <iframe id="app-frame"
         src=""
-        onload="document.getElementById('loader').style.display='none';"
-        allow="camera; microphone; fullscreen"></iframe>
+        allow="camera; microphone; fullscreen; clipboard-read; clipboard-write; autoplay"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads">
+    </iframe>
 
     <script>
-        // นี่คือลิงก์ Apps Script ของคุณที่ถูกแปลงเป็น Base64 แล้ว เพื่อซ่อนไม่ให้เห็นในซอร์สโค้ดตรงๆ
-        const encodedAppUrl = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9hL2VkbmFuMS5nby50aC9tYWNyb3Mvcy9BS2Z5Y2J4RENnd3E5anI0aE5MZVc1QkJNeWxEaVlVMXRBeFk5Uk5zSGFMNjRxeWs2QTV2eXBOMFlfOTF6NzZlVHlnY2tabEVHUS9leGVj";
-        
-        // ถอดรหัสและใส่กลับเข้าไปใน iframe อัตโนมัติเมื่อหน้าเว็บเริ่มทำงาน
-        document.getElementById('app-frame').src = atob(encodedAppUrl);
+        (function() {
+            // URL ของ Google Apps Script Backend (แปลงเป็น Base64 เพื่อไม่ให้แสดง URL ตรงๆ ในซอร์สโค้ด)
+            const encodedBackendUrl = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9hL2VkbmFuMS5nby50aC9tYWNyb3Mvcy9BS2Z5Y2J4RENnd3E5anI0aE5MZVc1QkJNeWxEaVlVMXRBeFk5Uk5zSGFMNjRxeWs2QTV2eXBOMFlfOTF6NzZlVHlnY2tabEVHUS9leGVj";
+            const backendBase = atob(encodedBackendUrl);
+
+            // ดึง Query Parameters และ Hash จาก Vercel URL
+            const currentSearch = window.location.search;
+            const currentHash = window.location.hash;
+
+            let finalBackendUrl = backendBase;
+
+            // ส่งต่อ Parameters ทั้งหมดไปยัง Backend
+            if (currentSearch) {
+                const separator = finalBackendUrl.includes('?') ? '&' : '?';
+                finalBackendUrl += separator + currentSearch.substring(1);
+            }
+
+            if (currentHash) {
+                finalBackendUrl += currentHash;
+            }
+
+            const frame = document.getElementById('app-frame');
+
+            // ซ่อน Loader เมื่อ Iframe โหลดเสร็จ
+            frame.onload = function() {
+                const loader = document.getElementById('loader');
+                if (loader) {
+                    loader.classList.add('fade-out');
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                    }, 500);
+                }
+            };
+
+            // ตั้งค่า src ให้ Iframe
+            frame.src = finalBackendUrl;
+
+            // รองรับการสื่อสาร PostMessage ระหว่าง Iframe และหน้าต่างหลักเพื่อ Sync URL บน Address Bar
+            window.addEventListener('message', function(event) {
+                if (event.data && typeof event.data === 'object') {
+                    if (event.data.type === 'SYNC_PAGE' && event.data.page) {
+                        const newPage = event.data.page;
+                        const newUrl = window.location.pathname + '?page=' + encodeURIComponent(newPage);
+                        window.history.replaceState({ page: newPage }, '', newUrl);
+                    }
+                }
+            });
+        })();
     </script>
 
 </body>
