@@ -11,36 +11,52 @@
     <meta property="og:url" content="https://svgolf-1-stop-service.vercel.app">
     <link rel="icon" type="image/png" href="assets/images/INDEX.png">
 
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --bg-light: #f8fafc;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --glass: rgba(255, 255, 255, 0.78);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --accent: #f59e0b;
+
+            --grad-1: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%);
+            --grad-2: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            --grad-3: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            --grad-4: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+            --grad-5: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+            --grad-6: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            --grad-7: linear-gradient(135deg, #f97316 0%, #f43f5e 100%);
+            --grad-8: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+            --grad-9: linear-gradient(135deg, #14b8a6 0%, #2dd4bf 100%);
+        }
+
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
-        body,
-        html {
+        body, html {
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            background-color: #0f172a;
             font-family: 'Sarabun', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
         }
 
-        /* Iframe แสดงผลระบบหลัก */
-        #app-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            z-index: 10;
-            position: relative;
-            background-color: transparent;
-        }
-
-        /* หน้าต่าง Splash Screen ต้อนรับบน Vercel โดยตรง (โหลดทันที ไม่ต้องผ่าน GAS) */
+        /* ----------------------------------------------------
+           1. Splash Screen
+           ---------------------------------------------------- */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -52,7 +68,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 500;
+            z-index: 600;
             cursor: pointer;
             transition: opacity 0.5s ease, visibility 0.5s ease;
         }
@@ -99,7 +115,7 @@
             animation: pulse 2s infinite;
             font-size: 1.05rem;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
-            z-index: 550;
+            z-index: 650;
             cursor: pointer;
             user-select: none;
             transition: all 0.3s;
@@ -130,7 +146,7 @@
             font-size: 0.85rem;
             text-align: center;
             width: 90%;
-            z-index: 520;
+            z-index: 620;
             pointer-events: auto;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
@@ -141,43 +157,370 @@
             font-weight: 600;
         }
 
-        .sponsor-footer a:hover {
-            text-decoration: underline;
-            color: #93c5fd;
+        /* ----------------------------------------------------
+           2. Dashboard Native Vercel View
+           ---------------------------------------------------- */
+        #dashboard-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            position: relative;
+            z-index: 50;
+            opacity: 1;
+            transition: opacity 0.3s ease;
         }
 
-        /* รูปแบบหน้าจอโหลดดิ้ง (Loading Screen) */
-        #loader {
+        #dashboard-view.hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        .bg-animation {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%);
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: #c7d2fe;
+            filter: blur(120px);
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: move 20s infinite alternate;
+        }
+
+        .blob-2 {
+            background: #fbcfe8;
+            right: -100px;
+            bottom: -100px;
+            animation-delay: -5s;
+        }
+
+        @keyframes move {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(10%, 10%); }
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            z-index: 1;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.04em;
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 1.5vw, 1.1rem);
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            background: white;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.12);
+            border-color: #93c5fd;
+        }
+
+        .icon-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            color: white;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-box svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .card:nth-child(2) .icon-box { background: var(--grad-1); }
+        .card:nth-child(3) .icon-box { background: var(--grad-2); }
+        .card:nth-child(4) .icon-box { background: var(--grad-3); }
+        .card:nth-child(5) .icon-box { background: var(--grad-4); }
+        .card:nth-child(6) .icon-box { background: var(--grad-5); }
+        .card:nth-child(7) .icon-box { background: var(--grad-6); }
+        .card:nth-child(8) .icon-box { background: var(--grad-7); }
+        .card:nth-child(9) .icon-box { background: var(--grad-8); }
+        .card:nth-child(10) .icon-box { background: var(--grad-9); }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: var(--text-muted);
+            padding-bottom: 1rem;
+        }
+
+        .visitor-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--glass-border);
+            margin-bottom: 1rem;
+        }
+
+        .manual-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            background: white;
+            border: 1px solid var(--primary);
+            border-radius: 9999px;
+            margin-top: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .manual-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+
+        .admin-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: inline-block;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .admin-link:hover {
+            color: var(--text-dark);
+        }
+
+        /* ----------------------------------------------------
+           3. App View (Top Bar + Headless Iframe)
+           ---------------------------------------------------- */
+        #app-view {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            background-color: #0f172a;
+        }
+
+        #app-view.active {
+            display: flex;
+        }
+
+        #app-topbar {
+            height: 54px;
+            background: #0f172a;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+            color: white;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 150;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .topbar-home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #2563eb;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.45rem 1rem;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .topbar-home-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.95rem;
+        }
+
+        .brand-pill {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.55rem;
+            border-radius: 6px;
+            letter-spacing: 0.05em;
+        }
+
+        .topbar-title {
+            color: #f1f5f9;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .topbar-icon-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .topbar-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+        }
+
+        #app-frame {
+            width: 100%;
+            height: calc(100vh - 54px);
+            border: none;
+            display: block;
+            background: #ffffff;
+        }
+
+        /* ----------------------------------------------------
+           4. Loading Screen
+           ---------------------------------------------------- */
+        #loader {
+            position: fixed;
+            top: 54px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 54px);
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 400;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            z-index: 120;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(8px);
             color: #f8fafc;
-            transition: opacity 0.4s ease, visibility 0.4s ease;
+            transition: opacity 0.3s ease;
         }
 
-        #loader.fade-out {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
+        #loader.active {
+            display: flex;
         }
 
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.1);
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             border-left-color: #38bdf8;
             border-top-color: #38bdf8;
             animation: spin 0.8s linear infinite;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         @keyframes spin {
@@ -186,22 +529,33 @@
         }
 
         .loading-title {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             font-weight: 600;
             color: #f1f5f9;
             margin-bottom: 6px;
         }
 
         .loading-sub {
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             color: #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            .topbar-title {
+                display: none;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- 1. Splash Screen ต้อนรับแสดงบน Vercel ทันที (ไม่หลุดไป Apps Script) -->
+    <!-- ==========================================
+         1. Splash Screen
+         ========================================== -->
     <div id="splash-screen" onclick="enterDashboard(event)">
         <div class="splash-container">
             <img src="assets/images/INDEX.png" class="splash-image" alt="SV.GOLF Welcome">
@@ -212,120 +566,462 @@
         </div>
     </div>
 
-    <!-- 2. หน้าจอหมุนโหลดระหว่างเชื่อมต่อ Backend -->
-    <div id="loader">
-        <div class="spinner"></div>
-        <div class="loading-title">SV.GOLF One Stop Service</div>
-        <div class="loading-sub">กำลังเชื่อมต่อระบบ กรุณารอสักครู่...</div>
+    <!-- ==========================================
+         2. Native Vercel Dashboard View
+         ========================================== -->
+    <div id="dashboard-view">
+        <div class="bg-animation">
+            <div class="blob"></div>
+            <div class="blob blob-2"></div>
+        </div>
+
+        <div class="container">
+            <header>
+                <h1>SV.GOLF One Stop Service</h1>
+                <p class="subtitle">ระบบอำนวยความสะดวกทางการศึกษา สำหรับทุกคน ทุกที่ ทุกเวลา | สพป.น่าน เขต 1</p>
+            </header>
+
+            <div class="grid-container">
+
+                <!-- Highlight Card: P.1 Active Learning On-Demand -->
+                <div class="card" onclick="openTool('p1_ondemand', 'On-Demand Learning ภาษาไทย ป.1')" style="grid-column: 1 / -1; background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%); border: 2px solid #3b82f6; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1.2rem;">
+                            <div class="icon-box" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); width: 64px; height: 64px; margin-bottom: 0;">
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                                    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div style="display: inline-block; background: #dbeafe; color: #1e40af; font-size: 0.78rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px; margin-bottom: 0.3rem;">
+                                    🌟 ระบบแนะนำไฮไลต์ (On-Demand Learning)
+                                </div>
+                                <h2 style="font-size: 1.25rem; color: #1e3a8a; font-weight: 800;">การพัฒนาการจัดการเรียนรู้เชิงรุกเพื่อส่งเสริมการอ่านและการเขียนภาษาไทย สำหรับครูชั้นประถมศึกษาปีที่ 1</h2>
+                                <p style="color: #475569; font-size: 0.95rem; margin-top: 0.2rem;">
+                                    ระบบพัฒนาสมรรถนะครูผู้สอนภาษาไทย ป.1 สพป.น่าน เขต 1 ออกแบบแผนการจัดการเรียนรู้เชิงรุก (Backward Design) และออกใบประกาศนียบัตรออนไลน์
+                                </p>
+                            </div>
+                        </div>
+                        <div style="background: #2563eb; color: white; padding: 0.6rem 1.2rem; border-radius: 12px; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0;">
+                            เข้าสู่บทเรียน <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 1: RT Toolkit -->
+                <div class="card" onclick="openTool('toolkit', 'NAN1 RT Toolkit')" aria-label="เข้าสู่ระบบ สร้างใบงาน RT">
+                    <div class="icon-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </div>
+                    <h2>NAN1 RT Toolkit</h2>
+                    <p>สร้างใบงานและแบบฝึกทักษะ RT อัตโนมัติ ช่วยลดภาระงานครูได้อย่างมีประสิทธิภาพ</p>
+                </div>
+
+                <!-- Card 2: RT Assessment -->
+                <div class="card" onclick="openTool('assessment', 'Pre-RT Online NAN1')" aria-label="เข้าสู่ระบบ ประเมินและจัดสอบออนไลน์">
+                    <div class="icon-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <h2>Pre-RT Online NAN1</h2>
+                    <p>ระบบจัดสอบและประเมินผลออนไลน์ โดยใช้ฐานข้อมูลข้อสอบย้อนหลังและแบบทดสอบคู่ขนาน</p>
+                </div>
+
+                <!-- Card 3: RT-NT Management -->
+                <div class="card" onclick="openTool('management', 'RT-NT Management')" aria-label="เข้าสู่ระบบ จัดการเฉลยและบันทึกผู้เข้าสอบ">
+                    <div class="icon-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                            <line x1="9" y1="21" x2="9" y2="9"></line>
+                        </svg>
+                    </div>
+                    <h2>RT-NT Management</h2>
+                    <p>บริหารจัดการข้อมูลผู้เข้าสอบและเฉลยข้อสอบ RT-NT อย่างเป็นระบบ</p>
+                </div>
+
+                <!-- Card 4: Online Meeting -->
+                <div class="card" onclick="openTool('meeting', 'ระบบกิจกรรมประชุมออนไลน์')" aria-label="เข้าสู่ระบบ เช็คอินและประชุมชี้แจงออนไลน์">
+                    <div class="icon-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15.6 11.6L22 7v10l-6.4-4.5v-1zM4 5h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7c0-1.1.9-2 2-2z"></path>
+                        </svg>
+                    </div>
+                    <h2>ระบบกิจกรรมประชุมออนไลน์</h2>
+                    <p>ระบบเช็คอินและติดตามการประชุมชี้แจงออนไลน์สำหรับบุคลากรทางการศึกษา</p>
+                </div>
+
+                <!-- Card 5: เพื่อคู่คิด ครูพละ น่าน1 -->
+                <div class="card" onclick="openTool('system5', 'เพื่อนคู่คิด ครูพละ น่าน 1')" aria-label="เพื่อคู่คิด ครูพละ น่าน1">
+                    <div class="icon-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <h2>เพื่อนคู่คิด ครูพละ น่าน 1</h2>
+                    <p>ศูนย์รวมความรู้และสื่อการสอน เพื่อยกระดับการจัดการเรียนรู้สุขศึกษาและพลศึกษา</p>
+                </div>
+
+                <!-- Card 6: ระบบ นิเทศออนไลน์ By SV.Golf -->
+                <div class="card" onclick="openTool('system6', 'นิเทศออนไลน์ By SV.GOLF')" aria-label="ระบบ นิเทศออนไลน์ By SV.Golf">
+                    <div class="icon-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+                    <h2>นิเทศออนไลน์ By SV.GOLF</h2>
+                    <p>ติดตามผลและนิเทศการจัดการเรียนการสอน พร้อมระบบวิเคราะห์คะแนน O-NET / RT / NT</p>
+                    <div style="margin-top: 10px; font-size: 0.85rem; background: rgba(59, 130, 246, 0.1); color: #2563eb; padding: 4px 12px; border-radius: 20px; display: inline-block; font-weight: 600;">
+                        คลิกเพื่อเข้าสู่ระบบศูนย์รวมงานนิเทศ
+                    </div>
+                </div>
+
+                <!-- Card 7: คลังข้อสอบ O-NET อัจฉริยะ -->
+                <div class="card" onclick="openTool('onet_bank', 'คลังข้อสอบ O-NET อัจฉริยะ')" aria-label="คลังข้อสอบ O-NET อัจฉริยะ">
+                    <div class="icon-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                    </div>
+                    <h2>คลังข้อสอบ O-NET อัจฉริยะ</h2>
+                    <p>ระบบคลังข้อสอบและวิเคราะห์ผลการสอบ O-NET อัจฉริยะ เพื่อยกระดับผลสัมฤทธิ์ทางการศึกษา</p>
+                </div>
+
+                <!-- Card 8: Check-in/Check-out Onsite (External Vercel) -->
+                <a href="https://checkin-out-nan1.vercel.app" target="_blank" rel="noopener noreferrer" class="card" aria-label="ระบบลงทะเบียน Check-in/Check-out การประชุม อบรม สัมมนา Onsite">
+                    <div class="icon-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <polyline points="17 11 19 13 23 9"></polyline>
+                        </svg>
+                    </div>
+                    <h2 style="font-size: 1.15rem;">ระบบลงทะเบียน Check-in/Out Onsite</h2>
+                    <p>ระบบสำหรับลงทะเบียนและบันทึกเวลาเข้าร่วมการประชุม อบรม สัมมนาแบบ Onsite</p>
+                </a>
+
+                <!-- Card 9: ระบบ ส่ง-แสดงผลงาน Online By SV.Golf (External Vercel) -->
+                <a href="https://work-submit.vercel.app" target="_blank" rel="noopener noreferrer" class="card" aria-label="ระบบ ส่ง-แสดงผลงาน Online By SV.Golf">
+                    <div class="icon-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                    </div>
+                    <h2>ระบบ ส่ง-แสดงผลงาน Online</h2>
+                    <p>ระบบสำหรับการส่งและแสดงผลงานเชิงประจักษ์แบบออนไลน์ By SV.Golf</p>
+                </a>
+
+            </div>
+
+            <footer>
+                <div class="visitor-badge">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>ศูนย์รวมบริการดิจิทัลทางการศึกษา สพป.น่าน เขต 1</span>
+                </div>
+
+                <p style="font-weight: 500;">พัฒนาโดย <b>พุฒิพงษ์ วงศ์นันท์</b> | ศึกษานิเทศก์ สพป.น่าน เขต 1 (โทร <b>0861161126</b>)</p>
+
+                <div style="display: flex; justify-content: center; gap: 1.5rem; align-items: center; margin-top: 1.5rem;">
+                    <button onclick="openTool('manual', 'คู่มือการใช้งานระบบ')" class="manual-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        คู่มือการใช้งานระบบ
+                    </button>
+                    <a href="javascript:void(0)" onclick="promptAdmin()" class="admin-link">⚙️ สำหรับผู้ดูแลระบบ</a>
+                </div>
+
+                <div style="margin-top: 2.5rem; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
+                    สนับสนุนโดย <a href="https://www.facebook.com/IntensityStudio" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 600;">intensity studio & insurance</a> บริการประกันรถ พรบ. และวินาศภัยทุกชนิด เลือกได้กว่า 30 บริษัท
+                </div>
+            </footer>
+        </div>
     </div>
 
-    <!-- 3. Iframe ครอบ Backend Google Apps Script -->
-    <iframe id="app-frame"
-        src=""
-        allow="camera; microphone; fullscreen; clipboard-read; clipboard-write; autoplay">
-    </iframe>
+    <!-- ==========================================
+         3. App View (Top Bar + Headless Iframe)
+         ========================================== -->
+    <div id="app-view">
+        <div id="app-topbar">
+            <div class="topbar-left">
+                <button class="topbar-home-btn" onclick="backToDashboard()">
+                    <i class="fa-solid fa-house"></i>
+                    <span>กลับสู่ Dashboard</span>
+                </button>
+                <div class="topbar-brand">
+                    <span class="brand-pill">SV.GOLF</span>
+                    <span class="topbar-title" id="topbar-title">One Stop Service</span>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <button class="topbar-icon-btn" onclick="reloadApp()" title="โหลดหน้านี้ใหม่">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+                <button class="topbar-icon-btn" onclick="toggleFullscreen()" title="แสดงเต็มจอ">
+                    <i class="fa-solid fa-expand"></i>
+                </button>
+            </div>
+        </div>
 
+        <!-- หน้าจอหมุนโหลดดิ้ง -->
+        <div id="loader">
+            <div class="spinner"></div>
+            <div class="loading-title" id="loader-title">กำลังโหลดระบบ...</div>
+            <div class="loading-sub">เชื่อมต่อ Headless Backend กรุณารอสักครู่</div>
+        </div>
+
+        <!-- Iframe แสดงผลระบบหลังบ้านของ Google Apps Script -->
+        <iframe id="app-frame"
+            src=""
+            allow="camera; microphone; fullscreen; clipboard-read; clipboard-write; autoplay"
+            sandbox="allow-downloads allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
+        </iframe>
+    </div>
+
+    <!-- ==========================================
+         4. Client Routing Controller
+         ========================================== -->
     <script>
-        // URL ของ Google Apps Script Headless Backend
+        // Headless Google Apps Script Backend Base URL
         const encodedBackendUrl = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9hL2VkbmFuMS5nby50aC9tYWNyb3Mvcy9BS2Z5Y2J4RENnd3E5anI0aE5MZVc1QkJNeWxEaVlVMXRBeFk5Uk5zSGFMNjRxeWs2QTV2eXBOMFlfOTF6NzZlVHlnY2tabEVHUS9leGVj";
         const backendBase = atob(encodedBackendUrl);
 
+        // Titles mapping for clean header display
+        const pageTitles = {
+            'toolkit': 'NAN1 RT Toolkit (ระบบสร้างใบงาน)',
+            'assessment': 'Pre-RT Online NAN1 (ระบบประเมินและจัดสอบ)',
+            'management': 'RT-NT Management (จัดการเฉลยและข้อมูล)',
+            'meeting': 'ระบบกิจกรรมประชุมออนไลน์',
+            'system5': 'เพื่อนคู่คิด ครูพละ น่าน 1',
+            'system6': 'นิเทศออนไลน์ By SV.GOLF',
+            'onet_bank': 'คลังข้อสอบ O-NET อัจฉริยะ',
+            'p1_ondemand': 'Active Learning On-Demand ป.1',
+            'supervision': 'ระบบนิเทศติดตามการเปิดภาคเรียน',
+            'classroom_obs': 'ระบบบันทึกการสังเกตชั้นเรียน',
+            'supervision_report': 'รายงานผลการนิเทศ',
+            'classroom_obs_report': 'รายงานผลการสังเกตชั้นเรียน',
+            'onet_nanoy2': 'วิเคราะห์คะแนน O-NET อำเภอนาน้อย',
+            'rt_nanoy2': 'วิเคราะห์คะแนน RT อำเภอนาน้อย',
+            'nt_nanoy2': 'วิเคราะห์คะแนน NT อำเภอนาน้อย',
+            'manual': 'คู่มือการใช้งานระบบ',
+            'admin': 'Admin Control Panel'
+        };
+
+        const splash = document.getElementById('splash-screen');
+        const dashboard = document.getElementById('dashboard-view');
+        const appView = document.getElementById('app-view');
         const frame = document.getElementById('app-frame');
         const loader = document.getElementById('loader');
-        const splash = document.getElementById('splash-screen');
+        const topbarTitle = document.getElementById('topbar-title');
+        const loaderTitle = document.getElementById('loader-title');
 
-        function showLoader() {
-            if (loader) {
-                loader.style.display = 'flex';
-                loader.classList.remove('fade-out');
-            }
+        // ฟังก์ชันสร้าง Backend URL ที่ปลอดภัย
+        function buildBackendUrl(queryStr) {
+            const sep = backendBase.includes('?') ? '&' : '?';
+            return backendBase + sep + queryStr.replace(/^\?/, '');
+        }
+
+        // จัดการแสดง/ซ่อน Loader
+        function showLoader(title) {
+            if (loaderTitle && title) loaderTitle.innerText = 'กำลังเปิด ' + title + '...';
+            if (loader) loader.classList.add('active');
         }
 
         function hideLoader() {
-            if (loader) {
-                loader.classList.add('fade-out');
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                }, 400);
-            }
+            if (loader) loader.classList.remove('active');
         }
 
         frame.onload = function() {
             hideLoader();
         };
 
-        // ฟังก์ชันสร้าง Backend URL
-        function buildBackendUrl(queryStr) {
-            let q = queryStr !== undefined ? queryStr : window.location.search;
-            // หากไม่มีพารามิเตอร์ ให้เริ่มต้นที่หน้า dashboard เพื่อป้องกันไม่ให้ GAS โหลด splash ซ้ำซ้อน
-            if (!q || q === '' || q === '?') {
-                q = '?page=dashboard';
-            }
-            const sep = backendBase.includes('?') ? '&' : '?';
-            return backendBase + sep + q.replace(/^\?/, '') + window.location.hash;
-        }
+        // เปิดระบบย่อย (เปิดใน Vercel โดยเปลี่ยนเฉพาะ Iframe ข้างใน)
+        function openTool(pageName, displayTitle) {
+            const title = displayTitle || pageTitles[pageName] || 'SV.GOLF Service';
+            topbarTitle.innerText = title;
+            document.title = title + ' - SV.GOLF';
 
-        // ตรวจสอบว่าต้องแสดง Splash Screen หรือไม่
-        const currentSearch = window.location.search;
-        const isDirectPage = currentSearch && currentSearch.includes('page=') && !currentSearch.includes('page=welcome');
-
-        if (isDirectPage) {
-            // หากผู้ใช้เข้าลิงก์ตรง เช่น ?page=dashboard, ?page=toolkit ให้ซ่อน Splash ทันที
+            // ซ่อน Splash และ Dashboard
             splash.classList.add('hidden');
             splash.style.display = 'none';
-            frame.src = buildBackendUrl(currentSearch);
-        } else {
-            // หากเข้าหน้าแรก ให้แสดง Splash บน Vercel และพรีโหลด Dashboard ไว้เบื้องหลัง
-            splash.classList.remove('hidden');
-            frame.src = buildBackendUrl('?page=dashboard');
+            dashboard.classList.add('hidden');
+
+            // แสดง App View พร้อม Loader
+            appView.classList.add('active');
+            showLoader(title);
+
+            // อัปเดต Address Bar บน Vercel ให้เป็น ?page=...
+            const newQuery = '?page=' + encodeURIComponent(pageName);
+            window.history.pushState({ page: pageName, title: title }, '', newQuery);
+
+            // ส่งคำสั่งโหลด Iframe หลังบ้าน
+            frame.src = buildBackendUrl(newQuery);
         }
 
-        // เมื่อผู้ใช้คลิกเข้าสู่ระบบจาก Splash Screen บน Vercel
+        // กลับสู่ Dashboard หน้าหลัก
+        function backToDashboard() {
+            document.title = 'SV.GOLF One Stop Service';
+            appView.classList.remove('active');
+            frame.src = 'about:blank'; // เคลียร์ memory
+            dashboard.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            window.history.pushState({ page: 'dashboard' }, '', '?page=dashboard');
+        }
+
+        // คลิกเข้าใช้งานจาก Splash Screen
         function enterDashboard(e) {
             if (e) {
                 e.preventDefault();
                 e.stopPropagation();
             }
-
-            // ซ่อน Splash Screen ด้วย Animation
             splash.classList.add('hidden');
             setTimeout(() => {
                 splash.style.display = 'none';
             }, 500);
 
-            // อัปเดต Address Bar บน Vercel เป็น ?page=dashboard
+            dashboard.classList.remove('hidden');
             window.history.pushState({ page: 'dashboard' }, '', '?page=dashboard');
         }
 
-        // ระบบรับคำสั่ง Navigation & Sync จาก Iframe
-        window.addEventListener('message', function(event) {
-            if (event.data && typeof event.data === 'object') {
-                if (event.data.type === 'NAVIGATE' && event.data.page) {
-                    const page = event.data.page;
-                    const newQuery = '?page=' + encodeURIComponent(page);
-                    
-                    window.history.pushState({ page: page }, '', newQuery);
-                    showLoader();
-                    frame.src = buildBackendUrl(newQuery);
-                } else if (event.data.type === 'SYNC_PAGE' && event.data.page) {
-                    const page = event.data.page;
-                    const newQuery = '?page=' + encodeURIComponent(page);
-                    window.history.replaceState({ page: page }, '', newQuery);
+        // โหลดหน้าระบบย่อยใหม่
+        function reloadApp() {
+            if (frame && frame.src) {
+                showLoader(topbarTitle.innerText);
+                frame.src = frame.src;
+            }
+        }
+
+        // สลับโหมดเต็มจอ
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
                 }
+            }
+        }
+
+        // รหัสผ่านผู้ดูแลระบบ
+        function promptAdmin() {
+            Swal.fire({
+                title: '🔒 ระบบผู้ดูแลระบบ',
+                text: 'กรุณาใส่รหัสผ่าน Admin',
+                input: 'password',
+                inputPlaceholder: 'ใส่รหัสผ่าน...',
+                showCancelButton: true,
+                confirmButtonText: 'เข้าสู่ระบบ',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#4f46e5'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (result.value === 'SVGolf@2026') {
+                        openTool('admin', 'Admin Control Panel');
+                    } else {
+                        Swal.fire('ข้อผิดพลาด', 'รหัสผ่านไม่ถูกต้อง', 'error');
+                    }
+                }
+            });
+        }
+
+        // ----------------------------------------------------
+        // รับฟังการนำทางผ่าน Popstate (ปุ่ม Back / Forward ของเบราว์เซอร์)
+        // ----------------------------------------------------
+        window.addEventListener('popstate', function(event) {
+            const params = new URLSearchParams(window.location.search);
+            const page = params.get('page');
+
+            if (!page || page === 'welcome') {
+                appView.classList.remove('active');
+                dashboard.classList.add('hidden');
+                splash.style.display = 'flex';
+                splash.classList.remove('hidden');
+                document.title = 'SV.GOLF One Stop Service';
+            } else if (page === 'dashboard') {
+                splash.classList.add('hidden');
+                splash.style.display = 'none';
+                appView.classList.remove('active');
+                frame.src = 'about:blank';
+                dashboard.classList.remove('hidden');
+                document.title = 'SV.GOLF One Stop Service';
+            } else {
+                const title = pageTitles[page] || page;
+                splash.classList.add('hidden');
+                splash.style.display = 'none';
+                dashboard.classList.add('hidden');
+                appView.classList.add('active');
+                topbarTitle.innerText = title;
+                document.title = title + ' - SV.GOLF';
+                showLoader(title);
+                frame.src = buildBackendUrl('?page=' + encodeURIComponent(page));
             }
         });
 
-        // รองรับปุ่ม Back / Forward ของเบราว์เซอร์
-        window.addEventListener('popstate', function(event) {
-            const search = window.location.search;
-            if (!search || search === '' || search.includes('page=welcome')) {
-                splash.style.display = 'flex';
-                splash.classList.remove('hidden');
-            } else {
+        // ----------------------------------------------------
+        // การเริ่มต้นทำงานตาม URL ที่เข้าชม (Initial Route Check)
+        // ----------------------------------------------------
+        (function init() {
+            const params = new URLSearchParams(window.location.search);
+            const page = params.get('page');
+
+            if (page && page !== 'welcome' && page !== 'dashboard') {
+                // หากเข้ามาด้วย Direct Link เช่น ?page=toolkit, ?page=assessment
                 splash.classList.add('hidden');
                 splash.style.display = 'none';
-                showLoader();
-                frame.src = buildBackendUrl(search);
+                dashboard.classList.add('hidden');
+                appView.classList.add('active');
+
+                const title = pageTitles[page] || page;
+                topbarTitle.innerText = title;
+                document.title = title + ' - SV.GOLF';
+                showLoader(title);
+                frame.src = buildBackendUrl('?page=' + encodeURIComponent(page));
+            } else if (page === 'dashboard') {
+                // หากเข้ามาด้วย ?page=dashboard
+                splash.classList.add('hidden');
+                splash.style.display = 'none';
+                dashboard.classList.remove('hidden');
+            } else {
+                // เข้าหน้าแรกสุด แสดง Splash Screen บน Vercel
+                splash.classList.remove('hidden');
+                dashboard.classList.add('hidden');
+            }
+        })();
+
+        // รับฟัง Message จาก Iframe กรณีมีปุ่มส่งข้อมูลข้ามเฟรม
+        window.addEventListener('message', function(event) {
+            if (event.data && typeof event.data === 'object') {
+                if (event.data.type === 'NAVIGATE' && event.data.page) {
+                    if (event.data.page === 'dashboard') {
+                        backToDashboard();
+                    } else {
+                        openTool(event.data.page);
+                    }
+                }
             }
         });
     </script>
