@@ -713,8 +713,8 @@
                     </div>
                 </div>
 
-                <!-- Card 7: คลังข้อสอบ O-NET อัจฉริยะ -->
-                <div class="card" onclick="openTool('onet_bank', 'คลังข้อสอบ O-NET อัจฉริยะ')" aria-label="คลังข้อสอบ O-NET อัจฉริยะ">
+                <!-- Card 7: คลังข้อสอบ O-NET อัจฉริยะ (External Vercel) -->
+                <a href="https://ednan1onetbank.vercel.app/" target="_blank" rel="noopener noreferrer" class="card" aria-label="คลังข้อสอบ O-NET อัจฉริยะ">
                     <div class="status-badge" id="badge-onet_bank" style="display: none;">ปิดระบบ</div>
                     <div class="icon-box">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -724,7 +724,7 @@
                     </div>
                     <h2>คลังข้อสอบ O-NET อัจฉริยะ</h2>
                     <p>ระบบคลังข้อสอบและวิเคราะห์ผลการสอบ O-NET อัจฉริยะ เพื่อยกระดับผลสัมฤทธิ์ทางการศึกษา</p>
-                </div>
+                </a>
 
                 <!-- Card 8: Check-in/Check-out Onsite (External Vercel) -->
                 <a href="https://checkin-out-nan1.vercel.app" target="_blank" rel="noopener noreferrer" class="card" aria-label="ระบบลงทะเบียน Check-in/Check-out การประชุม อบรม สัมมนา Onsite">
@@ -934,6 +934,11 @@
                     text: 'ขออภัย ระบบนี้ปิดให้บริการชั่วคราว อยู่ระหว่างการปรับปรุงข้อมูล',
                     confirmButtonColor: '#4f46e5'
                 });
+                return;
+            }
+
+            if (pageName === 'onet_bank') {
+                window.open('https://ednan1onetbank.vercel.app/', '_blank');
                 return;
             }
 
