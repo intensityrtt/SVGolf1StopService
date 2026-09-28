@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #f0f2f5;
+      padding-bottom: 50px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin-top: 20px;
+      position: relative;
+    }
+
+    .card {
+      border-radius: 20px;
+      border: none;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .view-content {
+      display: none;
+    }
+
+    .view-content.active {
+      display: block;
+    }
+
+    .header-box {
+      background: linear-gradient(135deg, #0056b3, #00aaff);
+      color: white;
+      padding: 25px;
+    }
+
+    .admin-btn {
+      position: absolute;
+      top: -10px;
+      right: 10px;
+      opacity: 0.1;
+      border: none;
+      background: transparent;
+      font-size: 1.5rem;
+      z-index: 1000;
+    }
+
+    /* Home Button Styles */
+    .home-btn {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      z-index: 9999;
+      background: #1e3a8a; /* primary blue */
+      color: white !important;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .home-btn:hover {
+      transform: scale(1.1);
+      background: #3b82f6; /* primary-light */
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    }
+    .home-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Manual Button Style */
+    .manual-float-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      z-index: 9999;
+      background: #0056b3;
+      color: white !important;
+      padding: 0 15px;
+      height: 45px;
+      border-radius: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255,255,255,0.2);
+      font-weight: 600;
+      font-size: 0.9rem;
+      gap: 8px;
+    }
+    .manual-float-btn:hover {
+      transform: scale(1.05);
+      background: #003d7a;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Floating Home Button -->
+  <a href="<?= url ?>" target="_top" class="home-btn" title="กลับหน้าหลัก">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
+  </a>
+
+  <!-- Floating Manual Button -->
+  <a href="<?= (typeof manualUrl !== 'undefined') ? manualUrl : '#' ?>" target="_blank" class="manual-float-btn" title="คู่มือการใช้งาน">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+    <span>คู่มือ</span>
+  </a>
+
+  <div class="container">
+    <button class="admin-btn" onclick="openAdminModal()">⚙️</button>
+
+    <div class="px-2 mb-3">
+      <small id="progressText" class="text-primary fw-bold">สถานะ: เตรียมพร้อม</small>
+      <div class="progress" style="height: 10px; border-radius: 10px;">
+        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 33%"></div>
+      </div>
+    </div>
+
+    <div class="card shadow">
+      <div class="header-box text-center">
+        <h4 class="mb-0 text-white"><?= config.title || 'การประชุม' ?></h4>
+        <p class="mb-0 small text-white-50"><?= config.subtitle || '' ?></p>
+      </div>
+
+      <div class="card-body p-4">
+        <div id="view-step1" class="view-content active">
+          <h5 class="text-primary mb-3 fw-bold text-center">ภารกิจที่ 1: ข้อมูลทั่วไป</h5>
+          <div class="mb-3">
+            <label class="form-label fw-bold small">ชื่อ-นามสกุล</label>
+            <input type="text" id="name" class="form-control form-control-lg"
+              placeholder="ระบุคำนำหน้าชื่อ ชื่อ-นามสกุล" oninput="saveState()">
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-bold small">บทบาทหน้าที่</label>
+            <select id="role" class="form-select form-control-lg" onchange="saveState()">
+              <option value="">-- เลือกบทบาท --</option>
+              <? 
+                var rolesStr = config.roles || '';
+                var rolesArray = rolesStr.split(',');
+                for (var i = 0; i < rolesArray.length; i++) {
+                  var r = rolesArray[i].trim();
+                  if (r !== '') {
+              ?>
+              <option value="<?= r ?>"><?= r ?></option>
+              <? 
+                  }
+                }
+              ?>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-lg w-100 py-3 fw-bold" onclick="checkStepBeforeNext(2)">ส่งภารกิจที่ 1
+            →</button>
+        </div>
+
+        <div id="view-waiting" class="view-content">
+          <div class="text-center py-5">
+            <div class="spinner-border text-primary mb-4" style="width: 3rem; height: 3rem;"></div>
+            <h4 class="text-primary fw-bold">รอฟังภารกิจต่อไป</h4>
+            <p class="text-muted small">กรุณารอฟังคำชี้แจงจากศูนย์สอบ<br>เมื่อได้รับอนุญาต ให้กดปุ่มด้านล่าง</p>
+            <button class="btn btn-outline-primary btn-lg w-100 mt-3 rounded-pill" onclick="reCheckStep()">🔄
+              ตรวจสอบการเปิดภารกิจต่อไป</button>
+          </div>
+        </div>
+
+        <div id="view-step2" class="view-content">
+          <h5 class="text-primary mb-3 fw-bold text-center">ภารกิจที่ 2: ถ่ายภาพรายงานตัว (ถ่ายภาพเดียว
+            ไม่ต้องถ่ายซ้ำครับ)</h5>
+          <input type="file" id="photo" accept="image/*" capture="camera" class="form-control mb-3">
+          <div id="previewContainer" class="mb-3 text-center"></div>
+          <button class="btn btn-primary btn-lg w-100 py-3 fw-bold" onclick="checkStepBeforeNext(3)">ส่งภารกิจที่ 2
+            →</button>
+        </div>
+
+        <div id="view-step3" class="view-content">
+          <h5 class="text-primary mb-3 fw-bold text-center">ภารกิจที่ 3: ตอบคำถามสรุป</h5>
+          <label class="small fw-bold"><?= config.question || 'ท่านมีความพร้อมในการจัดสอบเพียงใด?' ?></label>
+          <input type="text" id="q2" class="form-control mb-4" placeholder="ระบุคำตอบ">
+
+          <button id="btnSubmit" class="btn btn-success btn-lg w-100 py-3 fw-bold"
+            onclick="submitForm()">เสร็จสิ้นภารกิจ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center;">
+    <div class="bg-white p-4 rounded-4 shadow-lg text-center mx-3" style="max-width:320px; width:100%;">
+      <h5>รหัส Admin</h5>
+      <input type="password" id="adminPinInput" class="form-control mb-3 text-center" placeholder="****">
+      <button class="btn btn-primary w-100 mb-2" onclick="verifyAdmin()">เข้าสู่โหมดควบคุม</button>
+      <button class="btn btn-link text-muted btn-sm" onclick="closeAdminModal()">ยกเลิก</button>
+    </div>
+  </div>
+
+  <script>
+    let uploadedFileUrl = "";
+    let targetStep = 1;
+    let scriptUrl = "";
+
+    window.onload = function () {
+      google.script.run.withSuccessHandler(url => scriptUrl = url).getScriptUrl();
+      loadSavedState();
+    };
+
+    function saveState() {
+      localStorage.setItem('meeting_state', JSON.stringify({
+        name: document.getElementById('name').value,
+        role: document.getElementById('role').value,
+        uploadedFileUrl: uploadedFileUrl,
+        targetStep: targetStep
+      }));
+    }
+
+    function loadSavedState() {
+      const saved = localStorage.getItem('meeting_state');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          if (data.name) document.getElementById('name').value = data.name;
+          if (data.role) document.getElementById('role').value = data.role;
+          if (data.uploadedFileUrl) {
+            uploadedFileUrl = data.uploadedFileUrl;
+            document.getElementById('previewContainer').innerHTML = `<div class="alert alert-success py-1 small mb-2">✅ พร้อมใช้งาน (จากข้อมูลเดิม)</div><img src="${uploadedFileUrl}" class="img-fluid rounded shadow" style="max-height:150px;">`;
+          }
+          if (data.targetStep) {
+            targetStep = data.targetStep;
+            reCheckStep();
+          }
+        } catch (e) {}
+      }
+    }
+
+    function switchView(viewId) {
+      document.querySelectorAll('.view-content').forEach(el => el.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+    }
+
+    function checkStepBeforeNext(nextS) {
+      if (nextS === 2 && !document.getElementById('name').value) { 
+        Swal.fire({ icon: 'warning', title: 'เตือน', text: "กรุณากรอกชื่อก่อนครับ" }); 
+        return; 
+      }
+      if (nextS === 3 && !uploadedFileUrl) { 
+        Swal.fire({ icon: 'warning', title: 'เตือน', text: "กรุณารอการอัปโหลดรูปภาพให้สำเร็จก่อนครับ" }); 
+        return; 
+      }
+      targetStep = nextS;
+      saveState();
+      reCheckStep();
+    }
+
+    function reCheckStep() {
+      google.script.run.withSuccessHandler(function (serverStep) {
+        if (targetStep <= serverStep) {
+          switchView('view-step' + targetStep);
+          updateProgress(targetStep);
+        } else {
+          switchView('view-waiting');
+        }
+      }).getCurrentAllowedStep();
+    }
+
+    function updateProgress(s) {
+      document.getElementById('progressBar').style.width = (s === 1 ? '33%' : (s === 2 ? '66%' : '100%'));
+      document.getElementById('progressText').innerText = `สถานะ: ภารกิจที่ ${s}`;
+    }
+
+    // อัปโหลดรูป Real-time
+    document.getElementById('photo').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      const name = document.getElementById('name').value;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const base64 = e.target.result;
+        document.getElementById('previewContainer').innerHTML = `<div class="alert alert-warning py-1 small mb-2">⏳ กำลังส่งรูปภาพ...</div><img src="${base64}" class="img-fluid rounded opacity-50" style="max-height:150px;">`;
+        google.script.run.withSuccessHandler(function (res) {
+          if (res.status === 'success') {
+            uploadedFileUrl = res.url;
+            document.getElementById('previewContainer').innerHTML = `<div class="alert alert-success py-1 small mb-2">✅ พร้อมใช้งาน</div><img src="${base64}" class="img-fluid rounded shadow" style="max-height:150px;">`;
+            saveState();
+          } else {
+            document.getElementById('previewContainer').innerHTML = `<div class="alert alert-danger py-1 small mb-2">❌ ผิดพลาด: ${res.message}</div>`;
+            Swal.fire('ผิดพลาด', 'อัปโหลดรูปภาพไม่สำเร็จ: ' + res.message, 'error');
+          }
+        }).withFailureHandler(function(err) {
+          document.getElementById('previewContainer').innerHTML = `<div class="alert alert-danger py-1 small mb-2">❌ ผิดพลาด: การเชื่อมต่อมีปัญหา</div>`;
+          Swal.fire('ผิดพลาด', 'เกิดปัญหาการเชื่อมต่อกับเซิร์ฟเวอร์', 'error');
+        }).uploadImageOnly(base64, name);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function submitForm() {
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true; btn.innerHTML = "กำลังบันทึก...";
+      google.script.run.withSuccessHandler(res => {
+        if (res.status === 'success') {
+          localStorage.removeItem('meeting_state');
+          google.script.run.withSuccessHandler(html => document.body.innerHTML = html).getSuccessPage();
+        } else { 
+          Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: res.message }); 
+          btn.disabled = false; btn.innerText = "ส่งอีกครั้ง"; 
+        }
+      }).uploadData({
+        name: document.getElementById('name').value,
+        role: document.getElementById('role').value,
+        fileUrl: uploadedFileUrl,
+        q2: document.getElementById('q2').value
+      });
+    }
+
+    function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; }
+    function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
+    function verifyAdmin() {
+      if (document.getElementById('adminPinInput').value === "2568") {
+        window.top.location.href = scriptUrl + "?page=meeting&mode=admin";
+      } else { 
+        Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: "รหัสผิด!" }); 
+        closeAdminModal(); 
+      }
+    }
+  </script>
+</body>
+
+</html>

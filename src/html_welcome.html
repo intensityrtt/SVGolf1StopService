@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SV.GOLF One Stop Service</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --bg: #0f172a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body,
+    html {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background-color: var(--bg);
+      font-family: 'Sarabun', sans-serif;
+    }
+
+    .splash-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      background-color: var(--bg);
+      transition: all 0.5s ease;
+      position: relative;
+    }
+
+    .splash-container:hover {
+      transform: scale(1.01);
+    }
+
+    .splash-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
+      display: block;
+      min-width: 300px;
+      min-height: 300px;
+    }
+
+    .instruction {
+      position: absolute;
+      bottom: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 0.8rem 1.5rem;
+      border-radius: 9999px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      animation: pulse 2s infinite;
+      pointer-events: none;
+      font-size: 0.9rem;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 0.6;
+        transform: translateX(-50%) scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1.05);
+      }
+    }
+
+    .sponsor-footer {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.85rem;
+      text-align: center;
+      width: 90%;
+      z-index: 10;
+      pointer-events: auto;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .sponsor-footer a {
+      color: #60a5fa;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .sponsor-footer a:hover {
+      text-decoration: underline;
+      color: #93c5fd;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="splash-container" onclick="enterSystem()">
+    <!-- เพิ่ม ID เพื่อให้ JS เข้ามาเปลี่ยนภาพได้ และมีตัวอย่างภาพระหว่างโหลด -->
+    <div id="loading-spinner" style="position: absolute; color: white; opacity: 0.5;">กำลังโหลดภาพ...</div>
+    <img id="main-splash" src="" class="splash-image" alt="SV.GOLF Welcome" style="display: none;">
+    <div class="instruction">คลิกที่นี่เพื่อเข้าใช้งานระบบ</div>
+  </div>
+
+  <div class="sponsor-footer">
+    สนับสนุนโดย <a href="https://www.facebook.com/IntensityStudio" target="_blank" rel="noopener noreferrer">intensity
+      studio & insurance</a> บริการประกันรถ พรบ. และวินาศภัยทุกชนิด เลือกได้กว่า 30 บริษัท
+  </div>
+
+  <script>
+    // ดึงภาพจาก Server เมื่อหน้าเว็บโหลดเสร็จ
+    window.onload = function () {
+      google.script.run.withSuccessHandler(function (base64Data) {
+        if (base64Data) {
+          const img = document.getElementById('main-splash');
+          img.src = base64Data;
+          img.style.display = 'block';
+          document.getElementById('loading-spinner').style.display = 'none';
+        }
+      }).getImageBase64('INDEX.png');
+    };
+
+    function enterSystem() {
+      window.top.location.href = "<?= url ?>?page=dashboard";
+    }
+  </script>
+
+</body>
+
+</html>

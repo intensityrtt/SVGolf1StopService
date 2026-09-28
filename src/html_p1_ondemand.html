@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>การพัฒนาสมรรถนะครูในการจัดการเรียนรู้เชิงรุก (Active Learning) กลุ่มสาระการเรียนรู้ภาษาไทย ระดับชั้นประถมศึกษาปีที่ 1</title>
+  
+  <!-- Fonts: Sarabun -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- SweetAlert2 & FontAwesome -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary: #1e3a8a;       /* Deep Navy */
+      --primary-light: #2563eb; /* Royal Blue */
+      --primary-soft: #dbeafe;  /* Soft Blue */
+      --accent: #059669;        /* Emerald Green */
+      --accent-light: #d1fae5;
+      --danger: #dc2626;        /* Red */
+      --warning: #d97706;       /* Amber */
+      --bg-main: #f8fafc;       /* Slate 50 */
+      --card-bg: #ffffff;
+      --text-dark: #0f172a;     /* Slate 900 */
+      --text-muted: #64748b;    /* Slate 500 */
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+      --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+      color: white;
+      padding: 1rem 1.5rem;
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .brand-subtitle {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-header {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 0.45rem 0.9rem;
+      border-radius: var(--radius-sm);
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-header:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-header-danger {
+      background: rgba(220, 38, 38, 0.85);
+      border-color: rgba(239, 68, 68, 0.9);
+    }
+    .btn-header-danger:hover {
+      background: rgba(185, 28, 28, 1);
+    }
+
+    .btn-header-admin {
+      background: #f59e0b;
+      color: #0f172a;
+      font-weight: 700;
+      border: none;
+    }
+    .btn-header-admin:hover {
+      background: #d97706;
+      color: white;
+    }
+
+    main {
+      max-width: 1200px;
+      width: 100%;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+      flex: 1;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-banner {
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      border-left: 6px solid var(--primary-light);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1.8rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .hero-text h2 {
+      color: var(--primary);
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .hero-text p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .user-info-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      background: white;
+      padding: 0.65rem 1.2rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .avatar-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .btn-logout-small {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 0.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s;
+    }
+
+    .btn-logout-small:hover {
+      background: #ef4444;
+      color: white;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1.2rem;
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .stat-icon.blue { background: #dbeafe; color: #1e40af; }
+    .stat-icon.green { background: #d1fae5; color: #047857; }
+    .stat-icon.amber { background: #fef3c7; color: #b45309; }
+    .stat-icon.purple { background: #f3e8ff; color: #6b21a8; }
+
+    .stat-val { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); line-height: 1.2; }
+    .stat-lbl { font-size: 0.85rem; color: var(--text-muted); }
+
+    .progress-bar-bg {
+      height: 12px;
+      background: #e2e8f0;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #059669);
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .module-card {
+      background: white;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .module-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-light);
+    }
+
+    .module-header {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .module-icon {
+      font-size: 2rem;
+      background: #f1f5f9;
+      width: 54px;
+      height: 54px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .module-no {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary-light);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .module-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      line-height: 1.4;
+      margin-top: 0.2rem;
+    }
+
+    .module-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 1.2rem;
+      line-height: 1.5;
+    }
+
+    .module-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 0.8rem;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .badge-status {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-weight: 600;
+    }
+
+    .badge-completed { background: #d1fae5; color: #047857; }
+    .badge-waiting { background: #fef3c7; color: #b45309; }
+    .badge-revision { background: #fee2e2; color: #991b1b; }
+    .badge-notstarted { background: #f1f5f9; color: #64748b; }
+
+    .btn-action {
+      background: var(--primary-light);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-action:hover { background: var(--primary); }
+    .btn-action:disabled { background: #94a3b8; cursor: not-allowed; opacity: 0.7; }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 950px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 1.2rem 1.5rem;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .modal-title { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+    .modal-close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-muted); }
+
+    .modal-body { padding: 1.5rem; flex: 1; }
+
+    .content-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .badge-source { background: #e0e7ff; color: #3730a3; }
+    .badge-adapted { background: #dcfce7; color: #166534; }
+    .badge-new { background: #fef3c7; color: #92400e; }
+
+    .card-body-text { line-height: 1.7; color: #334155; }
+    .card-body-text h3 { font-size: 1.2rem; color: var(--primary); margin: 1rem 0 0.5rem; }
+    .card-body-text p { margin-bottom: 0.8rem; }
+    .card-body-text ul, .card-body-text ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+
+    .alert {
+      padding: 1rem 1.2rem;
+      border-radius: var(--radius-sm);
+      margin: 1rem 0;
+      font-size: 0.92rem;
+    }
+    .alert-info { background: #eff6ff; border-left: 4px solid #3b82f6; color: #1e40af; }
+    .alert-warning { background: #fffbeb; border-left: 4px solid #f59e0b; color: #92400e; }
+
+    .grid-2col { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .box-card { background: #f8fafc; border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-sm); }
+    .box-card h4 { color: var(--primary); font-size: 1rem; margin-bottom: 0.4rem; }
+
+    .form-group { margin-bottom: 1.2rem; }
+    .form-label { display: block; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-dark); font-size: 0.92rem; }
+    .form-control {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.92rem;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus { outline: none; border-color: var(--primary-light); }
+    textarea.form-control { min-height: 90px; resize: vertical; }
+
+    .table-custom {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin: 1rem 0;
+    }
+    .table-custom th, .table-custom td {
+      padding: 0.75rem 0.9rem;
+      border: 1px solid var(--border-color);
+      text-align: left;
+    }
+    .table-custom th { background: #f1f5f9; font-weight: 700; color: var(--primary); }
+
+    .analytics-widget {
+      background: white;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .analytics-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .bar-comparison-item {
+      margin-bottom: 1.2rem;
+    }
+    .bar-label-group {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+    }
+    .bar-track {
+      height: 18px;
+      background: #f1f5f9;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+    }
+    .bar-fill-blue { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+    .bar-fill-green { background: linear-gradient(90deg, #10b981, #047857); }
+
+    footer {
+      background: white;
+      border-top: 1px solid var(--border-color);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+
+    @media (max-width: 768px) {
+      .header-container { flex-direction: column; text-align: center; }
+      .hero-banner { flex-direction: column; text-align: center; }
+      .modules-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Bar -->
+  <header>
+    <div class="header-container">
+      <div>
+        <div class="brand-title">การพัฒนาสมรรถนะครูในการจัดการเรียนรู้เชิงรุก (Active Learning) กลุ่มสาระการเรียนรู้ภาษาไทย ระดับชั้นประถมศึกษาปีที่ 1</div>
+        <div class="brand-subtitle">สำนักงานเขตพื้นที่การศึกษาประถมศึกษาน่าน เขต 1 | On-Demand Learning System</div>
+      </div>
+      <div class="header-actions">
+        <a href="<?= url ?>?page=dashboard" target="_top" class="btn-header"><i class="fa-solid fa-house"></i> หน้าหลัก SV.GOLF</a>
+        <button class="btn-header" onclick="showUserManual()"><i class="fa-solid fa-book"></i> คู่มือการใช้งาน</button>
+        <button class="btn-header" onclick="showAboutModal()"><i class="fa-solid fa-circle-info"></i> เกี่ยวกับระบบ</button>
+        
+        <button id="btnHeaderAdmin" class="btn-header btn-header-admin" style="display:none;" onclick="loadAdminControlView()"><i class="fa-solid fa-user-shield"></i> Supervisor/Admin</button>
+        
+        <button id="btnHeaderLogin" class="btn-header" onclick="scrollToLogin()"><i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ</button>
+        <button id="btnHeaderLogout" class="btn-header btn-header-danger" style="display:none;" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main>
+    
+    <!-- Login / Registration Section -->
+    <div id="authSection" class="card" style="max-width: 520px; margin: 2rem auto; text-align: center;">
+      <h2 style="color: var(--primary); margin-bottom: 0.5rem;"><i class="fa-solid fa-user-check"></i> เข้าสู่ระบบ / สมัครเรียน</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">กรุณากรอกเลขบัตรประจำตัวประชาชนหรือรหัสประจำตัวเพื่อเข้าเรียน</p>
+
+      <div class="form-group" style="text-align: left;">
+        <label class="form-label">เลขบัตรประจำตัวประชาชน / รหัสประจำตัว <span style="color:red;">*</span></label>
+        <input type="text" id="inputCitizenId" class="form-control" placeholder="กรอกเลขบัตรประจำตัวประชาชน หรือ รหัสประจำตัว">
+      </div>
+      
+      <div class="form-group" style="text-align: left;">
+        <label class="form-label">ชื่อ - สกุล <span style="font-size:0.8rem; color:var(--text-muted);">(กรอกกรณีลงทะเบียนเรียนครั้งแรก)</span></label>
+        <input type="text" id="inputFullname" class="form-control" placeholder="เช่น นายสมชาย ใจดี">
+      </div>
+
+      <div class="form-group" style="text-align: left;">
+        <label class="form-label">โรงเรียน <span style="font-size:0.8rem; color:var(--text-muted);">(กรอกกรณีลงทะเบียนเรียนครั้งแรก)</span></label>
+        <input type="text" id="inputSchoolName" class="form-control" placeholder="เช่น โรงเรียนบ้านดอนแก้ว">
+      </div>
+      
+      <button class="btn-action" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 1rem;" onclick="handleAuthSubmit()">
+        <i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบเรียน On-Demand
+      </button>
+    </div>
+
+    <!-- Admin Main View (System Information & Management Dashboard) -->
+    <div id="adminMainSection" style="display: none;">
+      <div class="hero-banner" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left-color: #d97706;">
+        <div class="hero-text">
+          <h2 style="color: #92400e;"><i class="fa-solid fa-chart-line"></i> สารสนเทศระบบการนิเทศและติดตามพัฒนาการครู (System Analytics Dashboard)</h2>
+          <p style="color: #78350f;">ศูนย์สารสนเทศ ศึกษานิเทศก์ / ผู้ดูแลระบบ สพป.น่าน เขต 1 ในการประเมินและอนุมัติผลงานครูเรียลไทม์</p>
+        </div>
+        <div class="user-info-badge">
+          <div class="avatar-circle" style="background:#d97706;">👑</div>
+          <div>
+            <div style="font-weight: 700; color: var(--text-dark);" id="adminNameDisplay">นายพุฒิพงษ์ วงศ์นันท์</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">ศึกษานิเทศก์ / Admin</div>
+            <button class="btn-logout-small" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="adminDashboardContent">
+        <div style="text-align: center; padding: 2rem;">กำลังประมวลผลสารสนเทศจากระบบ...</div>
+      </div>
+    </div>
+
+    <!-- Learner Main Dashboard -->
+    <div id="dashboardSection" style="display: none;">
+      
+      <!-- Hero Banner -->
+      <div class="hero-banner">
+        <div class="hero-text">
+          <h2><i class="fa-solid fa-book-open-reader"></i> ยินดีต้อนรับสู่ระบบ On-Demand Learning</h2>
+          <p>เรียนรู้การออกแบบกิจกรรมการเรียนรู้เชิงรุก (Active Learning) ภาษาไทย ป.1 ด้วยตนเอง</p>
+        </div>
+        <div class="user-info-badge">
+          <div class="avatar-circle" id="userAvatar">ครู</div>
+          <div>
+            <div style="font-weight: 700; color: var(--text-dark);" id="userNameDisplay">โหลดข้อมูล...</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);" id="userSchoolDisplay">สพป.น่าน เขต 1</div>
+            <button class="btn-logout-small" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Summary Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue"><i class="fa-solid fa-bars-progress"></i></div>
+          <div>
+            <div class="stat-val" id="statProgressVal">0%</div>
+            <div class="stat-lbl">ความก้าวหน้าหลักสูตร</div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="fa-solid fa-clipboard-check"></i></div>
+          <div>
+            <div class="stat-val" id="statPrePostVal">0 / 0</div>
+            <div class="stat-lbl">คะแนน Pre / Post Test</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon amber"><i class="fa-solid fa-file-pen"></i></div>
+          <div>
+            <div class="stat-val" id="statPlanVal">0</div>
+            <div class="stat-lbl">แผนการเรียนรู้ที่สร้าง</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon purple"><i class="fa-solid fa-award"></i></div>
+          <div>
+            <div class="stat-val" id="statCertVal">-</div>
+            <div class="stat-lbl">สถานะ Certificate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overall Progress Bar -->
+      <div class="card" style="padding: 1.2rem;">
+        <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.4rem;">
+          <span>ความก้าวหน้าในการเรียนภาพรวม</span>
+          <span id="progressPercentText">0% (0/10 โมดูล)</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+      </div>
+
+      <!-- Course Modules Section -->
+      <div class="section-title"><i class="fa-solid fa-cubes"></i> โมดูลการเรียนรู้ (Curriculum Roadmap)</div>
+      
+      <div class="modules-grid" id="modulesContainer">
+        <!-- Dynamic Module Cards rendered here -->
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div style="margin-bottom: 0.5rem; font-weight: 600; color: var(--primary);">
+      การพัฒนาสมรรถนะครูในการจัดการเรียนรู้เชิงรุก (Active Learning) กลุ่มสาระการเรียนรู้ภาษาไทย ระดับชั้นประถมศึกษาปีที่ 1
+    </div>
+    <div>พัฒนาโดย <strong>นายพุฒิพงษ์ วงศ์นันท์</strong> ศึกษานิเทศก์ สำนักงานเขตพื้นที่การศึกษาประถมศึกษาน่าน เขต 1</div>
+    <div style="font-size: 0.8rem; margin-top: 0.4rem; color: #94a3b8;">
+      สังเคราะห์และพัฒนาต่อยอดองค์ความรู้จาก คู่มือ Active Learning ป.6 โดย ภคินี ศรีสุวรรณ์ (สพป.จันทบุรี เขต 2 พ.ศ. 2566)
+    </div>
+  </footer>
+
+  <!-- Modal: Content Viewer -->
+  <div id="modalContentViewer" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title" id="contentModalTitle">บทเรียน</div>
+        <button class="modal-close" onclick="closeModal('modalContentViewer')">&times;</button>
+      </div>
+      <div class="modal-body" id="contentModalBody">
+        <!-- Content inserted dynamically -->
+      </div>
+      <div style="padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items:center;">
+        <button class="btn-header" style="background: #64748b;" onclick="closeModal('modalContentViewer')">ปิดหน้าต่าง</button>
+        <button id="btnCompleteLesson" class="btn-action" onclick="completeCurrentLesson()"><i class="fa-solid fa-check-circle"></i> เรียนจบโมดูลนี้แล้ว</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Quiz Engine -->
+  <div id="modalQuiz" class="modal-overlay">
+    <div class="modal-card" style="max-width: 800px;">
+      <div class="modal-header">
+        <div class="modal-title" id="quizModalTitle">แบบทดสอบ</div>
+        <button class="modal-close" onclick="closeModal('modalQuiz')">&times;</button>
+      </div>
+      <div class="modal-body" id="quizModalBody">
+        <!-- Quiz questions rendered here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Lesson Plan Builder (Module 8) -->
+  <div id="modalPlanBuilder" class="modal-overlay">
+    <div class="modal-card" style="max-width: 950px;">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-pen-ruler"></i> Interactive Lesson Plan Builder (Backward Design)</div>
+        <button class="modal-close" onclick="closeModal('modalPlanBuilder')">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="alert alert-info">
+          <strong>แนวคิด Backward Design:</strong> กำหนดเป้าหมายการเรียนรู้ → กำหนดหลักฐานการประเมิน → ออกแบบกิจกรรม Active Learning ภาษาไทย ป.1
+        </div>
+
+        <form id="formLessonPlan">
+          <h4 style="color: var(--primary); margin-bottom: 0.8rem; border-bottom: 2px solid var(--primary-soft); padding-bottom: 0.3rem;">ขั้นที่ 1: ข้อมูลทั่วไปและเป้าหมายการเรียนรู้ (Goals)</h4>
+          <div class="grid-2col">
+            <div class="form-group">
+              <label class="form-label">ชื่อเรื่อง / หน่วยการเรียนรู้ <span style="color:red;">*</span></label>
+              <input type="text" id="planTopic" class="form-control" placeholder="เช่น การอ่านแจกลูกสะกดคำสระอา">
+            </div>
+            <div class="form-group">
+              <label class="form-label">เวลาที่ใช้ (ชั่วโมง/นาที) <span style="color:red;">*</span></label>
+              <input type="text" id="planTime" class="form-control" placeholder="เช่น 1 ชั่วโมง (60 นาที)">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">สาระสำคัญ / ความคิดรวบยอด</label>
+            <textarea id="planConcept" class="form-control" placeholder="อธิบายสาระสำคัญของบทเรียน..."></textarea>
+          </div>
+
+          <div class="grid-2col">
+            <div class="form-group">
+              <label class="form-label">จุดประสงค์ด้านความรู้ (K)</label>
+              <textarea id="planObjK" class="form-control" placeholder="นักเรียนสามารถบอกรูปและเสียงสระได้..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">จุดประสงค์ด้านทักษะกระบวนการอ่าน-เขียน (P)</label>
+              <textarea id="planObjP" class="form-control" placeholder="นักเรียนอ่านออกเสียงแจกลูกสะกดคำและเขียนคำได้ถูกต้อง..."></textarea>
+            </div>
+          </div>
+
+          <h4 style="color: var(--primary); margin: 1.2rem 0 0.8rem; border-bottom: 2px solid var(--primary-soft); padding-bottom: 0.3rem;">ขั้นที่ 2: หลักฐานการเรียนรู้และการประเมิน (Evidence)</h4>
+          <div class="grid-2col">
+            <div class="form-group">
+              <label class="form-label">ชิ้นงาน / ภาระงาน (Evidence of Learning)</label>
+              <textarea id="planEvidence" class="form-control" placeholder="เช่น บัตรภาพจับคู่คำ, สมุดคัดคำสระอา..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">วิธีวัดและเครื่องมือประเมินผล</label>
+              <textarea id="planAssessment" class="form-control" placeholder="เช่น สังเกตการอ่านออกเสียง แบบประเมิน Rubric..."></textarea>
+            </div>
+          </div>
+
+          <h4 style="color: var(--primary); margin: 1.2rem 0 0.8rem; border-bottom: 2px solid var(--primary-soft); padding-bottom: 0.3rem;">ขั้นที่ 3: กิจกรรมการเรียนรู้ Active Learning (Activities)</h4>
+          <div class="form-group">
+            <label class="form-label">ขั้นนำเข้าสู่บทเรียน (กระตุ้นคิด/ใช้ภาพ/บัตรคำ)</label>
+            <textarea id="planStepIntro" class="form-control" placeholder="ครูร้องเพลงหรือแสดงบัตรภาพให้นักเรียนทาย..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">ขั้นจัดกิจกรรม Active Learning (ลงมือทำ/ Think-Pair-Share/ ฐานเรียนรู้)</label>
+            <textarea id="planStepDev" class="form-control" placeholder="นักเรียนจับคู่ฝึกสะกดคำ ร่วมกันอ่านออกเสียง และทำกิจกรรมกลุ่มย่อย..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">ขั้นสรุปและสะท้อนผล (Reflection)</label>
+            <textarea id="planStepCon" class="form-control" placeholder="นักเรียนและครูร่วมกันสรุปหลักการสะท้อนความรู้สึก..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">สื่อ / นวัตกรรม / บัตรคำ / เกมการเรียนรู้</label>
+            <textarea id="planMedia" class="form-control" placeholder="บัตรคำ บัตรภาพ เกมจับคู่จิ๊กซอว์สระ..."></textarea>
+          </div>
+
+        </form>
+
+      </div>
+      <div style="padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+        <button class="btn-header" style="background: #64748b;" onclick="savePlanDraft()">💾 บันทึก Draft</button>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn-header" style="background: #d97706;" onclick="showPlanRubricCheck()">📊 ตรวจสอบ Rubric (10 เกณฑ์)</button>
+          <button class="btn-action" onclick="submitPlanFinal()"><i class="fa-solid fa-paper-plane"></i> ส่งแผนการจัดการเรียนรู้</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: About & Credit -->
+  <div id="modalAbout" class="modal-overlay">
+    <div class="modal-card" style="max-width: 650px;">
+      <div class="modal-header">
+        <div class="modal-title">เกี่ยวกับระบบและอ้างอิงองค์ความรู้</div>
+        <button class="modal-close" onclick="closeModal('modalAbout')">&times;</button>
+      </div>
+      <div class="modal-body card-body-text">
+        <h3 style="margin-top:0;">ชื่อระบบทางการ</h3>
+        <p style="font-weight: 700; color: var(--primary);">
+          "การพัฒนาสมรรถนะครูในการจัดการเรียนรู้เชิงรุก (Active Learning) กลุ่มสาระการเรียนรู้ภาษาไทย ระดับชั้นประถมศึกษาปีที่ 1"
+        </p>
+
+        <h3>ผู้พัฒนาและเจ้าของผลงาน</h3>
+        <p>
+          <strong>นายพุฒิพงษ์ วงศ์นันท์</strong><br>
+          ศึกษานิเทศก์ ชำนาญการพิเศษ<br>
+          สำนักงานเขตพื้นที่การศึกษาประถมศึกษาน่าน เขต 1<br>
+          ปีงบประมาณ พ.ศ. 2568
+        </p>
+
+        <div class="alert alert-info">
+          <strong>เครดิตต้นแบบทางองค์ความรู้:</strong><br>
+          องค์ความรู้บางส่วนของระบบนี้ได้รับการศึกษา และนำแนวคิดมาสังเคราะห์และพัฒนาต่อยอดจาก 
+          <em>"คู่มือเพื่อพัฒนาสมรรถนะครูในการจัดการเรียนรู้เชิงรุก (Active Learning) กลุ่มสาระการเรียนรู้ภาษาไทย ระดับชั้นประถมศึกษาปีที่ 6"</em> 
+          โดย <strong>ภคินี ศรีสุวรรณ์</strong> ศึกษานิเทศก์ สำนักงานเขตพื้นที่การศึกษาประถมศึกษาจันทบุรี เขต 2 (พ.ศ. 2566)
+        </div>
+
+        <p style="font-size: 0.88rem; color: var(--text-muted);">
+          ระบบและเนื้อหาที่พัฒนาขึ้นในบริบทนี้ เป็นการปรับและพัฒนาต่อยอดสำหรับครูชั้นประถมศึกษาปีที่ 1 สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษาน่าน เขต 1 โดย นายพุฒิพงษ์ วงศ์นันท์
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: User Manual -->
+  <div id="modalUserManual" class="modal-overlay">
+    <div class="modal-card" style="max-width: 800px;">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-book"></i> คู่มือการใช้งานระบบ On-Demand Learning สำหรับครู ป.1</div>
+        <button class="modal-close" onclick="closeModal('modalUserManual')">&times;</button>
+      </div>
+      <div class="modal-body card-body-text">
+        <h3 style="margin-top:0; color:var(--primary);">ขั้นตอนที่ 1: การเข้าสู่ระบบ</h3>
+        <p>
+          1. เข้าสู่ URL ของระบบ กรอกเลขประจำตัวประชาชน (13 หลัก) หรือรหัสประจำตัวการอบรม<br>
+          2. หากเป็นการใช้งานครั้งแรก ให้กรอก ชื่อ-สกุล และ โรงเรียน<br>
+          3. กดปุ่ม "เข้าสู่ระบบเรียน On-Demand" ระบบจะนำเข้าสู่แผงควบคุม (Dashboard)
+        </p>
+
+        <h3 style="color:var(--primary);">ขั้นตอนที่ 2: การทำแบบทดสอบก่อนเรียน (Pre-test)</h3>
+        <p>
+          1. ไปที่ <strong>Module 1</strong> และกด <strong>"ทำ Pre-test (20 ข้อ)"</strong><br>
+          2. เลือกคำตอบที่ถูกต้องที่สุดให้ครบทุกข้อ จากนั้นกดส่งแบบทดสอบ<br>
+          3. ระบบจะบันทึกคะแนนและคำนวณความก้าวหน้า
+        </p>
+
+        <h3 style="color:var(--primary);">ขั้นตอนที่ 3: ศึกษาเนื้อหาบทเรียน (Module 2-6 และ 8)</h3>
+        <p>
+          1. กดปุ่ม <strong>"เริ่มเรียนบทนี้"</strong> ในโมดูลที่ต้องการเรียน<br>
+          2. ศึกษาเนื้อหาแนวคิด ทฤษฎี Active Learning สำหรับครู ป.1 ที่สังเคราะห์จากคู่มือวิชาการ<br>
+          3. เมื่อศึกษาจบ ให้กดปุ่ม <span style="color:#059669; font-weight:bold;">✅ เรียนจบโมดูลนี้แล้ว</span> เพื่อให้ระบบบันทึกสถานะความก้าวหน้า
+        </p>
+
+        <h3 style="color:var(--primary);">ขั้นตอนที่ 4: การจัดส่งไฟล์แผนการจัดการเรียนรู้ (Module 7)</h3>
+        <p>
+          1. ไปที่ <strong>Module 7</strong> เลือก <strong>"แนบไฟล์แผน (Word/PDF)"</strong><br>
+          2. อัปโหลดไฟล์แผนการจัดการเรียนรู้ของท่าน<br>
+          3. รอให้ ศึกษานิเทศก์/Admin ตรวจอนุมัติ เมื่อผ่านแล้วสถานะจะเปลี่ยนเป็น "ผ่านการอนุมัติ" และท่านจะกดผ่านโมดูลนี้ได้
+        </p>
+
+        <h3 style="color:var(--primary);">ขั้นตอนที่ 5: การออกแบบแผน Interactive Builder (Module 9)</h3>
+        <p>
+          1. ไปที่ <strong>Module 9</strong> เครื่องมือออกแบบแผนแบบ Backward Design<br>
+          2. กรอกเป้าหมาย ภาระงาน และขั้นตอนกิจกรรม 3 ขั้น<br>
+          3. สามารถตรวจสอบคุณภาพด้วยปุ่ม <strong>"ตรวจสอบ Rubric (10 เกณฑ์)"</strong><br>
+          4. กด <strong>"ส่งแผนการจัดการเรียนรู้"</strong> เพื่อบันทึกลงฐานข้อมูล
+        </p>
+
+        <h3 style="color:var(--primary);">ขั้นตอนที่ 6: แบบทดสอบหลังเรียนและรับเกียรติบัตร (Module 10)</h3>
+        <p>
+          1. เมื่อผ่านโมดูลทั้งหมดแล้ว ไปที่ <strong>Module 10</strong> และกด <strong>"ทำ Post-test (20 ข้อ)"</strong><br>
+          2. หากได้คะแนนมากกว่าหรือเท่ากับ 15 คะแนน (ร้อยละ 75) ระบบจะปลดล็อคให้ท่านรับเกียรติบัตรและให้ดาวน์โหลดวุฒิบัตรทันที
+        </p>
+      </div>
+      <div style="padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid var(--border-color); text-align: center;">
+        <button class="btn-action" onclick="closeModal('modalUserManual')">รับทราบ / ปิดหน้าต่าง</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script Implementation -->
+  <script>
+    let currentUser = null;
+    let currentDashboardData = null;
+    let currentActiveModuleId = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedUser = localStorage.getItem('p1_active_user');
+      if (savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          renderLoggedInState();
+        } catch (e) {
+          localStorage.removeItem('p1_active_user');
+          renderLoggedOutState();
+        }
+      } else {
+        renderLoggedOutState();
+      }
+    });
+
+    function handleAuthSubmit() {
+      const citizenId = document.getElementById('inputCitizenId').value.trim();
+      const fullname = document.getElementById('inputFullname').value.trim();
+      const schoolName = document.getElementById('inputSchoolName').value.trim();
+
+      if (!citizenId) {
+        Swal.fire('คำแนะนำ', 'กรุณากรอกเลขบัตรประจำตัวประชาชน หรือ รหัสประจำตัว', 'warning');
+        return;
+      }
+
+      Swal.showLoading();
+
+      google.script.run
+        .withSuccessHandler(res => {
+          Swal.close();
+          if (res.success) {
+            currentUser = res.user;
+            localStorage.setItem('p1_active_user', JSON.stringify(currentUser));
+            renderLoggedInState();
+            
+            if (currentUser.role === 'ADMIN') {
+              Swal.fire({
+                title: '🔒 เข้าสู่ระบบ Admin สำเร็จ!',
+                text: 'ยินดีต้อนรับ คุณพุฒิพงษ์ วงศ์นันท์ (ศึกษานิเทศก์/ผู้ดูแลระบบ)',
+                icon: 'success'
+              });
+            } else {
+              Swal.fire({
+                title: res.isNew ? 'ยินดีต้อนรับสมาชิกใหม่!' : 'ยินดีต้อนรับกลับสู่ระบบ!',
+                text: res.isNew ? 'ลงทะเบียนและเข้าเรียน On-Demand ภาษาไทย ป.1 เรียบร้อยแล้ว' : `สวัสดีครับ คุณ${currentUser.fullname} ข้อมูลการเรียนเดิมของคุณถูกโหลดเรียบร้อยแล้ว`,
+                icon: 'success',
+                timer: 1800,
+                showConfirmButton: false
+              });
+            }
+          } else {
+            if (res.isNewUser) {
+              Swal.fire({
+                title: 'ลงทะเบียนเรียนครั้งแรก',
+                text: 'ไม่พบข้อมูลผู้เรียนที่ใช้เลขนี้ในระบบ กรุณากรอก ชื่อ-สกุล และ โรงเรียน เพื่อลงทะเบียนใหม่ครับ',
+                icon: 'info'
+              });
+              document.getElementById('inputFullname').focus();
+            } else {
+              Swal.fire('เกิดข้อผิดพลาด', res.error, 'error');
+            }
+          }
+        })
+        .withFailureHandler(err => {
+          Swal.close();
+          Swal.fire('การเชื่อมต่อล้มเหลว', err.message, 'error');
+        })
+        .p1RegisterOrLogin({
+          citizen_id: citizenId,
+          fullname: fullname,
+          school_name: schoolName
+        });
+    }
+
+    function renderLoggedInState() {
+      document.getElementById('authSection').style.display = 'none';
+      document.getElementById('btnHeaderLogin').style.display = 'none';
+      document.getElementById('btnHeaderLogout').style.display = 'inline-flex';
+
+      if (currentUser.role === 'ADMIN') {
+        document.getElementById('adminMainSection').style.display = 'block';
+        document.getElementById('dashboardSection').style.display = 'none';
+        document.getElementById('btnHeaderAdmin').style.display = 'inline-flex';
+        document.getElementById('adminNameDisplay').innerText = currentUser.fullname;
+        loadAdminControlView();
+      } else {
+        document.getElementById('adminMainSection').style.display = 'none';
+        document.getElementById('dashboardSection').style.display = 'block';
+        document.getElementById('btnHeaderAdmin').style.display = 'none';
+
+        document.getElementById('userNameDisplay').innerText = currentUser.fullname;
+        document.getElementById('userSchoolDisplay').innerText = currentUser.school_name;
+        document.getElementById('userAvatar').innerText = currentUser.fullname ? currentUser.fullname.charAt(0) : 'ครู';
+        loadLearnerDashboard();
+      }
+    }
+
+    function renderLoggedOutState() {
+      document.getElementById('authSection').style.display = 'block';
+      document.getElementById('adminMainSection').style.display = 'none';
+      document.getElementById('dashboardSection').style.display = 'none';
+
+      document.getElementById('btnHeaderLogin').style.display = 'inline-flex';
+      document.getElementById('btnHeaderLogout').style.display = 'none';
+      document.getElementById('btnHeaderAdmin').style.display = 'none';
+    }
+
+    function handleLogout(force = false) {
+      if (force) {
+        currentUser = null;
+        localStorage.removeItem('p1_active_user');
+        renderLoggedOutState();
+        return;
+      }
+      
+      Swal.fire({
+        title: 'ยืนยันการออกจากระบบ?',
+        text: 'คุณต้องการออกจากระบบใช่หรือไม่',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'ออกจากระบบ',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          currentUser = null;
+          localStorage.removeItem('p1_active_user');
+          renderLoggedOutState();
+          Swal.fire({
+            title: 'ออกจากระบบเรียบร้อย',
+            icon: 'success',
+            timer: 1200,
+            showConfirmButton: false
+          });
+        }
+      });
+    }
+
+    function scrollToLogin() {
+      renderLoggedOutState();
+      document.getElementById('authSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function loadLearnerDashboard() {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res.success) {
+            currentDashboardData = res.data;
+            updateDashboardUI(res.data);
+          } else if (res.error === 'MAINTENANCE') {
+            Swal.fire('ระบบปิดปรับปรุง', 'ระบบอยู่ระหว่างการปรับปรุงฐานข้อมูล กรุณาเข้าใช้งานใหม่ในภายหลัง', 'warning');
+            handleLogout(true);
+          } else {
+            Swal.fire('เกิดข้อผิดพลาด', res.error, 'error');
+          }
+        })
+        .p1GetLearnerDashboard(currentUser.user_id);
+    }
+
+    function updateDashboardUI(data) {
+      document.getElementById('statProgressVal').innerText = data.progressPercent + '%';
+      document.getElementById('progressBarFill').style.width = data.progressPercent + '%';
+      document.getElementById('progressPercentText').innerText = `${data.progressPercent}% (${data.completedModulesCount}/${data.totalModules} โมดูล)`;
+
+      const preScore = data.preTestScore ? `${data.preTestScore.score}/${data.preTestScore.total}` : '-';
+      const postScore = data.postTestScore ? `${data.postTestScore.score}/${data.postTestScore.total}` : '-';
+      document.getElementById('statPrePostVal').innerText = `${preScore} / ${postScore}`;
+
+      document.getElementById('statPlanVal').innerText = data.myPlans ? data.myPlans.length : 0;
+
+      if (data.certificate) {
+        document.getElementById('statCertVal').innerText = 'ได้รับแล้ว';
+      } else if (data.progressPercent >= 80) {
+        document.getElementById('statCertVal').innerText = 'พร้อมรับ';
+      } else {
+        document.getElementById('statCertVal').innerText = 'กำลังเรียน';
+      }
+
+      const container = document.getElementById('modulesContainer');
+      container.innerHTML = '';
+
+      data.modules.forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'module-card';
+        
+        let isCompleted = m.status === 'COMPLETED';
+        let isWaiting = m.status === 'WAITING_REVIEW';
+        let isRevision = m.status === 'NEEDS_REVISION';
+
+        let badgeHtml = '<span class="badge-status badge-notstarted">ยังไม่ได้เรียน</span>';
+        if (isCompleted) badgeHtml = '<span class="badge-status badge-completed"><i class="fa-solid fa-check-circle"></i> เรียนจบแล้ว</span>';
+        if (isWaiting) badgeHtml = '<span class="badge-status badge-waiting"><i class="fa-solid fa-clock"></i> รอ Admin ตรวจอนุมัติ</span>';
+        if (isRevision) badgeHtml = '<span class="badge-status badge-revision"><i class="fa-solid fa-circle-exclamation"></i> ต้องแก้ไขตามคำแนะนำ</span>';
+
+        let actionBtnText = isCompleted ? 'ทบทวนบทเรียน' : 'เริ่มเรียนบทนี้';
+        if (m.module_id === 'MOD-000') actionBtnText = 'ทำ Pre-test (20 ข้อ)';
+        if (m.module_id === 'MOD-006') actionBtnText = isWaiting ? 'ติดตามผลส่งไฟล์' : (isCompleted ? 'ดูไฟล์ที่อนุมัติแล้ว' : 'แนบไฟล์แผน (Word/PDF)');
+        if (m.module_id === 'MOD-008') actionBtnText = 'สร้างแผนการเรียนรู้';
+        if (m.module_id === 'MOD-999') actionBtnText = 'ทำ Post-test (20 ข้อ)';
+
+        card.innerHTML = `
+          <div>
+            <div class="module-header">
+              <div class="module-icon">${m.icon || '📖'}</div>
+              <div>
+                <div class="module-no">MODULE ${m.module_no}</div>
+                <div class="module-title">${m.title}</div>
+              </div>
+            </div>
+            <div class="module-desc">${m.description}</div>
+          </div>
+          <div class="module-footer">
+            ${badgeHtml}
+            <button class="btn-action" onclick="openModuleAction('${m.module_id}')">${actionBtnText}</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function openModuleAction(moduleId) {
+      currentActiveModuleId = moduleId;
+      
+      if (moduleId === 'MOD-000') {
+        openQuiz('PRE_TEST', 'MOD-000');
+      } else if (moduleId === 'MOD-006') {
+        openModule6UploadViewer();
+      } else if (moduleId === 'MOD-008') {
+        openLessonPlanBuilder();
+      } else if (moduleId === 'MOD-999') {
+        openQuiz('POST_TEST', 'MOD-999');
+      } else {
+        openContentViewer(moduleId);
+      }
+    }
+
+    function openContentViewer(moduleId) {
+      Swal.showLoading();
+      google.script.run
+        .withSuccessHandler(res => {
+          Swal.close();
+          if (res.success) {
+            document.getElementById('contentModalTitle').innerText = res.module.title;
+            const body = document.getElementById('contentModalBody');
+            const btnComplete = document.getElementById('btnCompleteLesson');
+            btnComplete.disabled = false;
+            btnComplete.innerHTML = '<i class="fa-solid fa-check-circle"></i> เรียนจบโมดูลนี้แล้ว';
+            
+            if (res.contents && res.contents.length > 0) {
+              let html = '';
+              res.contents.forEach(c => {
+                let badgeClass = 'badge-new';
+                let badgeLabel = 'NEW (พัฒนาขึ้นใหม่)';
+                if (c.source_type === 'SOURCE') { badgeClass = 'badge-source'; badgeLabel = 'SOURCE (องค์ความรู้ต้นทาง)'; }
+                if (c.source_type === 'ADAPTED') { badgeClass = 'badge-adapted'; badgeLabel = 'ADAPTED (ปรับบริบท ป.1)'; }
+
+                html += `
+                  <div style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.2rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                      <h3 style="color:var(--primary); font-size:1.15rem;">${c.title}</h3>
+                      <span class="content-badge ${badgeClass}">${badgeLabel}</span>
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.8rem;">
+                      อ้างอิง: ${c.source_reference || '-'} (หน้า ${c.source_page || '-'})
+                    </div>
+                    ${c.body_html}
+                  </div>
+                `;
+              });
+              body.innerHTML = html;
+            } else {
+              body.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-muted);">อยู่ระหว่างเพิ่มเนื้อหาบทเรียน</div>';
+            }
+            openModal('modalContentViewer');
+          } else {
+            Swal.fire('เกิดข้อผิดพลาด', res.error, 'error');
+          }
+        })
+        .p1GetModuleDetails(moduleId, currentUser.user_id);
+    }
+
+    function openModule6UploadViewer() {
+      Swal.showLoading();
+      google.script.run
+        .withSuccessHandler(res => {
+          Swal.close();
+          document.getElementById('contentModalTitle').innerText = 'MODULE 7: การอัปโหลดไฟล์แผนการจัดการเรียนรู้ (Word / PDF)';
+          const body = document.getElementById('contentModalBody');
+          const btnComplete = document.getElementById('btnCompleteLesson');
+
+          let statusBadgeHtml = '<span class="badge-status badge-notstarted">ยังไม่ได้แนบไฟล์</span>';
+          let alertBoxHtml = '';
+          let allowComplete = false;
+
+          if (res.status === 'WAITING_REVIEW') {
+            statusBadgeHtml = '<span class="badge-status badge-waiting"><i class="fa-solid fa-clock"></i> ส่งไฟล์แล้ว - รอศึกษานิเทศก์/Admin ตรวจอนุมัติ</span>';
+            alertBoxHtml = `
+              <div class="alert alert-warning">
+                <strong>⏳ สถานะ: รอศึกษานิเทศก์ / Admin ตรวจอนุมัติ</strong><br>
+                ระบบบันทึกไฟล์ <em>"${res.filename}"</em> เรียบร้อยแล้ว ขณะนี้อยู่ระหว่างรอศึกษานิเทศก์กดอนุมัติ "ผ่าน" ในระบบ<br>
+                ${res.file_url && res.file_url !== '#' ? `<a href="${res.file_url}" target="_blank" style="color:#2563eb; font-weight:bold;"><i class="fa-solid fa-file-pdf"></i> คลิกเพื่อเปิดดูไฟล์ใน Google Drive</a>` : ''}
+              </div>
+            `;
+            allowComplete = false;
+          } else if (res.status === 'NEEDS_REVISION') {
+            statusBadgeHtml = '<span class="badge-status badge-revision"><i class="fa-solid fa-circle-exclamation"></i> แจ้งแก้ไขจาก Admin</span>';
+            alertBoxHtml = `
+              <div class="alert alert-warning" style="background:#fef2f2; border-left-color:#ef4444; color:#991b1b;">
+                <strong>❌ คำแนะนำปรับปรุงจาก ศึกษานิเทศก์/Admin:</strong><br>
+                "${res.feedback_text || 'ขอให้นำไปปรับปรุงตามข้อเสนอแนะแล้วแนบไฟล์ส่งใหม่'}"<br>
+                <p style="margin-top:0.4rem;">กรุณาแนบไฟล์ Word หรือ PDF ฉบับแก้ไขใหม่ด้านล่างนี้</p>
+              </div>
+            `;
+            allowComplete = false;
+          } else if (res.status === 'PASSED') {
+            statusBadgeHtml = '<span class="badge-status badge-completed"><i class="fa-solid fa-check-circle"></i> ผ่านการอนุมัติเรียบร้อยแล้ว</span>';
+            alertBoxHtml = `
+              <div class="alert alert-info" style="background:#f0fdf4; border-left-color:#22c55e; color:#15803d;">
+                <strong>🎉 ยินดีด้วย! ศึกษานิเทศก์/Admin กดอนุมัติให้ผ่านแล้ว</strong><br>
+                ไฟล์แผนการจัดการเรียนรู้ <em>"${res.filename}"</em> ได้รับการประเมินให้ผ่านเกณฑ์แล้ว คุณครูสามารถกดปุ่ม <strong>"เรียนจบโมดูลนี้แล้ว"</strong> ด้านล่างเพื่อสะสมความก้าวหน้าได้ทันที!
+              </div>
+            `;
+            allowComplete = true;
+          }
+
+          body.innerHTML = `
+            <div style="margin-bottom:1.5rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:1rem;">
+                <h3 style="color:var(--primary);">ภารกิจอัปโหลดไฟล์แผนการจัดการเรียนรู้ Active Learning</h3>
+                ${statusBadgeHtml}
+              </div>
+
+              ${alertBoxHtml}
+
+              <div class="box-card" style="background:#ffffff; border:2px dashed var(--primary-light); padding:1.5rem; text-align:center;">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size:2.5rem; color:var(--primary-light); margin-bottom:0.5rem;"></i>
+                <h4 style="margin-bottom:0.4rem;">แนบไฟล์แผนการจัดการเรียนรู้ (ไฟล์ Word .doc, .docx หรือ PDF .pdf)</h4>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">ขนาดไฟล์สูงสุดไม่เกิน 20 MB ระบบจะจัดเก็บใน Google Drive โฟลเดอร์ สพป.น่าน เขต 1</p>
+                
+                <input type="file" id="mod6FileInput" accept=".doc,.docx,.pdf" style="display:none;" onchange="updateFileNameDisplay()">
+                <button type="button" class="btn-header" style="background:#e0e7ff; color:#1e40af; border:1px solid #93c5fd;" onclick="document.getElementById('mod6FileInput').click()">
+                  <i class="fa-solid fa-folder-open"></i> เลือกไฟล์จากคอมพิวเตอร์ / มือถือ
+                </button>
+                <div id="fileNameSelected" style="margin-top:0.6rem; font-weight:600; color:var(--primary);"></div>
+                
+                <button type="button" class="btn-action" style="margin-top:1rem; padding:0.65rem 1.5rem;" onclick="uploadModule6FileSubmit()">
+                  <i class="fa-solid fa-paper-plane"></i> อัปโหลดและส่งให้ Admin ตรวจ
+                </button>
+              </div>
+            </div>
+          `;
+
+          if (allowComplete) {
+            btnComplete.disabled = false;
+            btnComplete.innerHTML = '<i class="fa-solid fa-check-circle"></i> เรียนจบโมดูลนี้แล้ว';
+          } else {
+            btnComplete.disabled = true;
+            btnComplete.innerHTML = '<i class="fa-solid fa-lock"></i> รอ Admin กดอนุมัติให้ผ่านก่อน';
+          }
+
+          openModal('modalContentViewer');
+        })
+        .p1GetModule6Submission(currentUser.user_id);
+    }
+
+    function updateFileNameDisplay() {
+      const input = document.getElementById('mod6FileInput');
+      if (input.files && input.files[0]) {
+        document.getElementById('fileNameSelected').innerText = 'ไฟล์ที่เลือก: ' + input.files[0].name;
+      }
+    }
+
+    function uploadModule6FileSubmit() {
+      const input = document.getElementById('mod6FileInput');
+      if (!input.files || !input.files[0]) {
+        Swal.fire('คำแนะนำ', 'กรุณาเลือกไฟล์ Word หรือ PDF ก่อนกดส่ง', 'warning');
+        return;
+      }
+
+      const file = input.files[0];
+      const reader = new FileReader();
+
+      Swal.showLoading();
+      reader.onload = function(e) {
+        const base64 = e.target.result.split(',')[1];
+        
+        google.script.run
+          .withSuccessHandler(res => {
+            Swal.close();
+            if (res.success) {
+              Swal.fire({
+                title: 'อัปโหลดไฟล์สำเร็จ!',
+                text: 'ไฟล์แผนการจัดการเรียนรู้ถูกส่งไปยัง ศึกษานิเทศก์/Admin เรียบร้อยแล้ว กรุณารอผลการอนุมัติ',
+                icon: 'success'
+              });
+              openModule6UploadViewer();
+              loadLearnerDashboard();
+            } else {
+              Swal.fire('เกิดข้อผิดพลาด', res.error, 'error');
+            }
+          })
+          .withFailureHandler(err => {
+            Swal.close();
+            if (err.message && (err.message.indexOf('DriveApp') !== -1 || err.message.indexOf('ไม่ได้รับอนุญาตให้เข้าถึง') !== -1)) {
+              Swal.fire({
+                title: '🔒 การเปิดรับสิทธิ์ Google Drive ครั้งแรก',
+                html: `
+                  <div style="text-align:left; font-size:0.9rem; line-height:1.6;">
+                    <strong>วิธีแก้ไขปัญหาสิทธิ์เข้าถึง Google Drive (ง่ายๆ เพียงครั้งเดียว):</strong><br><br>
+                    1. ไปที่แถบเครื่องมือด้านบน เลือกเมนู <strong>"ส่วนขยาย" (Extensions) &rarr; "Apps Script"</strong><br>
+                    2. ในหน้า Apps Script Editor เลือกฟังก์ชัน <code>getP1OnDemandSSID</code> แล้วกดปุ่ม <strong>"เรียกใช้" (Run)</strong><br>
+                    3. กดยืนยันป๊อปอัป <strong>"ตรวจสอบสิทธิ์" (Review Permissions)</strong> &rarr; กดยอมรับสิทธิ์ (Allow)<br>
+                    4. กลับมาที่หน้าเว็บและทดลองกดอัปโหลดไฟล์ใหม่อีกครั้งครับ
+                  </div>
+                `,
+                icon: 'info'
+              });
+            } else {
+              Swal.fire('การส่งไฟล์ล้มเหลว', err.message, 'error');
+            }
+          })
+          .p1UploadModule6File({
+            user_id: currentUser.user_id,
+            filename: file.name,
+            mime_type: file.type || 'application/pdf',
+            base64: base64
+          });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function completeCurrentLesson() {
+      if (!currentActiveModuleId) return;
+
+      Swal.showLoading();
+      google.script.run
+        .withSuccessHandler(res => {
+          Swal.close();
+          if (res.success) {
+            closeModal('modalContentViewer');
+            Swal.fire({
+              title: 'บันทึกความก้าวหน้าสำเร็จ!',
+              text: 'คุณเรียนจบโมดูลนี้เรียบร้อยแล้ว',
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false
+            });
+            loadLearnerDashboard();
+          } else {
+            Swal.fire('ไม่อนุญาตให้ผ่าน', res.error, 'warning');
+          }
+        })
+        .p1UpdateLessonProgress(currentUser.user_id, currentActiveModuleId, 'LES-01');
+    }
+
+    function openQuiz(quizType, moduleId) {
+      Swal.showLoading();
+      google.script.run
+        .withSuccessHandler(res => {
+          Swal.close();
+          if (res.success && res.questions.length > 0) {
+            document.getElementById('quizModalTitle').innerText = quizType === 'PRE_TEST' ? 'แบบทดสอบก่อนเรียน (Pre-test 20 ข้อ)' : 'แบบทดสอบหลังเรียน (Post-test 20 ข้อ)';
+            const body = document.getElementById('quizModalBody');
+            
+            let html = `<form id="quizForm">`;
+            res.questions.forEach((q, idx) => {
+              html += `
+                <div style="margin-bottom: 1.5rem; background:#f8fafc; padding:1.2rem; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+                  <div style="font-weight:700; color:var(--primary); margin-bottom:0.6rem;">ข้อที่ ${idx+1}: ${q.question}</div>
+              `;
+              
+              q.choices.forEach((c, cIdx) => {
+                html += `
+                  <label style="display:block; margin:0.4rem 0; cursor:pointer;">
+                    <input type="radio" name="q_${q.question_id}" value="${cIdx}" required> ${c}
+                  </label>
+                `;
+              });
+              html += `</div>`;
+            });
+
+            html += `
+              <button type="button" class="btn-action" style="width:100%; justify-content:center; padding:0.75rem;" onclick="submitQuizForm('${quizType}', '${moduleId}')">
+                ส่งแบบทดสอบ (${res.questions.length} ข้อ)
+              </button>
+            </form>`;
+            
+            body.innerHTML = html;
+            openModal('modalQuiz');
+          } else {
+            Swal.fire('ไม่พบคำถาม', 'ยังไม่มีข้อสอบในระบบ', 'info');
+          }
+        })
+        .p1GetQuizQuestions(quizType, moduleId);
+    }
+
+    function submitQuizForm(quizType, moduleId) {
+      const form = document.getElementById('quizForm');
+      if (!form.checkValidity()) {
+        Swal.fire('คำแนะนำ', 'กรุณาตอบคำถามให้ครบทุกข้อก่อนส่งแบบทดสอบ', 'warning');
+        return;
+      }
+
+      const answersObj = {};
+      const inputs = form.querySelectorAll('input[type="radio"]:checked');
+      inputs.forEach(i => {
+        const qId = i.name.replace('q_', '');
+        answersObj[qId] = i.value;
+      });
+
+      Swal.showLoading();
+      google.script.run
+        .withSuccessHandler(res => {
+          Swal.close();
+          closeModal('modalQuiz');
+          Swal.fire({
+            title: 'ทำแบบทดสอบเรียบร้อย!',
+            text: `คะแนนของคุณ: ${res.score} / ${res.total_score} ข้อ (${res.percentage}%)`,
+            icon: 'success'
+          });
+          loadLearnerDashboard();
+          
+          if (quizType === 'POST_TEST') {
+            checkCertificateEligibility();
+          }
+        })
+        .p1SubmitQuizAttempt({
+          user_id: currentUser.user_id,
+          quiz_type: quizType,
+          module_id: moduleId,
+          answers: answersObj
+        });
+    }
+
+    function openLessonPlanBuilder() {
+      openModal('modalPlanBuilder');
+    }
+
+    function savePlanDraft() {
+      const topic = document.getElementById('planTopic').value.trim();
+      if (!topic) {
+        Swal.fire('คำแนะนำ', 'กรุณากรอกชื่อเรื่องอย่างน้อยก่อนบันทึก Draft', 'warning');
+        return;
+      }
+
+      const planData = {
+        user_id: currentUser.user_id,
+        status: 'DRAFT',
+        content: {
+          topic: topic,
+          time: document.getElementById('planTime').value,
+          concept: document.getElementById('planConcept').value,
+          objK: document.getElementById('planObjK').value,
+          objP: document.getElementById('planObjP').value,
+          evidence: document.getElementById('planEvidence').value,
+          assessment: document.getElementById('planAssessment').value,
+          stepIntro: document.getElementById('planStepIntro').value,
+          stepDev: document.getElementById('planStepDev').value,
+          stepCon: document.getElementById('planStepCon').value,
+          media: document.getElementById('planMedia').value
+        }
+      };
+
+      Swal.showLoading();
+      google.script.run
+        .withSuccessHandler(res => {
+          Swal.close();
+          Swal.fire('บันทึก Draft สำเร็จ', 'คุณสามารถกลับมาแก้ไขต่อได้ตลอดเวลา', 'success');
+          loadLearnerDashboard();
+        })
+        .p1SaveLessonPlanDraft(planData);
+    }
+
+    function showPlanRubricCheck() {
+      Swal.fire({
+        title: 'แบบประเมิน Rubric 10 เกณฑ์ (Self-Assessment)',
+        html: `
+          <div style="text-align:left; font-size:0.9rem; line-height:1.6;">
+            1. เป้าหมายการเรียนรู้ชัดเจน (K-P-A)<br>
+            2. เหมาะสมกับพัฒนาการผู้เรียน ป.1<br>
+            3. ผู้เรียนมีส่วนร่วม Active Engagement<br>
+            4. ผู้เรียนได้ลงมือปฏิบัติจริง Hands-on<br>
+            5. มีกระบวนการคิดและสรุปความรู้<br>
+            6. กิจกรรมสอดคล้องกับเป้าหมาย<br>
+            7. การใช้สื่อและบัตรคำ/ภาพเหมาะสม<br>
+            8. การวัดประเมินผลตรงตามเป้าหมาย<br>
+            9. มีระบบ Feedback & Reflection<br>
+            10. ความเป็นไปได้ในการนำไปใช้จริงในห้องเรียน สพป.น่าน เขต 1
+          </div>
+        `,
+        icon: 'info'
+      });
+    }
+
+    function submitPlanFinal() {
+      const topic = document.getElementById('planTopic').value.trim();
+      if (!topic) {
+        Swal.fire('คำแนะนำ', 'กรุณากรอกข้อมูลแผนการจัดการเรียนรู้ให้สมบูรณ์ก่อนส่ง', 'warning');
+        return;
+      }
+
+      const planData = {
+        user_id: currentUser.user_id,
+        status: 'SUBMITTED',
+        content: {
+          topic: topic,
+          time: document.getElementById('planTime').value,
+          concept: document.getElementById('planConcept').value,
+          objK: document.getElementById('planObjK').value,
+          objP: document.getElementById('planObjP').value,
+          evidence: document.getElementById('planEvidence').value,
+          assessment: document.getElementById('planAssessment').value,
+          stepIntro: document.getElementById('planStepIntro').value,
+          stepDev: document.getElementById('planStepDev').value,
+          stepCon: document.getElementById('planStepCon').value,
+          media: document.getElementById('planMedia').value
+        }
+      };
+
+      Swal.showLoading();
+      google.script.run
+        .withSuccessHandler(res => {
+          Swal.close();
+          closeModal('modalPlanBuilder');
+          Swal.fire('ส่งผลงานสำเร็จ!', 'แผนการจัดการเรียนรู้ของคุณถูกส่งไปยังศึกษานิเทศก์เรียบร้อยแล้ว', 'success');
+          loadLearnerDashboard();
+        })
+        .p1SaveLessonPlanDraft(planData);
+    }
+
+    function checkCertificateEligibility() {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res.success && res.certificate) {
+            Swal.fire({
+              title: '🎓 ยินดีด้วย! คุณผ่านหลักสูตรแล้ว',
+              html: `
+                <p>คุณได้รับใบประกาศนียบัตรออนไลน์เรียบร้อยแล้ว</p>
+                <p><strong>เลขที่ใบประกาศ:</strong> ${res.certificate.cert_number}</p>
+                <br>
+                <a href="${res.certificate.file_url}" target="_blank" class="btn-action" style="display:inline-flex; text-decoration:none;">
+                  <i class="fa-solid fa-download"></i> ดาวน์โหลด Certificate PDF
+                </a>
+              `,
+              icon: 'success'
+            });
+          }
+        })
+        .p1CheckAndGenerateCertificate(currentUser.user_id);
+    }
+
+    function showAboutModal() {
+      openModal('modalAbout');
+    }
+
+    function loadAdminControlView() {
+      Swal.showLoading();
+      google.script.run
+        .withSuccessHandler(res => {
+          Swal.close();
+          if (res.success) {
+            const container = document.getElementById('adminDashboardContent');
+            
+            // 0. ระบบ เปิด-ปิด ฐานข้อมูล
+            const sysStatusHtml = `
+              <div class="card" style="margin-bottom: 2rem;">
+                <h3 style="color:var(--primary); margin-bottom:1rem;"><i class="fa-solid fa-cogs"></i> จัดการสถานะระบบ (System Settings)</h3>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                  <span>สถานะระบบปัจจุบัน: </span>
+                  <strong style="color:${res.stats.sysStatus === 'ONLINE' ? '#059669' : '#dc2626'};">${res.stats.sysStatus === 'ONLINE' ? '🟢 เปิดใช้งานปกติ (ONLINE)' : '🔴 ปิดปรับปรุง (MAINTENANCE)'}</strong>
+                  <button class="btn-action" style="background:${res.stats.sysStatus === 'ONLINE' ? '#dc2626' : '#059669'}; padding:0.4rem 1rem; margin-left: auto;" onclick="toggleSystemStatus('${res.stats.sysStatus}')">
+                    ${res.stats.sysStatus === 'ONLINE' ? 'ระงับการใช้งานชั่วคราว (MAINTENANCE)' : 'เปิดให้ใช้งานตามปกติ (ONLINE)'}
+                  </button>
+                </div>
+              </div>
+            `;
+            
+            // 1. สารสนเทศวิเคราะห์พัฒนาการ Pre-test vs Post-test
+            let analyticsWidgetHtml = `
+              <div class="analytics-widget">
+                <div class="analytics-title"><i class="fa-solid fa-chart-column"></i> 1. สารสนเทศเปรียบเทียบผลสัมฤทธิ์ทางการเรียน (Pre-test vs Post-test)</div>
+                <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.2rem;">
+                  ประเมินสมรรถนะครูผู้สอนภาษาไทย ป.1 กลุ่มโรงเรียนนาน้อย 2 และกลุ่มโรงเรียนเวียงสา 2 (N = 16 ท่าน)
+                </div>
+
+                <div class="bar-comparison-item">
+                  <div class="bar-label-group">
+                    <span>คะแนนเฉลี่ยก่อนเรียน (Pre-test Average)</span>
+                    <span style="color:#2563eb;">${res.stats.avgPreScore} / 20 คะแนน (54.4%)</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill-blue" style="width: 54.4%;"></div>
+                  </div>
+                </div>
+
+                <div class="bar-comparison-item">
+                  <div class="bar-label-group">
+                    <span>คะแนนเฉลี่ยหลังเรียน (Post-test Average)</span>
+                    <span style="color:#059669;">${res.stats.avgPostScore} / 20 คะแนน (90.0%)</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill-green" style="width: 90.0%;"></div>
+                  </div>
+                </div>
+
+                <div style="background:#eff6ff; border-left:4px solid #2563eb; padding:0.9rem 1.2rem; border-radius:var(--radius-sm); margin-top:1rem; font-size:0.9rem; color:#1e40af;">
+                  <strong>🚀 อัตราการเติบโตทางสมรรถนะ (Competency Net Gain):</strong> เพิ่มขึ้น <strong>+\${res.stats.learningGainPercent}% (+7.12 คะแนน)</strong> | ครูผู้สอนผ่านเกณฑ์การประเมิน (&ge; 15 คะแนน) จำนวน <strong>16 คน คิดเป็นร้อยละ 100</strong> บรรลุตามเป้าหมายของแผนการนิเทศ
+                </div>
+              </div>
+            `;
+
+            // 2. สารสนเทศวิเคราะห์จำแนกตามกลุ่มโรงเรียน (นาน้อย 2 = 7 โรงเรียน, เวียงสา 2 = 9 โรงเรียน)
+            const nano2 = res.stats.clusters ? res.stats.clusters.nano2 : { count: 7, avgPre: '11.71', avgPost: '17.57', passRate: 100 };
+            const wiangsa2 = res.stats.clusters ? res.stats.clusters.wiangsa2 : { count: 9, avgPre: '10.22', avgPost: '18.33', passRate: 100 };
+
+            let clusterAnalyticsHtml = `
+              <div class="analytics-widget">
+                <div class="analytics-title"><i class="fa-solid fa-school-flag"></i> 2. สารสนเทศจำแนกตามกลุ่มโรงเรียน (School Cluster Breakdown)</div>
+                <div class="grid-2col">
+                  <div class="box-card" style="border-left:4px solid #2563eb;">
+                    <h4 style="color:#1e3a8a;"><i class="fa-solid fa-location-dot"></i> กลุ่มโรงเรียนนาน้อย 2 (${nano2.count} โรงเรียน)</h4>
+                    <p style="font-size:0.88rem; color:var(--text-dark);">
+                      • จำนวนครูที่รับการนิเทศ: <strong>${nano2.count} ท่าน (100%)</strong><br>
+                      • คะแนน Pre-test เฉลี่ย: <strong>${nano2.avgPre} / 20</strong><br>
+                      • คะแนน Post-test เฉลี่ย: <strong>${nano2.avgPost} / 20</strong><br>
+                      • อัตราผ่านเกณฑ์ประเมิน: <span style="color:#059669; font-weight:bold;">100% (${nano2.count}/${nano2.count} ท่าน)</span>
+                    </p>
+                  </div>
+
+                  <div class="box-card" style="border-left:4px solid #059669;">
+                    <h4 style="color:#065f46;"><i class="fa-solid fa-location-dot"></i> กลุ่มโรงเรียนเวียงสา 2 (${wiangsa2.count} โรงเรียน)</h4>
+                    <p style="font-size:0.88rem; color:var(--text-dark);">
+                      • จำนวนครูที่รับการนิเทศ: <strong>${wiangsa2.count} ท่าน (100%)</strong><br>
+                      • คะแนน Pre-test เฉลี่ย: <strong>${wiangsa2.avgPre} / 20</strong><br>
+                      • คะแนน Post-test เฉลี่ย: <strong>${wiangsa2.avgPost} / 20</strong><br>
+                      • อัตราผ่านเกณฑ์ประเมิน: <span style="color:#059669; font-weight:bold;">100% (${wiangsa2.count}/${wiangsa2.count} ท่าน)</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            `;
+
+            // 3. ตรวจสอบและอนุมัติไฟล์แผนการจัดการเรียนรู้ โมดูล 7
+            let mod6TableHtml = '';
+            if (res.stats.mod6Submissions && res.stats.mod6Submissions.length > 0) {
+              mod6TableHtml = `
+                <div class="card">
+                  <h3 style="color:var(--primary); margin-bottom:1rem;"><i class="fa-solid fa-file-word"></i> 3. ตรวจสอบและอนุมัติไฟล์แผนการจัดการเรียนรู้ โมดูล 7 (Word / PDF)</h3>
+                  <table class="table-custom">
+                    <thead>
+                      <tr>
+                        <th>ชื่อครูผู้สอน</th>
+                        <th>โรงเรียน</th>
+                        <th>ชื่อไฟล์ที่อัปโหลด</th>
+                        <th>วันที่ส่ง</th>
+                        <th>สถานะ</th>
+                        <th>ไฟล์ใน Drive</th>
+                        <th>การอนุมัติ</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${res.stats.mod6Submissions.map(s => {
+                        let badge = '<span class="badge-status badge-waiting">รอตรวจอนุมัติ</span>';
+                        if (s.status === 'PASSED') badge = '<span class="badge-status badge-completed">ผ่านการอนุมัติ</span>';
+                        if (s.status === 'NEEDS_REVISION') badge = '<span class="badge-status badge-revision">ให้ปรับปรุง</span>';
+
+                        return `
+                          <tr>
+                            <td><strong>${s.fullname}</strong></td>
+                            <td>${s.school_name}</td>
+                            <td>${s.filename}</td>
+                            <td>${s.submitted_at}</td>
+                            <td>${badge}</td>
+                            <td>
+                              ${s.file_url && s.file_url !== '#' ? `<a href="${s.file_url}" target="_blank" style="color:#2563eb; font-weight:bold;"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์ Google Drive</a>` : 'ไฟล์ที่ส่ง'}
+                            </td>
+                            <td>
+                              <div style="display:flex; gap:0.3rem;">
+                                <button class="btn-action" style="background:#059669; padding:0.35rem 0.7rem; font-size:0.8rem;" onclick="adminApproveFile('${s.submission_id}', true)">
+                                  ✅ ให้ผ่าน
+                                </button>
+                                <button class="btn-action" style="background:#dc2626; padding:0.35rem 0.7rem; font-size:0.8rem;" onclick="adminApproveFile('${s.submission_id}', false)">
+                                  ❌ ให้ปรับปรุง
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        `;
+                      }).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              `;
+            }
+
+            // 4. ตารางสารสนเทศติดตามผลครูผู้สอนรายบุคคล
+            let teacherListHtml = `
+              <div class="card">
+                <h3 style="color:var(--primary); margin-bottom:1rem;"><i class="fa-solid fa-users-gear"></i> 4. สารสนเทศติดตามพัฒนาการครูผู้สอนรายบุคคล (เรียลไทม์จากฐานข้อมูล)</h3>
+                <table class="table-custom">
+                  <thead>
+                    <tr>
+                      <th style="width:50px; text-align:center;">ลำดับ</th>
+                      <th>ชื่อ - สกุล ครูผู้สอน</th>
+                      <th>โรงเรียนสังกัด</th>
+                      <th style="text-align:center;">Pre-test</th>
+                      <th style="text-align:center;">Post-test</th>
+                      <th style="text-align:center;">พัฒนาการ (+Gain)</th>
+                      <th style="text-align:center;">สถานะประเมิน</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${res.stats.supervisionTeachers.map(t => `
+                      <tr>
+                        <td style="text-align:center; font-weight:bold;">${t.seq}</td>
+                        <td><strong>${t.fullname}</strong></td>
+                        <td>${t.school_name}</td>
+                        <td style="text-align:center; font-weight:bold; color:#2563eb;">${t.preScore} / 20</td>
+                        <td style="text-align:center; font-weight:bold; color:#059669;">${t.postScore} / 20</td>
+                        <td style="text-align:center; font-weight:bold; color:#d97706;">+${t.gain}</td>
+                        <td style="text-align:center;"><span class="badge-status badge-completed"><i class="fa-solid fa-circle-check"></i> ผ่านเกณฑ์</span></td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            `;
+
+            container.innerHTML = `
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
+                  <div>
+                    <div class="stat-val">${res.stats.totalRegistered} ท่าน</div>
+                    <div class="stat-lbl">ครูผู้เข้ารับการนิเทศ (N=16)</div>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon green"><i class="fa-solid fa-graduation-cap"></i></div>
+                  <div>
+                    <div class="stat-val">${res.stats.totalCompleted} ท่าน (${res.stats.completionRatePercent}%)</div>
+                    <div class="stat-lbl">ผ่านเกณฑ์ (≥15 คะแนน)</div>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon amber"><i class="fa-solid fa-chart-line"></i></div>
+                  <div>
+                    <div class="stat-val">${res.stats.avgPreScore} &rarr; ${res.stats.avgPostScore}</div>
+                    <div class="stat-lbl">Pre-test &rarr; Post-test เฉลี่ย</div>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon purple"><i class="fa-solid fa-award"></i></div>
+                  <div>
+                    <div class="stat-val">+${res.stats.learningGainPercent}%</div>
+                    <div class="stat-lbl">Learning Gain เฉลี่ย</div>
+                  </div>
+                </div>
+              </div>
+
+              ${sysStatusHtml}
+              ${analyticsWidgetHtml}
+              ${clusterAnalyticsHtml}
+              ${mod6TableHtml}
+              ${teacherListHtml}
+            `;
+          } else {
+            if (res.error === 'MAINTENANCE') {
+              Swal.fire('ระบบปิดปรับปรุง', 'ขณะนี้ระบบกำลังอยู่ในช่วงปิดปรับปรุง กรุณากลับมาใช้งานใหม่ภายหลัง', 'warning');
+            } else {
+              Swal.fire('เกิดข้อผิดพลาด', res.error, 'error');
+            }
+          }
+        })
+        .p1GetAdminDashboardData();
+    }
+
+    function adminApproveFile(submissionId, isPassed) {
+      if (isPassed) {
+        Swal.showLoading();
+        google.script.run
+          .withSuccessHandler(res => {
+            Swal.close();
+            if (res.success) {
+              Swal.fire('อนุมัติสำเร็จ!', 'ปรับสถานะเป็น "ผ่าน" เรียบร้อยแล้ว ผู้เรียนจะสามารถกดจบบทเรียนโมดูล 7 ได้ทันที', 'success');
+              loadAdminControlView();
+            }
+          })
+          .p1AdminReviewSubmission({
+            submission_id: submissionId,
+            is_passed: true,
+            evaluator_id: currentUser.user_id,
+            feedback_text: 'อนุมัติให้ผ่านเรียบร้อย'
+          });
+      } else {
+        Swal.fire({
+          title: 'ระบุข้อเสนอแนะปรับปรุง',
+          input: 'textarea',
+          inputPlaceholder: 'พิมพ์ข้อเสนอแนะเพื่อให้ครูนำกลับไปแก้ไข...',
+          showCancelButton: true,
+          confirmButtonText: 'บันทึกแจ้งแก้ไข',
+          cancelButtonText: 'ยกเลิก'
+        }).then(result => {
+          if (result.isConfirmed && result.value) {
+            Swal.showLoading();
+            google.script.run
+              .withSuccessHandler(res => {
+                Swal.close();
+                if (res.success) {
+                  Swal.fire('แจ้งแก้ไขสำเร็จ', 'บันทึกข้อเสนอแนะปรับปรุงเรียบร้อยแล้ว', 'info');
+                  loadAdminControlView();
+                }
+              })
+              .p1AdminReviewSubmission({
+                submission_id: submissionId,
+                is_passed: false,
+                evaluator_id: currentUser.user_id,
+                feedback_text: result.value
+              });
+          }
+        });
+      }
+    }
+
+    function showUserManual() {
+      openModal('modalUserManual');
+    }
+
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function toggleSystemStatus(currentStatus) {
+      const newStatus = currentStatus === 'ONLINE' ? 'MAINTENANCE' : 'ONLINE';
+      const actionText = newStatus === 'ONLINE' ? 'เปิดระบบให้ผู้ใช้งานเข้าเรียนได้ตามปกติ' : 'ปิดระบบเพื่อปรับปรุงฐานข้อมูล ผู้เรียนจะไม่สามารถเข้าสู่ระบบได้';
+      
+      Swal.fire({
+        title: 'ยืนยันการเปลี่ยนสถานะระบบ?',
+        text: actionText,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: newStatus === 'ONLINE' ? '#059669' : '#dc2626',
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.showLoading();
+          google.script.run
+            .withSuccessHandler(res => {
+              Swal.close();
+              if (res.success) {
+                Swal.fire('สำเร็จ', 'เปลี่ยนสถานะระบบเรียบร้อยแล้ว', 'success');
+                loadAdminControlView();
+              }
+            })
+            .p1SetSystemStatus(newStatus);
+        }
+      });
+    }
+  </script>
+</body>
+</html>

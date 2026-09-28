@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบ On-Demand Learning ป.1</title>
+    <!-- สามารถเพิ่ม Meta Tag สำหรับ SEO หรือการแชร์ลิงก์ได้ที่นี่ -->
+    <meta name="description" content="การพัฒนาสมรรถนะครูในการจัดการเรียนรู้เชิงรุก (Active Learning) กลุ่มสาระการเรียนรู้ภาษาไทย ระดับชั้นประถมศึกษาปีที่ 1">
+    
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* ป้องกันแถบเลื่อนซ้อนกัน */
+            background-color: #f8fafc;
+        }
+        
+        /* สไตล์สำหรับ iframe ให้แสดงผลเต็มจอ */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* หน้าจอโหลดข้อมูล (Loading Screen) แบบง่าย */
+        #loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Sarabun', sans-serif;
+            color: #1e3a8a;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        
+        .spinner {
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- หน้าต่างโหลด (จะถูกทับเมื่อ iframe โหลดเสร็จ) -->
+    <div id="loader">
+        <div class="spinner"></div>
+        กำลังโหลดระบบ...
+    </div>
+
+    <!-- ส่วนครอบโค้ด (Iframe Wrapper) -->
+    <iframe 
+        id="app-frame"
+        src="https://script.google.com/a/ednan1.go.th/macros/s/AKfycbxDCgwq9jr4hNLeW5BBMylDiYU1tAxY9RNsHaL64qyk6A5vypN0Y_91z76eTygckZlEGQ/exec?page=p1_ondemand" 
+        allow="autoplay; fullscreen; camera; microphone" 
+        onload="document.getElementById('loader').style.display='none';"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads">
+    </iframe>
+
+</body>
+</html>

@@ -1,0 +1,393 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบนิเทศเปิดภาคเรียน - SV.GOLF</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root { --primary: #1e3a8a; --secondary: #3b82f6; --accent: #f59e0b; --bg: #f8fafc; --text: #1e293b; --danger: #ef4444; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Sarabun', sans-serif; background-color: var(--bg); color: var(--text); overflow-x: hidden; }
+    #pin-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; color: white; padding: 20px; }
+    .pin-input { background: rgba(255,255,255,0.2); border: 2px solid white; border-radius: 15px; padding: 15px; font-size: 2rem; text-align: center; color: white; width: 200px; margin-bottom: 20px; outline: none; }
+    .btn-unlock { background: white; color: var(--primary); padding: 12px 40px; border-radius: 30px; font-weight: 700; cursor: pointer; border: none; font-size: 1.1rem; }
+    .app-container { display: none; max-width: 900px; margin: auto; padding: 20px; padding-bottom: 100px; }
+    header { text-align: center; margin-bottom: 30px; }
+    .card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); z-index: 1000; }
+    .nav-item { border: none; background: none; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; font-size: 0.7rem; opacity: 0.6; flex:1; }
+    .nav-item.active { color: var(--primary); opacity: 1; font-weight: 700; }
+    .step { display: none; } .step.active { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .form-group { margin-bottom: 15px; }
+    .form-label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
+    input, select, textarea { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; font-family: inherit; font-size: 1rem; }
+    .score-group { display: flex; gap: 8px; margin: 10px 0; }
+    .score-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-align: center; }
+    .score-btn.active[data-score="4"] { background: #dcfce7; border-color: #22c55e; color: #166534; }
+    .score-btn.active[data-score="3"] { background: #dbeafe; border-color: #3b82f6; color: #1e40af; }
+    .score-btn.active[data-score="2"] { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+    .score-btn.active[data-score="1"] { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+    .progress-bar { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin: 20px 0; position: relative; }
+    .progress-fill { height: 100%; background: var(--primary); border-radius: 4px; transition: 0.3s; width: 0%; }
+    .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; }
+    .btn-secondary { background: #f1f5f9; color: var(--text); border: none; padding: 12px 25px; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+    .stat-card { background: var(--primary); color: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; }
+    .stat-val { font-size: 2.5rem; font-weight: 800; }
+    .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f1f5f9; }
+    .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; align-items: center; justify-content: center; z-index: 20000; }
+    .action-btns { display: flex; gap: 5px; margin-top: 5px; }
+    .btn-icon { padding: 5px 8px; border-radius: 5px; border: 1px solid #e2e8f0; background: white; cursor: pointer; font-size: 0.7rem; }
+    .btn-delete { color: var(--danger); border-color: #fecaca; }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .summary-card { background: white; border-radius: 15px; padding: 15px; border: 1px solid #e2e8f0; text-align: center; }
+    .summary-val { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+    .data-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9rem; }
+    .data-table th, .data-table td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; }
+    .data-table th { background: #f8fafc; font-weight: 700; }
+    .data-table .total-row { background: #f1f5f9; font-weight: 800; }
+
+    /* PDF Template Styles */
+    #pdf-container { position: absolute; left: -9999px; width: 800px; background: white; padding: 50px; color: black; font-family: 'Sarabun', sans-serif; line-height: 1.6; }
+    .pdf-header { text-align: center; margin-bottom: 30px; }
+    .pdf-title { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
+    .pdf-section-title { font-size: 17px; font-weight: 700; background: #e2e8f0; padding: 8px 15px; margin: 25px 0 15px 0; border-left: 5px solid var(--primary); }
+    .pdf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 12px; }
+    .pdf-label { font-weight: 700; color: #1e293b; }
+    .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 14px; }
+    .pdf-table th, .pdf-table td { border: 1px solid #94a3b8; padding: 10px; text-align: left; vertical-align: top; }
+    .pdf-table th { background: #f1f5f9; font-weight: 700; }
+    .pdf-score { text-align: center; font-weight: 700; width: 60px; }
+    .pdf-signature-block { margin-top: 50px; display: flex; justify-content: flex-end; }
+    .pdf-sig-box { width: 350px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div id="pin-screen">
+    <h2 style="margin-bottom: 20px;">🔒 เข้าใช้งานระบบนิเทศ</h2>
+    <input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="PIN" autofocus>
+    <button onclick="unlock()" class="btn-unlock">ตกลง</button>
+  </div>
+  <div class="loading-overlay" id="loader">
+    <div style="text-align: center;"><div class="spinner-border text-primary" role="status"></div><p id="loader-text" style="margin-top: 10px; font-weight: 600;">กำลังประมวลผล...</p></div>
+  </div>
+  
+  <div id="pdf-container">
+    <div class="pdf-header">
+      <div class="pdf-title">แบบนิเทศ ติดตาม และประเมินผลการเปิดภาคเรียน</div>
+      <div style="font-size: 16px;">สำนักงานเขตพื้นที่การศึกษาประถมศึกษาน่าน เขต 1</div>
+      <div id="pdf-date-header" style="font-weight: 700;">ปีการศึกษา 2569</div>
+    </div>
+    
+    <div class="pdf-section-title">๑. ข้อมูลสถานศึกษา</div>
+    <div class="pdf-grid">
+      <div><span class="pdf-label">ชื่อโรงเรียน:</span> <span id="pdf-school"></span></div>
+      <div><span class="pdf-label">กลุ่มโรงเรียน:</span> <span id="pdf-group"></span></div>
+      <div><span class="pdf-label">ผู้นิเทศ:</span> <span id="pdf-inspector"></span></div>
+      <div><span class="pdf-label">วันที่นิเทศ:</span> <span id="pdf-date"></span></div>
+    </div>
+    <div class="pdf-grid">
+      <div><span class="pdf-label">ชื่อผู้บริหาร:</span> <span id="pdf-director"></span> (<span id="pdf-dir-phone"></span>)</div>
+    </div>
+    
+    <div style="display: flex; gap: 30px; margin-top: 15px;">
+      <div style="flex:1">
+        <div class="pdf-label">จำนวนบุคลากร:</div>
+        <table class="pdf-table">
+          <tr><td>ผู้บริหาร</td><td id="pdf-s-adm" style="text-align:right"></td><td>คน</td></tr>
+          <tr><td>ครูผู้สอน</td><td id="pdf-s-tch" style="text-align:right"></td><td>คน</td></tr>
+          <tr><td>บุคลากรอื่น</td><td id="pdf-s-oth" style="text-align:right"></td><td>คน</td></tr>
+          <tr style="font-weight:700; background:#f8fafc;"><td>รวมทั้งสิ้น</td><td id="pdf-s-tot" style="text-align:right"></td><td>คน</td></tr>
+        </table>
+      </div>
+      <div style="flex:1">
+        <div class="pdf-label">จำนวนนักเรียน:</div>
+        <table class="pdf-table">
+          <tr><td>ปฐมวัย</td><td id="pdf-n-pre" style="text-align:right"></td><td>คน</td></tr>
+          <tr><td>ประถมศึกษา</td><td id="pdf-n-pri" style="text-align:right"></td><td>คน</td></tr>
+          <tr><td>มัธยมศึกษาตอนต้น</td><td id="pdf-n-sec" style="text-align:right"></td><td>คน</td></tr>
+          <tr style="font-weight:700; background:#f8fafc;"><td>รวมทั้งสิ้น</td><td id="pdf-n-tot" style="text-align:right"></td><td>คน</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="pdf-section-title">๒. ผลการประเมินรายด้าน</div>
+    <table class="pdf-table" id="pdf-results-table">
+      <thead><tr><th style="width:50%">รายการประเมิน</th><th class="pdf-score">คะแนน</th><th style="width:40%">ข้อเสนอแนะ/คอมเมนต์</th></tr></thead>
+      <tbody id="pdf-results-body"></tbody>
+    </table>
+
+    <div class="pdf-section-title">๓. สรุปผลและข้อเสนอแนะภาพรวม</div>
+    <div class="pdf-label">จุดเด่นของสถานศึกษา:</div>
+    <div id="pdf-strengths" style="margin-bottom: 12px; min-height: 40px; border-bottom: 1px dotted #94a3b8; padding: 5px;">-</div>
+    <div class="pdf-label">จุดที่ควรพัฒนา:</div>
+    <div id="pdf-improvements" style="margin-bottom: 12px; min-height: 40px; border-bottom: 1px dotted #94a3b8; padding: 5px;">-</div>
+    <div class="pdf-label">ข้อเสนอแนะเพิ่มเติม:</div>
+    <div id="pdf-suggestions" style="margin-bottom: 30px; min-height: 40px; border-bottom: 1px dotted #94a3b8; padding: 5px;">-</div>
+
+    <div class="pdf-signature-block">
+      <div class="pdf-sig-box">
+        <div style="margin-bottom: 15px;">ลงชื่อ..........................................................</div>
+        <div style="margin-bottom: 15px;">(..........................................................)</div>
+        <div style="margin-bottom: 15px;">ตำแหน่ง..........................................................</div>
+        <div>ผู้นิเทศ</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-container" id="app">
+    <header style="position: relative;">
+      <a href="<?= url ?>?page=system6" target="_top" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); border: none; background: #e2e8f0; padding: 8px 15px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px; text-decoration: none; color: #1e293b; font-weight: 600;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        เมนูหลัก
+      </a>
+      <h1 id="view-title">Dashboard</h1>
+      <p class="text-muted" id="view-subtitle">ภาพรวมการนิเทศติดตาม 2569</p>
+    </header>
+    <div id="view-dashboard" class="view">
+      <div class="stat-card"><p>โรงเรียนที่นิเทศแล้ว</p><div class="stat-val" id="stat-total">0</div><p>จากทั้งหมด 8 โรงเรียน (กลุ่มนาน้อย 2)</p></div>
+      <div class="card"><h3>รายการนิเทศล่าสุด</h3><div id="history-list" style="margin-top: 15px;"><p class="text-muted text-center py-4">ยังไม่มีข้อมูลการบันทึก</p></div></div>
+    </div>
+    <div id="view-form" class="view" style="display:none;">
+      <div class="progress-bar"><div class="progress-fill" id="form-progress"></div></div>
+      <div class="step active" data-step="1">
+        <div class="card">
+          <h3>ตอนที่ 1 ข้อมูลสถานศึกษา <span id="edit-mode-badge" style="display:none;" class="badge bg-warning float-end">โหมดแก้ไข</span></h3>
+          <input type="hidden" id="f-id">
+          <div class="form-group mt-3"><label class="form-label">๑.๑ โรงเรียน</label><select id="f-school" onchange="updateSchoolInfo()"><option value="">-- เลือกโรงเรียน --</option></select></div>
+          <div class="row d-flex gap-2"><div class="form-group flex-fill"><label class="form-label">กลุ่มโรงเรียน</label><input type="text" id="f-group" readonly></div><div class="form-group flex-fill"><label class="form-label">อำเภอ</label><input type="text" id="f-district" readonly></div></div>
+          <div class="form-group"><label class="form-label">๑.๒ ผู้บริหาร</label><input type="text" id="f-director"><input type="text" id="f-dir-phone" placeholder="เบอร์โทรศัพท์" class="mt-2"></div>
+          <div class="form-group"><label class="form-label">๑.๓ รองผู้บริหาร</label><input type="text" id="f-dep-name" placeholder="ชื่อ"><input type="text" id="f-dep-phone" placeholder="เบอร์โทรศัพท์" class="mt-2"></div>
+          <div class="form-group">
+            <label class="form-label">๑.๔ จำนวนบุคลากร</label>
+            <table class="data-table">
+              <tr><th>ข้อมูลบุคลากร</th><th style="width:80px">จำนวน</th></tr>
+              <tr><td>ผู้บริหาร</td><td><input type="number" id="f-staff-adm" value="0" oninput="calcStaff()"></td></tr>
+              <tr><td>ครูผู้สอน</td><td><input type="number" id="f-staff-tch" value="0" oninput="calcStaff()"></td></tr>
+              <tr><td>บุคลากรอื่น</td><td><input type="number" id="f-staff-oth" value="0" oninput="calcStaff()"></td></tr>
+              <tr class="total-row"><td>รวมทั้งสิ้น</td><td><input type="number" id="f-staff-tot" value="0" readonly></td></tr>
+            </table>
+          </div>
+          <div class="form-group">
+            <label class="form-label">๑.๕ จำนวนนักเรียน</label>
+            <div class="row d-flex gap-2 align-items-center mb-2"><div class="flex-fill">ปฐมวัย</div><div style="width:100px"><input type="number" id="f-std-pre" value="0" oninput="calcStd()"></div><div>คน</div></div>
+            <div class="row d-flex gap-2 align-items-center mb-2"><div class="flex-fill">ประถม</div><div style="width:100px"><input type="number" id="f-std-pri" value="0" oninput="calcStd()"></div><div>คน</div></div>
+            <div class="row d-flex gap-2 align-items-center mb-2"><div class="flex-fill">มัธยมต้น</div><div style="width:100px"><input type="number" id="f-std-sec" value="0" oninput="calcStd()"></div><div>คน</div></div>
+            <div class="row d-flex gap-2 align-items-center total-row p-2 bg-light"><div class="flex-fill fw-bold">รวมทั้งสิ้น</div><div style="width:100px"><input type="number" id="f-std-tot" value="0" readonly class="fw-bold"></div><div class="fw-bold">คน</div></div>
+          </div>
+          <div class="form-group"><label class="form-label">ผู้นิเทศ</label><input type="text" id="f-inspector" value="ศน.พุฒิพงษ์ วงศ์นันท์"></div>
+          <button onclick="nextStep(2)" class="btn-primary mt-3">ต่อไป</button>
+        </div>
+      </div>
+      <div id="checklist-steps"></div>
+      <div class="step" data-step="7">
+        <div class="card">
+          <h3>สรุปผลการนิเทศ</h3><canvas id="radarChart" style="margin:20px 0; max-height:300px;"></canvas>
+          <div class="form-group"><label class="form-label">จุดเด่น</label><textarea id="f-strengths" rows="3"></textarea></div>
+          <div class="form-group"><label class="form-label">จุดที่ควรพัฒนา</label><textarea id="f-improvements" rows="3"></textarea></div>
+          <div class="form-group"><label class="form-label">ข้อเสนอแนะ</label><textarea id="f-suggestions" rows="3"></textarea></div>
+          <button onclick="submitForm()" class="btn-primary mt-3" id="btn-submit">บันทึกและส่งรายงาน</button>
+          <button onclick="prevStep()" class="btn-secondary">ย้อนกลับ</button>
+        </div>
+      </div>
+    </div>
+    <div id="view-summary" class="view" style="display:none;">
+      <div class="summary-grid"><div class="summary-card"><div class="summary-label">นิเทศแล้ว</div><div class="summary-val" id="sum-count">0/8</div></div><div class="summary-card"><div class="summary-label">คะแนนเฉลี่ยกลุ่ม</div><div class="summary-val" id="sum-avg">0.00</div></div></div>
+      
+      <div class="card">
+        <h3>📊 สรุปจำนวนบุคลากรและนักเรียน (ภาพรวมกลุ่ม)</h3>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;" class="mt-3">
+          <div style="flex: 1; min-width: 300px;">
+            <p class="fw-bold text-primary">รวมบุคลากร</p>
+            <table class="data-table">
+              <tr><td>ผู้บริหาร</td><td id="sum-s-adm" style="text-align:right">0</td><td>คน</td></tr>
+              <tr><td>ครูผู้สอน</td><td id="sum-s-tch" style="text-align:right">0</td><td>คน</td></tr>
+              <tr><td>บุคลากรอื่น</td><td id="sum-s-oth" style="text-align:right">0</td><td>คน</td></tr>
+              <tr class="total-row"><td>รวมทั้งสิ้น</td><td id="sum-s-tot" style="text-align:right">0</td><td>คน</td></tr>
+            </table>
+          </div>
+          <div style="flex: 1; min-width: 300px;">
+            <p class="fw-bold text-primary">รวมนักเรียน</p>
+            <table class="data-table">
+              <tr><td>ปฐมวัย</td><td id="sum-n-pre" style="text-align:right">0</td><td>คน</td></tr>
+              <tr><td>ประถมศึกษา</td><td id="sum-n-pri" style="text-align:right">0</td><td>คน</td></tr>
+              <tr><td>มัธยมศึกษาตอนต้น</td><td id="sum-n-sec" style="text-align:right">0</td><td>คน</td></tr>
+              <tr class="total-row"><td>รวมทั้งสิ้น</td><td id="sum-n-tot" style="text-align:right">0</td><td>คน</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card"><h3>สรุปภาพรวมรายด้าน (Spider Web)</h3><canvas id="radarChartGroup" style="margin-top:20px; max-height:350px;"></canvas></div>
+      <div class="card"><h3>คะแนนเฉลี่ยรายโรงเรียน</h3><canvas id="barChartSchools" style="margin-top:20px;"></canvas></div>
+    </div>
+    <div id="view-reports" class="view" style="display:none;"><div class="card"><h3>รายการนิเทศทั้งหมด</h3><div id="full-history-list"></div></div></div>
+    <nav class="bottom-nav">
+      <button class="nav-item active" onclick="switchView('dashboard')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>หน้าหลัก</span></button>
+      <button class="nav-item" onclick="switchView('form')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>กรอกผล</span></button>
+      <button class="nav-item" onclick="switchView('summary')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg><span>สรุปผล</span></button>
+      <button class="nav-item" onclick="switchView('reports')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><span>รายงาน</span></button>
+    </nav>
+  </div>
+
+  <script>
+    let initialData = { schools: [], checklist: [] };
+    let currentStep = 1, formData = { results: {} }, chartInstance = null, chartSchools = null, chartGroupRadar = null;
+
+    function unlock() { if (document.getElementById('pin-input').value === '2569') { document.getElementById('pin-screen').style.display = 'none'; document.getElementById('app').style.display = 'block'; initApp(); } else Swal.fire('Error', 'PIN ไม่ถูกต้อง', 'error'); }
+    function initApp() { showLoader(true); google.script.run.withSuccessHandler(data => { initialData = data; renderSchools(); renderChecklistSteps(); loadDashboard(); showLoader(false); }).getSupervisionInitialData(); }
+    function renderSchools() { const s = document.getElementById('f-school'); s.innerHTML = '<option value="">-- เลือกโรงเรียน --</option>'; initialData.schools.forEach(i => { const o = document.createElement('option'); o.value = i.id; o.text = i.name; s.add(o); }); }
+    function updateSchoolInfo() { const id = document.getElementById('f-school').value, school = initialData.schools.find(s => s.id === id); if (school) { document.getElementById('f-group').value = school.group; document.getElementById('f-district').value = school.district; document.getElementById('f-director').value = school.director; } }
+    function renderChecklistSteps() {
+      const cats = [...new Set(initialData.checklist.map(i => i.category))], container = document.getElementById('checklist-steps'); container.innerHTML = '';
+      cats.forEach((cat, index) => {
+        const stepNum = index + 2, items = initialData.checklist.filter(i => i.category === cat);
+        const d = document.createElement('div'); d.className = 'step'; d.setAttribute('data-step', stepNum);
+        let html = items.map(i => `<div class="checklist-item"><p class="fw-bold">${i.name}</p><div class="score-group" id="score-group-${i.id}"><div class="score-btn" onclick="setScore('${i.id}', 4)" data-score="4">ดีมาก</div><div class="score-btn" onclick="setScore('${i.id}', 3)" data-score="3">ดี</div><div class="score-btn" onclick="setScore('${i.id}', 2)" data-score="2">พอใช้</div><div class="score-btn" onclick="setScore('${i.id}', 1)" data-score="1">ปรับปรุง</div></div><input type="text" id="comment-${i.id}" placeholder="ข้อเสนอแนะ" onchange="setComment('${i.id}', this.value)"></div>`).join('');
+        d.innerHTML = `<div class="card"><h3 class="text-primary">${cat}</h3><div class="mt-3">${html}</div><div class="mt-4"><button onclick="nextStep(${stepNum + 1})" class="btn-primary">ต่อไป</button><button onclick="prevStep()" class="btn-secondary">ย้อนกลับ</button></div></div>`; container.appendChild(d);
+      });
+    }
+    function calcStaff() { const a = +document.getElementById('f-staff-adm').value||0, t = +document.getElementById('f-staff-tch').value||0, o = +document.getElementById('f-staff-oth').value||0; document.getElementById('f-staff-tot').value = a+t+o; }
+    function calcStd() { const p = +document.getElementById('f-std-pre').value||0, r = +document.getElementById('f-std-pri').value||0, s = +document.getElementById('f-std-sec').value||0; document.getElementById('f-std-tot').value = p+r+s; }
+    function setScore(id, s) { formData.results[id] = { item_id: id, score: s, comment: document.getElementById(`comment-${id}`)?.value||'' }; const p = document.getElementById(`score-group-${id}`); if (p) { p.querySelectorAll('.score-btn').forEach(b => b.classList.remove('active')); const b = p.querySelector(`.score-btn[data-score="${s}"]`); if (b) b.classList.add('active'); } }
+    function setComment(id, c) { if (!formData.results[id]) formData.results[id] = { item_id: id, score: 0 }; formData.results[id].comment = c; }
+    function nextStep(n) { if (n === 2 && !document.getElementById('f-school').value) return Swal.fire('แจ้งเตือน', 'เลือกโรงเรียนก่อน', 'warning'); document.querySelectorAll('.step').forEach(s => s.classList.remove('active')); const next = document.querySelector(`.step[data-step="${n}"]`); if (next) { next.classList.add('active'); currentStep = n; document.getElementById('form-progress').style.width = ((currentStep-1)/6)*100+'%'; if (n===7) renderRadarChart(); window.scrollTo(0,0); } }
+    function prevStep() { nextStep(currentStep - 1); }
+    function switchView(v) { document.querySelectorAll('.view').forEach(i => i.style.display = 'none'); document.getElementById('view-'+v).style.display = 'block'; document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); const nav = document.querySelector(`.nav-item[onclick*="${v}"]`); if (nav) nav.classList.add('active'); if (v==='dashboard') loadDashboard(); if (v==='summary') loadSummary(); }
+    
+    function renderRadarChart() {
+      const ctx = document.getElementById('radarChart').getContext('2d'), cats = [...new Set(initialData.checklist.map(i => i.category))], scores = cats.map(c => { const items = initialData.checklist.filter(i => i.category === c); return (items.reduce((a,i) => a+(formData.results[i.id]?.score||0),0)/items.length).toFixed(2); });
+      if (chartInstance) chartInstance.destroy(); chartInstance = new Chart(ctx, { type: 'radar', data: { labels: ['บริหาร', 'อาคาร', 'ครู', 'ผู้เรียน', 'นโยบาย'], datasets: [{ label: 'คะแนน', data: scores, backgroundColor: 'rgba(30,58,138,0.2)', borderColor: '#1e3a8a' }] }, options: { scales: { r: { min: 0, max: 4, ticks: { stepSize: 1 } } } } });
+    }
+
+    function submitForm() {
+      showLoader(true); const cats = [...new Set(initialData.checklist.map(i => i.category))], avg = cats.map(c => { const items = initialData.checklist.filter(i => i.category === c); return items.reduce((a,i) => a+(formData.results[i.id]?.score||0), 0) / items.length; });
+      const data = {
+        inspection_id: document.getElementById('f-id').value, school_id: document.getElementById('f-school').value, inspector: document.getElementById('f-inspector').value, scores: avg, strengths: document.getElementById('f-strengths').value, improvements: document.getElementById('f-improvements').value, suggestions: document.getElementById('f-suggestions').value, results: Object.values(formData.results),
+        dir_phone: document.getElementById('f-dir-phone').value, dep_name: document.getElementById('f-dep-name').value, dep_phone: document.getElementById('f-dep-phone').value,
+        staff_adm: +document.getElementById('f-staff-adm').value, staff_tch: +document.getElementById('f-staff-tch').value, staff_oth: +document.getElementById('f-staff-oth').value, staff_tot: +document.getElementById('f-staff-tot').value,
+        std_pre: +document.getElementById('f-std-pre').value, std_pri: +document.getElementById('f-std-pri').value, std_sec: +document.getElementById('f-std-sec').value, std_tot: +document.getElementById('f-std-tot').value
+      };
+      google.script.run.withSuccessHandler(res => { showLoader(false); if (res.success) Swal.fire('สำเร็จ', 'บันทึกเรียบร้อย', 'success').then(() => { performReset(); switchView('dashboard'); }); }).saveSupervisionData(data);
+    }
+
+    function loadDashboard() { google.script.run.withSuccessHandler(d => { document.getElementById('stat-total').innerText = d.total; const l = document.getElementById('history-list'), f = document.getElementById('full-history-list'); const render = (items) => items.map(r => `<div class="list-item"><div style="flex:1"><p class="fw-bold mb-0">${initialData.schools.find(s=>s.id===r.school_id)?.name||r.school_id}</p><p class="text-muted small mb-0">${r.date} | ${r.inspector}</p></div><div class="text-end"><div class="badge-score mb-1">${r.score}</div><div class="action-btns"><button onclick="showDetails('${r.id}')" class="btn-icon text-success">ดูรายงาน</button><button onclick="editInspection('${r.id}')" class="btn-icon">แก้ไข</button><button onclick="exportPDF('${r.id}')" class="btn-icon">PDF</button><button onclick="confirmDelete('${r.id}')" class="btn-icon btn-delete">ลบ</button></div></div></div>`).join(''); l.innerHTML = render(d.list.slice(0,5)); f.innerHTML = render(d.list); }).getSupervisionDashboardData(); }
+    function confirmDelete(id) { Swal.fire({ title: 'ลบ?', icon: 'warning', showCancelButton: true }).then(r => { if (r.isConfirmed) { showLoader(true); google.script.run.withSuccessHandler(() => { showLoader(false); loadDashboard(); }).deleteInspection(id); } }); }
+    function editInspection(id) { showLoader(true); google.script.run.withSuccessHandler(res => { showLoader(false); if (res.success) { populateForm(res.data); switchView('form'); document.getElementById('edit-mode-badge').style.display = 'block'; } }).getInspectionDetails(id); }
+    function populateForm(d) {
+      performReset(); document.getElementById('f-id').value = d.id; document.getElementById('f-school').value = d.school_id; updateSchoolInfo(); document.getElementById('f-inspector').value = d.inspector; document.getElementById('f-strengths').value = d.strengths; document.getElementById('f-improvements').value = d.improvements; document.getElementById('f-suggestions').value = d.suggestions;
+      document.getElementById('f-dir-phone').value = d.dir_phone||''; document.getElementById('f-dep-name').value = d.dep_name||''; document.getElementById('f-dep-phone').value = d.dep_phone||'';
+      document.getElementById('f-staff-adm').value = d.staff_adm||0; document.getElementById('f-staff-tch').value = d.staff_tch||0; document.getElementById('f-staff-oth').value = d.staff_oth||0; document.getElementById('f-staff-tot').value = d.staff_tot||0;
+      document.getElementById('f-std-pre').value = d.std_pre||0; document.getElementById('f-std-pri').value = d.std_pri||0; document.getElementById('f-std-sec').value = d.std_sec||0; document.getElementById('f-std-tot').value = d.std_tot||0;
+      d.results.forEach(r => { formData.results[r.item_id] = r; const i = document.getElementById(`comment-${r.item_id}`); if (i) i.value = r.comment||''; const p = document.getElementById(`score-group-${r.item_id}`); if (p) { const b = p.querySelector(`.score-btn[data-score="${r.score}"]`); if (b) b.classList.add('active'); } });
+    }
+    function performReset() { document.getElementById('f-id').value = ''; document.querySelectorAll('#view-form input').forEach(i => i.value = (i.type==='number'?0:'')); document.getElementById('f-inspector').value = 'ศน.พุฒิพงษ์ วงศ์นันท์'; document.querySelectorAll('#view-form textarea').forEach(t => t.value = ''); document.getElementById('edit-mode-badge').style.display = 'none'; formData = { results: {} }; document.querySelectorAll('.score-btn').forEach(b => b.classList.remove('active')); currentStep = 1; nextStep(1); }
+    
+    function loadSummary() { 
+      showLoader(true); 
+      google.script.run.withSuccessHandler(res => { 
+        showLoader(false); 
+        if (res.success) { 
+          document.getElementById('sum-count').innerText = `${res.totalInspected || 0}/${res.totalSchools || 0}`; 
+          document.getElementById('sum-avg').innerText = (res.categoryAverages.reduce((a,b)=>+a+(+b),0)/5).toFixed(2); 
+          
+          // แสดงผลจำนวนคนภาพรวม
+          document.getElementById('sum-s-adm').innerText = res.totals.staff_adm;
+          document.getElementById('sum-s-tch').innerText = res.totals.staff_tch;
+          document.getElementById('sum-s-oth').innerText = res.totals.staff_oth;
+          document.getElementById('sum-s-tot').innerText = res.totals.staff_tot;
+          
+          document.getElementById('sum-n-pre').innerText = res.totals.std_pre;
+          document.getElementById('sum-n-pri').innerText = res.totals.std_pri;
+          document.getElementById('sum-n-sec').innerText = res.totals.std_sec;
+          document.getElementById('sum-n-tot').innerText = res.totals.std_tot;
+
+          renderSummaryCharts(res.schoolStats, res.categoryAverages); 
+        } 
+      }).getSupervisionSummaryData(); 
+    }
+
+    function renderSummaryCharts(s, c) {
+      if (chartSchools) chartSchools.destroy(); chartSchools = new Chart(document.getElementById('barChartSchools').getContext('2d'), { type: 'bar', data: { labels: s.map(x=>x.name), datasets: [{ label: 'คะแนน', data: s.map(x=>x.score), backgroundColor: '#3b82f6' }] }, options: { scales: { y: { min: 0, max: 4 } } } });
+      if (chartGroupRadar) chartGroupRadar.destroy(); chartGroupRadar = new Chart(document.getElementById('radarChartGroup').getContext('2d'), { type: 'radar', data: { labels: ['บริหาร', 'อาคาร', 'ครู', 'ผู้เรียน', 'นโยบาย'], datasets: [{ label: 'กลุ่ม', data: c, backgroundColor: 'rgba(59,130,246,0.2)', borderColor: '#3b82f6' }] }, options: { scales: { r: { min: 0, max: 4 } } } });
+    }
+
+    async function exportPDF(id) {
+      showLoader(true, 'กำลังสร้างรายงาน PDF (จัดหน้าสมบูรณ์)...');
+      google.script.run.withSuccessHandler(async (res) => {
+        if (!res.success) { showLoader(false); return Swal.fire('Error', res.error, 'error'); }
+        const d = res.data;
+        const schoolName = initialData.schools.find(s => s.id === d.school_id)?.name || d.school_id;
+        
+        document.getElementById('pdf-school').innerText = schoolName;
+        document.getElementById('pdf-group').innerText = initialData.schools.find(s => s.id === d.school_id)?.group || '-';
+        document.getElementById('pdf-inspector').innerText = d.inspector;
+        document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('th-TH');
+        document.getElementById('pdf-director').innerText = initialData.schools.find(s => s.id === d.school_id)?.director || '-';
+        document.getElementById('pdf-dir-phone').innerText = d.dir_phone || '-';
+        document.getElementById('pdf-s-adm').innerText = d.staff_adm;
+        document.getElementById('pdf-s-tch').innerText = d.staff_tch;
+        document.getElementById('pdf-s-oth').innerText = d.staff_oth;
+        document.getElementById('pdf-s-tot').innerText = d.staff_tot;
+        document.getElementById('pdf-n-pre').innerText = d.std_pre;
+        document.getElementById('pdf-n-pri').innerText = d.std_pri;
+        document.getElementById('pdf-n-sec').innerText = d.std_sec;
+        document.getElementById('pdf-n-tot').innerText = d.std_tot;
+        document.getElementById('pdf-strengths').innerText = d.strengths || '-';
+        document.getElementById('pdf-improvements').innerText = d.improvements || '-';
+        document.getElementById('pdf-suggestions').innerText = d.suggestions || '-';
+        
+        const body = document.getElementById('pdf-results-body');
+        body.innerHTML = '';
+        initialData.checklist.forEach(item => {
+          const resItem = d.results.find(r => r.item_id === item.id);
+          const row = `<tr><td>${item.name}</td><td class="pdf-score">${resItem?resItem.score:0}</td><td style="font-size:12px;">${resItem?resItem.comment:'-'}</td></tr>`;
+          body.insertAdjacentHTML('beforeend', row);
+        });
+
+        const container = document.getElementById('pdf-container');
+        html2canvas(container, { scale: 2, useCORS: true }).then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = pdf.internal.pageSize.getHeight();
+          const margin = 15;
+          const contentWidth = pdfWidth - (margin * 2);
+          const contentHeight = pdfHeight - (margin * 2);
+          const imgWidth = contentWidth;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+          let position = 0;
+          let currentPage = 1;
+          pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
+          heightLeft -= contentHeight;
+          while (heightLeft > 0) {
+            pdf.addPage();
+            position = margin - (currentPage * contentHeight);
+            pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+            heightLeft -= contentHeight;
+            currentPage++;
+          }
+          pdf.save(`รายงานการนิเทศ_${schoolName}.pdf`);
+          showLoader(false);
+        });
+      }).getInspectionDetails(id);
+    }
+    
+    function showDetails(id) {
+      const url = '<?= url ?>?page=supervision_report&id=' + id;
+      window.open(url, '_blank');
+    }
+
+    function showLoader(s, text = 'กำลังประมวลผล...') { 
+      document.getElementById('loader').style.display = s ? 'flex' : 'none'; 
+      document.getElementById('loader-text').innerText = text;
+    }
+  </script>
+</body>
+</html>

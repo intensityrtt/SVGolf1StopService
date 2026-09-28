@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SV.GOLF One Stop Service</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      /* Indigo */
+      --primary-dark: #3730a3;
+      --bg-light: #f8fafc;
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
+      --glass: rgba(255, 255, 255, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.5);
+
+      /* Vibrant Gradients */
+      --grad-1: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%);
+      /* Blue to Cyan */
+      --grad-2: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+      /* Green */
+      --grad-3: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+      /* Amber */
+      --grad-4: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+      /* Violet */
+      --grad-5: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+      /* Pink */
+      --grad-6: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+      /* Indigo */
+      --grad-7: linear-gradient(135deg, #f97316 0%, #f43f5e 100%);
+      /* Orange to Rose */
+      --grad-8: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+      /* Sky Blue */
+      --grad-9: linear-gradient(135deg, #14b8a6 0%, #2dd4bf 100%);
+      /* Teal */
+      --accent: #f59e0b;
+      /* Amber/Yellow */
+    }
+
+    /* Stats Badge */
+    .visitor-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      padding: 0.5rem 1.25rem;
+      border-radius: 9999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--primary);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--glass-border);
+      margin-bottom: 1rem;
+      animation: fadeIn 1s ease-out;
+    }
+
+    .visitor-badge svg {
+      color: var(--primary);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%);
+    }
+
+    .blob {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: #c7d2fe;
+      /* Soft Indigo */
+      filter: blur(120px);
+      border-radius: 50%;
+      opacity: 0.4;
+      animation: move 20s infinite alternate;
+    }
+
+    .blob-2 {
+      background: #fbcfe8;
+      /* Soft Pink */
+      right: -100px;
+      bottom: -100px;
+      animation-delay: -5s;
+    }
+
+    @keyframes move {
+      from {
+        transform: translate(-10%, -10%);
+      }
+
+      to {
+        transform: translate(10%, 10%);
+      }
+    }
+
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      z-index: 1;
+    }
+
+    header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 1.5vw, 1.1rem);
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: var(--text-dark);
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    .card:hover {
+      transform: translateY(-15px);
+      background: white;
+      box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.1);
+      border-color: transparent;
+    }
+
+    .icon-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+      color: white;
+      transition: all 0.5s ease;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon-box svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .card:nth-child(1) .icon-box {
+      background: var(--grad-1);
+    }
+
+    .card:nth-child(2) .icon-box {
+      background: var(--grad-2);
+    }
+
+    .card:nth-child(3) .icon-box {
+      background: var(--grad-3);
+    }
+
+    .card:nth-child(4) .icon-box {
+      background: var(--grad-4);
+    }
+
+    .card:nth-child(5) .icon-box {
+      background: var(--grad-5);
+    }
+
+    .card:nth-child(6) .icon-box {
+      background: var(--grad-6);
+    }
+
+    .card:nth-child(7) .icon-box {
+      background: var(--grad-7);
+    }
+
+    .card:nth-child(8) .icon-box {
+      background: var(--grad-8);
+    }
+
+    .card:nth-child(9) .icon-box {
+      background: var(--grad-9);
+    }
+
+    .card h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .card:hover p {
+      color: var(--text-light);
+    }
+
+    .status-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #ef4444;
+      color: white;
+      padding: 0.35rem 1rem;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: var(--text-muted);
+      padding-bottom: 1rem;
+    }
+
+    .admin-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      display: inline-block;
+      transition: color 0.3s;
+    }
+
+    .admin-link:hover {
+      color: var(--text-dark);
+    }
+
+    .manual-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.6rem 1.2rem;
+      background: white;
+      border: 1px solid var(--primary);
+      border-radius: 9999px;
+      margin-top: 1.5rem;
+      transition: all 0.3s;
+    }
+
+    .manual-btn:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body {
+        padding: 2rem 1rem;
+      }
+
+      header {
+        margin-bottom: 1.5rem;
+      }
+
+      .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1rem;
+      }
+
+      .card {
+        padding: 1.25rem;
+        border-radius: 20px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+    }
+
+    /* Accessibility focus styles */
+    .card:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="bg-animation">
+    <div class="blob"></div>
+    <div class="blob blob-2"></div>
+  </div>
+
+  <div class="container">
+    <header>
+      <h1>SV.GOLF One Stop Service</h1>
+      <p class="subtitle">ระบบอำนวยความสะดวกทางการศึกษา สำหรับทุกคน ทุกที่ ทุกเวลา</p>
+    </header>
+
+    <div class="grid-container">
+
+      <!-- Highlight Card: P.1 Active Learning On-Demand -->
+      <a href="<?= url ?>?page=p1_ondemand" target="_top" class="card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%); border: 2px solid #3b82f6; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15);" aria-label="เข้าสู่ระบบ On-Demand Learning ภาษาไทย ป.1">
+        <? if (statuses && statuses.p1_ondemand === 'closed') { ?>
+        <div class="status-badge">ปิดระบบ</div>
+        <? } ?>
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 1.2rem;">
+            <div class="icon-box" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); width: 64px; height: 64px; margin-bottom: 0;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+              </svg>
+            </div>
+            <div>
+              <div style="display: inline-block; background: #dbeafe; color: #1e40af; font-size: 0.78rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px; margin-bottom: 0.3rem;">
+                🌟 ระบบแนะนำไฮไลต์ (On-Demand Learning)
+              </div>
+              <h2 style="font-size: 1.3rem; color: #1e3a8a; font-weight: 800;">การพัฒนาการจัดการเรียนรู้เชิงรุกเพื่อส่งเสริมการอ่านและการเขียนภาษาไทย สำหรับครูชั้นประถมศึกษาปีที่ 1</h2>
+              <p style="color: #475569; font-size: 0.95rem; margin-top: 0.2rem;">
+                ระบบพัฒนาสมรรถนะครูผู้สอนภาษาไทย ป.1 สพป.น่าน เขต 1 ออกแบบแผนการจัดการเรียนรู้เชิงรุก (Backward Design) และออกใบประกาศนียบัตรออนไลน์
+              </p>
+            </div>
+          </div>
+          <div style="background: #2563eb; color: white; padding: 0.6rem 1.2rem; border-radius: 12px; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0;">
+            เข้าสู่บทเรียน <i class="fa-solid fa-arrow-right"></i>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card 1: RT Toolkit -->
+      <a href="<?= url ?>?page=toolkit" target="_top" class="card" aria-label="เข้าสู่ระบบ สร้างใบงาน RT">
+        <? if (statuses && statuses.toolkit === 'closed') { ?>
+        <div class="status-badge">ปิดระบบ</div>
+        <? } ?>
+        <div class="icon-box">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <h2>NAN1 RT Toolkit</h2>
+        <p>สร้างใบงานและแบบฝึกทักษะ RT อัตโนมัติ ช่วยลดภาระงานครูได้อย่างมีประสิทธิภาพ</p>
+      </a>
+
+      <!-- Card 2: RT Assessment -->
+      <a href="<?= url ?>?page=assessment" target="_top" class="card" aria-label="เข้าสู่ระบบ ประเมินและจัดสอบออนไลน์">
+        <? if (statuses && statuses.assessment === 'closed') { ?>
+        <div class="status-badge">ปิดระบบ</div>
+        <? } ?>
+        <div class="icon-box">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <h2>Pre-RT Online NAN1</h2>
+        <p>ระบบจัดสอบและประเมินผลออนไลน์ โดยใช้ฐานข้อมูลข้อสอบย้อนหลังและแบบทดสอบคู่ขนาน</p>
+      </a>
+
+      <!-- Card 3: RT-NT Management -->
+      <a href="<?= url ?>?page=management" target="_top" class="card"
+        aria-label="เข้าสู่ระบบ จัดการเฉลยและบันทึกผู้เข้าสอบ">
+        <? if (statuses && statuses.management === 'closed') { ?>
+        <div class="status-badge">ปิดระบบ</div>
+        <? } ?>
+        <div class="icon-box">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+            <line x1="9" y1="21" x2="9" y2="9"></line>
+          </svg>
+        </div>
+        <h2>RT-NT Management</h2>
+        <p>บริหารจัดการข้อมูลผู้เข้าสอบและเฉลยข้อสอบ RT-NT อย่างเป็นระบบ</p>
+      </a>
+
+      <!-- Card 4: Online Meeting -->
+      <a href="<?= url ?>?page=meeting" target="_top" class="card"
+        aria-label="เข้าสู่ระบบ เช็คอินและประชุมชี้แจงออนไลน์">
+        <? if (statuses && statuses.meeting === 'closed') { ?>
+        <div class="status-badge">ปิดระบบ</div>
+        <? } ?>
+        <div class="icon-box">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M15.6 11.6L22 7v10l-6.4-4.5v-1zM4 5h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7c0-1.1.9-2 2-2z">
+            </path>
+          </svg>
+        </div>
+        <h2>ระบบกิจกรรมประชุมออนไลน์</h2>
+        <p>ระบบเช็คอินและติดตามการประชุมชี้แจงออนไลน์สำหรับบุคลากรทางการศึกษา</p>
+      </a>
+
+      <!-- Card 5: เพื่อคู่คิด ครูพละ น่าน1 -->
+      <a href="<?= url ?>?page=system5" target="_top" class="card" aria-label="เพื่อคู่คิด ครูพละ น่าน1">
+        <? if (statuses && statuses.system5 === 'closed') { ?>
+        <div class="status-badge">ปิดระบบ</div>
+        <? } ?>
+        <div class="icon-box">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <h2>เพื่อนคู่คิด ครูพละ น่าน 1</h2>
+        <p>ศูนย์รวมความรู้และสื่อการสอน เพื่อยกระดับการจัดการเรียนรู้สุขศึกษาและพลศึกษา</p>
+      </a>
+
+      <!-- Card 6: ระบบ นิเทศออนไลน์ By SV.Golf -->
+      <a href="<?= url ?>?page=system6" target="_top" class="card" aria-label="ระบบ นิเทศออนไลน์ By SV.Golf">
+        <? if (statuses && statuses.system6 === 'closed') { ?>
+        <div class="status-badge">ปิดระบบ</div>
+        <? } ?>
+        <div class="icon-box">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+        </div>
+        <h2>นิเทศออนไลน์ By SV.GOLF</h2>
+        <p>ติดตามผลและนิเทศการจัดการเรียนการสอนผ่านระบบออนไลน์ที่ทันสมัยที่สุด</p>
+        <div style="margin-top: 10px; font-size: 0.85rem; background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; display: inline-block; font-weight: 600;">
+          นิเทศแล้ว <?= (typeof supervisionCount !== 'undefined') ? supervisionCount : 0 ?>/<?= (typeof supervisionTotal !== 'undefined') ? supervisionTotal : 0 ?> โรงเรียน
+        </div>
+      </a>
+
+      <!-- Card 7: คลังข้อสอบ O-NET อัจฉริยะ -->
+      <a href="<?= url ?>?page=onet_bank" target="_top" class="card" aria-label="คลังข้อสอบ O-NET อัจฉริยะ">
+        <? if (statuses && statuses.onet_bank === 'closed') { ?>
+        <div class="status-badge">ปิดระบบ</div>
+        <? } ?>
+        <div class="icon-box">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+        </div>
+        <h2>คลังข้อสอบ O-NET อัจฉริยะ</h2>
+        <p>ระบบคลังข้อสอบและวิเคราะห์ผลการสอบ O-NET อัจฉริยะ เพื่อยกระดับผลสัมฤทธิ์ทางการศึกษา</p>
+      </a>
+
+      <!-- Card 8: Check-in/Check-out Onsite -->
+      <a href="https://checkin-out-nan1.vercel.app" target="_blank" class="card" aria-label="ระบบลงทะเบียน Check-in/Check-out การประชุม อบรม สัมมนา Onsite">
+        <div class="icon-box">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+            <polyline points="17 11 19 13 23 9"></polyline>
+          </svg>
+        </div>
+        <h2 style="font-size: 1.1rem;">ระบบลงทะเบียน Check-in/Check-out การประชุม อบรม สัมมนา Onsite</h2>
+        <p>ระบบสำหรับลงทะเบียนและบันทึกเวลาเข้าร่วมการประชุม อบรม สัมมนาแบบ Onsite</p>
+      </a>
+
+      <!-- Card 9: ระบบ ส่ง-แสดงผลงาน Online By SV.Golf -->
+      <a href="https://work-submit.vercel.app" target="_blank" class="card" aria-label="ระบบ ส่ง-แสดงผลงาน Online By SV.Golf">
+        <div class="icon-box">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <h2>ระบบ ส่ง-แสดงผลงาน Online By SV.Golf</h2>
+        <p>ระบบสำหรับการส่งและแสดงผลงานแบบออนไลน์</p>
+      </a>
+
+    </div>
+
+    <footer>
+      <div class="visitor-badge">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <span>ผู้เข้าใช้งานทั้งหมด: <b>
+            <?= totalVisits ?>
+          </b> ครั้ง</span>
+      </div>
+      <p>พัฒนาโดย <b>พุฒิพงษ์ วงศ์นันท์</b> | ศึกษานิเทศก์ สพป.น่าน เขต 1</p>
+
+      <div
+        style="margin-top: 0.8rem; color: var(--text-muted); font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path
+            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+          </path>
+        </svg>
+        <span>ศน.พุฒิพงษ์ วงศ์นันท์ โทร. <b>0861161126</b></span>
+      </div>
+
+      <div style="margin-top: 1.2rem;">
+        <button onclick="showFeedbackModal()"
+          style="background: var(--accent); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 2rem; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          ส่งข้อเสนอแนะ / แจ้งปัญหา
+        </button>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 1.5rem; align-items: center; margin-top: 1.5rem;">
+        <a href="<?= manualUrls.dashboard ?>" target="_blank" class="manual-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          คู่มือการใช้งานระบบ
+        </a>
+        <a href="#" onclick="showAdminModal()" class="admin-link">⚙️ สำหรับผู้ดูแลระบบ</a>
+      </div>
+
+      <div style="margin-top: 2.5rem; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
+        สนับสนุนโดย <a href="https://www.facebook.com/IntensityStudio" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 600;">intensity studio & insurance</a> บริการประกันรถ พรบ. และวินาศภัยทุกชนิด เลือกได้กว่า 30 บริษัท
+      </div>
+    </footer>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModal"
+      style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+      <div
+        style="background:white; padding:2rem; border-radius:1.5rem; width:90%; max-width:500px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);">
+        <h2 style="margin-bottom:1rem; color:var(--primary); text-align:center;">💬 ส่งข้อเสนอแนะ</h2>
+        <p style="margin-bottom:1.5rem; color:var(--text-muted); text-align:center;">
+          ความคิดเห็นของคุณช่วยให้เราพัฒนาระบบให้ดียิ่งขึ้น</p>
+
+        <div style="margin-bottom:1rem;">
+          <label
+            style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-dark);">เลือกหัวข้อ/ระบบ</label>
+          <select id="fbSystem"
+            style="width:100%; padding:0.75rem; border:1px solid #e2e8f0; border-radius:0.75rem; font-family:inherit;">
+            <option value="General">ทั่วไป / ภาพรวม Dashboard</option>
+            <option value="Toolkit">RT Toolkit (ใบงาน)</option>
+            <option value="Assessment">RT Online (คลังข้อสอบ)</option>
+            <option value="Management">RT/NT Management (ส่งคะแนน)</option>
+            <option value="Meeting">Meeting (ระบบประชุม)</option>
+            <option value="Other">อื่นๆ</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:1rem;">
+          <label
+            style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-dark);">ข้อความของคุณ</label>
+          <textarea id="fbMessage"
+            style="width:100%; padding:0.75rem; border:1px solid #e2e8f0; border-radius:0.75rem; font-family:inherit; min-height:100px;"
+            placeholder="พิมพ์ข้อเสนอแนะหรือแจ้งปัญหาที่นี่..."></textarea>
+        </div>
+
+        <div style="margin-bottom:1.5rem;">
+          <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-dark);">ข้อมูลติดต่อกลับ
+            (ชื่อ/โรงเรียน/เบอร์โทร)</label>
+          <input type="text" id="fbContact"
+            style="width:100%; padding:0.75rem; border:1px solid #e2e8f0; border-radius:0.75rem; font-family:inherit;"
+            placeholder="เพื่อให้เราแจ้งความคืบหน้าให้ทราบ">
+        </div>
+
+        <div style="display:flex; gap:1rem;">
+          <button onclick="closeFeedbackModal()"
+            style="flex:1; padding:0.75rem; border:none; border-radius:0.75rem; background:#f1f5f9; cursor:pointer; font-weight:600;">ยกเลิก</button>
+          <button id="btnSubmitFeedback" onclick="submitFeedback()"
+            style="flex:2; padding:0.75rem; border:none; border-radius:0.75rem; background:var(--primary); color:white; cursor:pointer; font-weight:700;">ส่งข้อมูล</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Admin Modal -->
+    <div id="adminModal"
+      style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+      <div
+        style="background:white; padding:2rem; border-radius:1.5rem; width:90%; max-width:400px; text-align:center; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);">
+        <h2 style="margin-bottom:1rem; color:var(--primary);">🔒 ระบบจัดการ</h2>
+        <p style="margin-bottom:1.5rem; color:var(--text-muted);">กรุณาใส่รหัสผ่านผู้ดูแลระบบ</p>
+        <input type="password" id="adminPw"
+          style="width:100%; padding:0.75rem; border:1px solid #e2e8f0; border-radius:0.75rem; margin-bottom:1rem; text-align:center; font-size:1.1rem;"
+          placeholder="รหัสผ่าน">
+        <div style="display:flex; gap:1rem;">
+          <button onclick="closeAdminModal()"
+            style="flex:1; padding:0.75rem; border:none; border-radius:0.75rem; background:#f1f5f9; cursor:pointer;">ยกเลิก</button>
+          <button onclick="checkAdminPw()"
+            style="flex:1; padding:0.75rem; border:none; border-radius:0.75rem; background:var(--primary); color:white; cursor:pointer;">ยืนยัน</button>
+        </div>
+        <p id="errorMsg" style="color:#ef4444; margin-top:1rem; display:none; font-size:0.9rem;">รหัสผ่านไม่ถูกต้อง!</p>
+      </div>
+    </div>
+
+    <script>
+      // ฟังก์ชันสำหรับเปิดหน้าต่างหรือลิงก์แบบซ่อน URL
+      function openSystem(encodedUrl, isNewTab = false) {
+        const decodedUrl = atob(encodedUrl);
+        if (isNewTab) {
+          window.open(decodedUrl, '_blank');
+        } else {
+          window.top.location.href = decodedUrl;
+        }
+      }
+
+      function showAdminModal() {
+        document.getElementById('adminModal').style.display = 'flex';
+        document.getElementById('adminPw').focus();
+      }
+
+      function closeAdminModal() {
+        document.getElementById('adminModal').style.display = 'none';
+        document.getElementById('adminPw').value = '';
+        document.getElementById('errorMsg').style.display = 'none';
+      }
+
+      function checkAdminPw() {
+        const pw = document.getElementById('adminPw').value;
+        const btn = event.target;
+        btn.disabled = true;
+        btn.innerText = 'กำลังตรวจสอบ...';
+
+        google.script.run
+          .withSuccessHandler(function (content) {
+            if (content === "INVALID") {
+              document.getElementById('errorMsg').style.display = 'block';
+              btn.disabled = false;
+              btn.innerText = 'ยืนยัน';
+            } else {
+              document.open();
+              document.write(content);
+              document.close();
+            }
+          })
+          .withFailureHandler(function (err) {
+            btn.disabled = false;
+            btn.innerText = 'ยืนยัน';
+            Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อระบบจัดการได้: ' + err.message, 'error');
+          })
+          .getAdminContent(pw);
+      }
+
+      // ให้กด Enter ในช่องรหัสผ่านได้
+      document.getElementById('adminPw').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+          checkAdminPw();
+        }
+      });
+      // Feedback System
+      function showFeedbackModal() {
+        document.getElementById('feedbackModal').style.display = 'flex';
+      }
+
+      function closeFeedbackModal() {
+        document.getElementById('feedbackModal').style.display = 'none';
+        document.getElementById('fbMessage').value = '';
+        document.getElementById('fbContact').value = '';
+      }
+
+      function submitFeedback() {
+        const msg = document.getElementById('fbMessage').value;
+        const system = document.getElementById('fbSystem').value;
+        const contact = document.getElementById('fbContact').value;
+        const btn = document.getElementById('btnSubmitFeedback');
+
+        if (!msg) {
+          Swal.fire('คำแนะนำ', 'กรุณากรอกข้อความเสนอแนะก่อนส่ง', 'warning');
+          return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span style="display:flex; align-items:center; justify-content:center; gap:8px;"><svg class="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path></svg> กำลังส่ง...</span>';
+
+        google.script.run
+          .withSuccessHandler(function (res) {
+            if (res.success) {
+              Swal.fire({
+                title: 'ส่งข้อมูลสำเร็จ!',
+                text: 'ขอบคุณสำหรับข้อเสนอแนะ เราได้รับข้อมูลเรียบร้อยแล้วครับ',
+                icon: 'success',
+                confirmButtonColor: '#4f46e5'
+              });
+              closeFeedbackModal();
+            } else {
+              Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถส่งข้อมูลได้: ' + res.error, 'error');
+            }
+            btn.disabled = false;
+            btn.innerText = 'ส่งข้อมูล';
+          })
+          .withFailureHandler(function (err) {
+            btn.disabled = false;
+            btn.innerText = 'ส่งข้อมูล';
+            Swal.fire('เกิดข้อผิดพลาด', 'การเชื่อมต่อล้มเหลว: ' + err.message, 'error');
+          })
+          .saveFeedback({
+            system: system,
+            message: msg,
+            contact: contact
+          });
+      }
+
+    </script>
+  </div>
+</body>
+
+</html>

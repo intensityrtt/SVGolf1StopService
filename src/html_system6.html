@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>งานที่ได้รับมอบหมายตามภารกิจ - SV.GOLF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange-primary: #FFA500;
+            --orange-dark: #E67E22;
+            --pink-primary: #FF69B4;
+            --purple-primary: #BA55D3;
+            --bg-color: #f0f2f5;
+            --text-dark: #2c3e50;
+            --card-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 2rem;
+            padding: 3rem;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            margin-bottom: 3rem;
+            border-left: 10px solid var(--purple-primary);
+            padding-left: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #8e44ad;
+            margin-bottom: 0.5rem;
+        }
+
+        .header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .header p {
+            font-size: 1.5rem;
+            color: #7f8c8d;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            border-radius: 1.5rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-header i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .card-header span {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            background: white;
+            flex-grow: 1;
+        }
+
+        .card-body ul {
+            list-style: none;
+        }
+
+        .card-body li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.2rem;
+            position: relative;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .card-body li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: inherit;
+            font-weight: bold;
+        }
+
+        /* Card specific colors */
+        .card-1 .card-header { background-color: var(--orange-primary); }
+        .card-1 .card-body li::before { color: var(--orange-primary); }
+
+        .card-2 .card-header { background-color: var(--orange-dark); }
+        .card-2 .card-body li::before { color: var(--orange-dark); }
+
+        .card-3 .card-header { background-color: var(--pink-primary); }
+        .card-3 .card-body li::before { color: var(--pink-primary); }
+
+        .card-4 .card-header { background-color: var(--purple-primary); }
+        .card-4 .card-body li::before { color: var(--purple-primary); }
+
+        .profile-section {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 300px;
+            height: 450px;
+            pointer-events: none;
+            opacity: 0.9;
+            z-index: 0;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: bottom right;
+        }
+
+        .system-link {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .system-link:hover {
+            opacity: 0.8;
+            padding-left: 5px;
+            font-weight: bold;
+        }
+
+        .footer-nav {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 2rem;
+            background: #1e3a8a;
+            color: white;
+            text-decoration: none;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .back-btn:hover {
+            background: #3b82f6;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 1024px) {
+            .profile-section {
+                display: none;
+            }
+            .container {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            .header h1 { font-size: 1.8rem; }
+            .header h2 { font-size: 1.5rem; }
+            .header p { font-size: 1.2rem; }
+        }
+
+        /* Manual Button Style */
+        .manual-float-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            background: var(--purple-primary);
+            color: white !important;
+            padding: 0 15px;
+            height: 45px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.2);
+            font-weight: 600;
+            font-size: 0.9rem;
+            gap: 8px;
+        }
+        .manual-float-btn:hover {
+            transform: scale(1.05);
+            background: #8e44ad;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+  <a href="<?= (typeof manualUrl !== 'undefined') ? manualUrl : '#' ?>" target="_blank" class="manual-float-btn" title="คู่มือการใช้งาน">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+    <span>คู่มือ</span>
+  </a>
+
+    <div class="container">
+        <header class="header">
+            <h1>งานที่ได้รับมอบหมายตามภารกิจ</h1>
+            <h2>นายพุฒิพงษ์ วงศ์นันท์</h2>
+            <p>ศึกษานิเทศก์</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Card 1 -->
+            <div class="card card-1">
+                <div class="card-header">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <h3>กลุ่มงาน</h3>
+                    <span>Function Based</span>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <li>
+                            <a href="https://nt.obec.go.th/NT/ExamWeb/Access.aspx?ReturnUrl=%2fNT%2fExamWeb%2f" target="_blank" class="system-link">
+                                การประเมินความสามารถด้านการอ่านของผู้เรียน (RT) ชั้นประถมศึกษาปีที่ 1 ➔
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://a5501.obec.expert/authen/login" target="_blank" class="system-link">
+                                โปรแกรมระบบบริหารจัดการผลการเรียน (School MIS) ➔
+                            </a>
+                        </li>
+                        <li>ธนาคารหน่วยกิต (Credit Bank)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card card-2">
+                <div class="card-header">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38"/></svg>
+                    <h3>การขับเคลื่อนตามนโยบาย</h3>
+                    <span>Agenda Based</span>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <li>โครงการโรงเรียนกองทุนการศึกษา</li>
+                        <li>
+                            <a href="https://north.compet.site/739918" target="_blank" class="system-link">
+                                โครงการการแข่งขันศิลปหัตถกรรมนักเรียน ➔
+                            </a>
+                        </li>
+                        <li>โครงการ EF ประถมศึกษา</li>
+                        <li>
+                            <a href="https://cse-elearning.obec.go.th/" target="_blank" class="system-link">
+                                โครงการพัฒนาครูเพศวิถีศึกษาและทักษะชีวิต ➔
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://ddc.moph.go.th/dip/journal_detail.php?publish=12043&deptcode=dip" target="_blank" class="system-link">
+                                โครงการขับเคลื่อนหลักสูตร TSY Program ➔
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= url ?>?page=supervision" target="_top" class="system-link" onclick="window.top.location.href='<?= url ?>?page=supervision'; return false;">
+                                การนิเทศเตรียมความพร้อมเปิดภาคเรียนที่ 1/2569 ➔
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= url ?>?page=classroom_obs" target="_top" class="system-link" onclick="window.top.location.href='<?= url ?>?page=classroom_obs'; return false;">
+                                การนิเทศชั้นเรียน (Classroom Observation) ➔
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card card-3">
+                <div class="card-header">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <h3>งานพื้นที่</h3>
+                    <span>Area Based</span>
+                </div>
+                <div class="card-body">
+                    <a href="<?= url ?>?page=onet_nanoy2" target="_top" class="system-link" onclick="window.top.location.href='<?= url ?>?page=onet_nanoy2'; return false;" style="font-weight: bold; margin-bottom: 0.5rem; display: block; color: var(--pink-primary);">
+                        รายงานวิเคราะห์ผลสอบ O-NET ➔
+                    </a>
+                    <a href="<?= url ?>?page=rt_nanoy2" target="_top" class="system-link" onclick="window.top.location.href='<?= url ?>?page=rt_nanoy2'; return false;" style="font-weight: bold; margin-bottom: 0.5rem; display: block; color: var(--pink-primary);">
+                        รายงานวิเคราะห์ผลการประเมิน RT ป.1 ➔
+                    </a>
+                    <a href="<?= url ?>?page=nt_nanoy2" target="_top" class="system-link" onclick="window.top.location.href='<?= url ?>?page=nt_nanoy2'; return false;" style="font-weight: bold; margin-bottom: 0.8rem; display: block; color: var(--pink-primary);">
+                        รายงานวิเคราะห์ผลการประเมิน NT ป.3 ➔
+                    </a>
+                    <p style="font-weight: bold; margin-bottom: 0.5rem;">กลุ่มโรงเรียนนาน้อย 2 ประกอบด้วย 8 โรงเรียน ได้แก่</p>
+                    <ul style="margin-top: 1rem;">
+                        <li>รร.บ้านสันทะ</li>
+                        <li>รร.ชุมชนบ้านอ้อย</li>
+                        <li>รร.ประกิตเวชศักดิ์</li>
+                        <li>รร.บ้านนาไค้</li>
+                        <li>รร.บ้านทัพม่าน</li>
+                        <li>รร.บ้านส้าน</li>
+                        <li>รร.บ้านเขตวัน</li>
+                        <li>รร.บ้านห้วยส้ม</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="card card-4">
+                <div class="card-header">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    <h3>กลุ่มสาระการเรียนรู้</h3>
+                    <span>Subject Based</span>
+                </div>
+                <div class="card-body">
+                    <p style="font-weight: bold; margin-bottom: 0.5rem;">กลุ่มสาระการเรียนรู้</p>
+                    <ul>
+                        <li>
+                            <a href="<?= url ?>?page=system5" target="_top" class="system-link">
+                                สุขศึกษาและพลศึกษา (เพื่อนคู่คิด ครูพละ น่าน1) ➔
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Placeholder for the profile image - on real app user would replace this with actual photo -->
+        <div class="profile-section" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');"></div>
+    </div>
+
+    <div class="footer-nav">
+        <a href="<?= url ?>?page=dashboard" class="back-btn" target="_top">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            กลับสู่หน้าหลัก Dashboard
+        </a>
+    </div>
+
+</body>
+</html>

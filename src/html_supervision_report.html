@@ -1,0 +1,392 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --secondary: #64748b;
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Sarabun', sans-serif; 
+      background: var(--bg); 
+      color: var(--text-main); 
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+    
+    .report-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      position: relative;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--bg);
+    }
+    
+    .header h1 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+    
+    .header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+    
+    .section {
+      margin-bottom: 35px;
+    }
+    
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 15px;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .info-item b {
+      color: var(--secondary);
+      font-weight: 600;
+      width: 120px;
+      display: inline-block;
+    }
+    
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .stat-card {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .stat-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 5px;
+    }
+    
+    .score-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    
+    .score-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      transition: transform 0.2s;
+    }
+    
+    .badge-score {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    
+    .summary-box {
+      background: #fffbeb;
+      padding: 20px;
+      border-radius: 15px;
+      border: 1px solid #fef3c7;
+    }
+    
+    .summary-item {
+      margin-bottom: 12px;
+    }
+    
+    .summary-item:last-child { margin-bottom: 0; }
+    
+    .summary-item b {
+      color: #92400e;
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    
+    .detail-item {
+      padding: 12px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+    }
+    
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    
+    .detail-score {
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .detail-comment {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    
+    .print-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 100;
+    }
+    
+    .print-btn:hover { background: var(--primary-dark); }
+    
+    @media print {
+      .print-btn, .export-btn { display: none; }
+      body { padding: 0; background: white; }
+      .report-container { box-shadow: none; max-width: 100%; border: none; }
+    }
+    .export-btn {
+      position: fixed; bottom: 30px; right: 180px; background: #10b981;
+      color: white; border: none; padding: 12px 25px; border-radius: 30px;
+      font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+      display: flex; align-items: center; gap: 10px; z-index: 100;
+    }
+    .loader-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255,255,255,0.9); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 1000;
+    }
+    
+    .spinner {
+      width: 40px; height: 40px; border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary); border-radius: 50%;
+      animation: spin 1s linear infinite; margin-bottom: 15px;
+    }
+    
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div id="loader" class="loader-overlay">
+    <div class="spinner"></div>
+    <p>กำลังโหลดข้อมูลรายงาน...</p>
+  </div>
+
+  <div class="report-container" id="report-content" style="display:none;">
+    <div class="header">
+      <h1>รายงานผลการนิเทศติดตาม</h1>
+      <p>SV.GOLF One Stop Service</p>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">1. ข้อมูลสถานศึกษา</h2>
+      <div class="info-grid" id="school-info"></div>
+      <div class="stats-row" id="stats-info"></div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">2. ผลการประเมินรายด้าน</h2>
+      <div class="score-list" id="category-scores"></div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">3. สรุปผลและข้อเสนอแนะ</h2>
+      <div class="summary-box" id="summary-text"></div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">4. รายละเอียดคะแนนรายข้อ</h2>
+      <div class="details-grid" id="item-details"></div>
+    </div>
+  </div>
+
+  <button class="export-btn" onclick="exportPDF()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+    Export PDF
+  </button>
+
+  <button class="print-btn" onclick="window.print()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+    พิมพ์รายงาน
+  </button>
+
+  <script>
+    const inspectionId = '<?= inspectionId ?>';
+    
+    window.onload = function() {
+      google.script.run.withSuccessHandler(initData => {
+        google.script.run.withSuccessHandler(res => {
+          document.getElementById('loader').style.display = 'none';
+          if (!res.success) {
+            alert('ไม่พบข้อมูล: ' + res.error);
+            return;
+          }
+          renderReport(res.data, initData);
+          document.getElementById('report-content').style.display = 'block';
+        }).getInspectionDetails(inspectionId);
+      }).getSupervisionInitialData();
+    };
+
+    function renderReport(d, init) {
+      const school = init.schools.find(s => s.id === d.school_id);
+      const cats = ['บริหารจัดการ', 'อาคารสถานที่/ความปลอดภัย', 'การจัดการเรียนการสอน', 'คุณภาพผู้เรียน/ดูแลช่วยเหลือนักเรียน', 'นโยบาย/โครงการพิเศษ'];
+      
+      // 1. School Info
+      document.getElementById('school-info').innerHTML = `
+        <div class="info-item"><b>โรงเรียน:</b> ${school ? school.name : d.school_id}</div>
+        <div class="info-item"><b>กลุ่มโรงเรียน:</b> ${school ? school.group : '-'}</div>
+        <div class="info-item"><b>ผู้นิเทศ:</b> ${d.inspector}</div>
+        <div class="info-item"><b>วันที่นิเทศ:</b> ${d.date ? new Date(d.date).toLocaleDateString('th-TH') : '-'}</div>
+      `;
+      
+      document.getElementById('stats-info').innerHTML = `
+        <div class="stat-card">
+          <div class="stat-label">ข้อมูลบุคลากร (รวม ${d.staff_tot} คน)</div>
+          <div style="font-size: 0.9rem;">บริหาร: ${d.staff_adm} | ครู: ${d.staff_tch} | อื่นๆ: ${d.staff_oth}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">ข้อมูลนักเรียน (รวม ${d.std_tot} คน)</div>
+          <div style="font-size: 0.9rem;">ปฐมวัย: ${d.std_pre} | ประถม: ${d.std_pri} | มัธยม: ${d.std_sec}</div>
+        </div>
+      `;
+
+      // 2. Category Scores
+      document.getElementById('category-scores').innerHTML = cats.map((c, i) => `
+        <div class="score-item">
+          <span style="font-weight:600;">ด้านที่ ${i+1}: ${c}</span>
+          <span class="badge-score" style="background: ${getScoreBg(d.scores[i])}; color: ${getScoreColor(d.scores[i])}">${d.scores[i].toFixed(2)}</span>
+        </div>
+      `).join('');
+
+      // 3. Summary
+      document.getElementById('summary-text').innerHTML = `
+        <div class="summary-item"><b>จุดเด่น:</b> ${d.strengths || '-'}</div>
+        <div class="summary-item"><b>จุดที่ควรพัฒนา:</b> ${d.improvements || '-'}</div>
+        <div class="summary-item"><b>ข้อเสนอแนะเพิ่มเติม:</b> ${d.suggestions || '-'}</div>
+      `;
+
+      // 4. Details
+      document.getElementById('item-details').innerHTML = init.checklist.map(item => {
+        const r = d.results.find(res => res.item_id === item.id);
+        return `
+          <div class="detail-item">
+            <div class="detail-header">
+              <span style="font-weight:600; font-size:0.9rem;">${item.name}</span>
+              <span class="detail-score">${r ? r.score : 0}</span>
+            </div>
+            ${r && r.comment ? `<div class="detail-comment">หมายเหตุ: ${r.comment}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function exportPDF() {
+      const loader = document.getElementById('loader');
+      loader.style.display = 'flex';
+      loader.querySelector('p').innerText = 'กำลังสร้างไฟล์ PDF...';
+      
+      try {
+        const el = document.getElementById('report-content');
+        const canvas = await html2canvas(el, { scale: 2, useCORS: true });
+        const imgData = canvas.toDataURL('image/png');
+        
+        const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+        const imgWidth = 210;
+        const pageHeight = 297;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+        
+        pdf.save('รายงานการนิเทศติดตาม.pdf');
+      } catch (e) {
+        alert('Error generating PDF: ' + e.message);
+      }
+      loader.style.display = 'none';
+    }
+
+    function getScoreBg(s) {
+      if (s >= 3.5) return '#dcfce7';
+      if (s >= 2.5) return '#fef3c7';
+      return '#fee2e2';
+    }
+    function getScoreColor(s) {
+      if (s >= 3.5) return '#166534';
+      if (s >= 2.5) return '#92400e';
+      return '#991b1b';
+    }
+  </script>
+</body>
+</html>

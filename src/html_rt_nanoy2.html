@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>รายงานวิเคราะห์ผล RT ป.1 กลุ่มโรงเรียนนาน้อย 2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --navy:       #0d2346;
+            --navy-mid:   #1a3a6b;
+            --blue:       #1e5ba8;
+            --blue-light: #2d7dd2;
+            --sky:        #4fa3e3;
+            --sky-light:  #a8d4f5;
+            --ice:        #ddeef8;
+            --ice-faint:  #f0f7fd;
+            --white:      #ffffff;
+            --text-main:  #0d1f38;
+            --text-sub:   #2a4872;
+            --text-muted: #5a7499;
+            --border:     #c5daf0;
+            --up:         #0e7c3a;
+            --down:       #b81c2e;
+            --neutral:    #8a6d00;
+            --gold:       #e8b800;
+            --gold-dim:   #fdf5d5;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Sarabun', 'TH Sarabun New', sans-serif;
+            background: #e8f1fa;
+            color: var(--text-main);
+            font-size: 18px;
+            line-height: 1.65;
+        }
+
+        /* ── PAGE WRAPPER ── */
+        .page {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 40px 28px 60px;
+        }
+
+        /* ── COVER HEADER ── */
+        .cover {
+            background: linear-gradient(150deg, var(--navy) 0%, var(--navy-mid) 55%, var(--blue) 100%);
+            border-radius: 20px;
+            padding: 54px 56px 48px;
+            margin-bottom: 36px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(13,35,70,0.28);
+        }
+        .cover::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='1.2' fill='white' fill-opacity='.06'/%3E%3C/svg%3E");
+        }
+        .cover-eyebrow {
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--sky-light);
+            margin-bottom: 14px;
+        }
+        .cover h1 {
+            font-size: 2.7rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            margin-bottom: 6px;
+        }
+        .cover-scope {
+            font-size: 1.25rem;
+            color: var(--sky-light);
+            font-weight: 400;
+            margin-bottom: 36px;
+        }
+        .cover-divider {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            margin-bottom: 24px;
+        }
+        .cover-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 40px;
+            align-items: center;
+        }
+        .cover-meta-item {
+            font-size: 1.05rem;
+            color: rgba(255,255,255,0.82);
+        }
+        .cover-meta-item strong {
+            color: var(--white);
+            font-weight: 700;
+        }
+        .cover-tag {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.22);
+            color: var(--white);
+            padding: 6px 22px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* ── SECTION ── */
+        .section {
+            background: var(--white);
+            border-radius: 18px;
+            padding: 40px 44px 44px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 20px rgba(13,35,70,0.07);
+            border: 1px solid rgba(197,218,240,0.5);
+        }
+
+        /* ── SECTION HEADER ── */
+        .sec-head {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+        .sec-num {
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+            background: var(--blue);
+            color: var(--white);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+        .sec-title {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1.3;
+        }
+        .sec-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-sub);
+            background: var(--ice-faint);
+            border-left: 5px solid var(--blue-light);
+            padding: 13px 22px;
+            border-radius: 0 10px 10px 0;
+            margin: 16px 0 26px;
+        }
+
+        /* ── CHART GRID ── */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            margin: 0 0 18px;
+        }
+        @media (max-width: 860px) { .chart-grid { grid-template-columns: 1fr; } }
+
+        .chart-card {
+            background: var(--ice-faint);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 18px 14px;
+        }
+        .chart-card canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 320px;
+        }
+        .chart-card .chart-label {
+            text-align: center;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-top: 12px;
+        }
+
+        /* ── KPI ROW ── */
+        .kpi-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin: 20px 0 4px;
+        }
+        .kpi-card {
+            flex: 1;
+            min-width: 160px;
+            background: var(--ice-faint);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 22px;
+            text-align: center;
+        }
+        .kpi-year {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .kpi-val {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1;
+        }
+        .kpi-chg {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+        .kpi-chg.up   { color: var(--up); }
+        .kpi-chg.down { color: var(--down); }
+        .kpi-badge {
+            display: inline-block;
+            background: var(--ice);
+            border: 1px solid var(--border);
+            color: var(--blue);
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 14px 26px;
+            border-radius: 10px;
+            align-self: center;
+        }
+
+        /* ── COMPARE CARDS ── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 18px;
+            margin: 22px 0 28px;
+        }
+        @media (max-width: 720px) { .compare-grid { grid-template-columns: 1fr; } }
+
+        .comp-card {
+            border-radius: 14px;
+            padding: 22px 24px;
+            background: var(--ice-faint);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        .comp-card.accent-navy  { border-top: 4px solid var(--navy); }
+        .comp-card.accent-blue  { border-top: 4px solid var(--blue-light); }
+        .comp-card.accent-sky   { border-top: 4px solid var(--sky); }
+        .comp-label { font-size: 1rem; color: var(--text-muted); font-weight: 500; }
+        .comp-value { font-size: 2.4rem; font-weight: 800; color: var(--navy); margin: 6px 0 3px; }
+        .comp-sub   { font-size: 0.9rem; color: var(--text-muted); }
+
+        /* ── TABLE ── */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin: 22px 0 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.05rem;
+            min-width: 680px;
+        }
+        thead tr { background: var(--navy); }
+        th {
+            color: var(--white);
+            font-weight: 700;
+            padding: 16px 18px;
+            text-align: center;
+            font-size: 1.05rem;
+            letter-spacing: 0.3px;
+            border-right: 1px solid rgba(255,255,255,0.08);
+        }
+        th:last-child { border-right: none; }
+        td {
+            padding: 15px 18px;
+            text-align: center;
+            border-bottom: 1px solid var(--ice);
+            font-size: 1.05rem;
+        }
+        tbody tr:hover { background: var(--ice-faint); }
+        tbody tr:last-child td { border-bottom: none; }
+        td:first-child { text-align: left; font-weight: 500; }
+        .avg-row td {
+            background: var(--ice) !important;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .trend-up   { color: var(--up);      font-weight: 700; }
+        .trend-down { color: var(--down);     font-weight: 700; }
+        .trend-steady { color: var(--neutral); font-weight: 700; }
+        .gap-positive { color: var(--up);    font-weight: 700; }
+        .gap-negative { color: var(--down);  font-weight: 700; }
+
+        /* ── QUALITY BADGES ── */
+        .quality-badge {
+            display: inline-block;
+            padding: 3px 13px;
+            border-radius: 20px;
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+        .quality-excellent { background: #d1f0dc; color: #0a5c22; }
+        .quality-good      { background: #fff0c0; color: #7a5800; }
+        .quality-fair      { background: #fde0d5; color: #9c2a12; }
+        .quality-poor      { background: #f8d7da; color: #7b0010; }
+
+        /* ── INSIGHT BOX ── */
+        .insight {
+            background: var(--gold-dim);
+            border-left: 6px solid var(--gold);
+            border-radius: 0 12px 12px 0;
+            padding: 20px 26px;
+            margin-top: 24px;
+        }
+        .insight-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 10px;
+        }
+        .insight ul {
+            padding-left: 22px;
+            font-size: 1.05rem;
+            color: var(--text-main);
+        }
+        .insight ul li { margin-bottom: 6px; }
+
+        /* ── FOOTER ── */
+        .footer {
+            text-align: center;
+            font-size: 1rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            padding-top: 28px;
+            margin-top: 12px;
+        }
+
+        /* ===== FLOATING MANUAL BUTTON ===== */
+        .manual-float-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            background: #BA55D3; /* var(--purple-primary) equivalent */
+            color: white !important;
+            padding: 0 15px;
+            height: 45px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.2);
+            font-weight: 600;
+            font-size: 0.9rem;
+            gap: 8px;
+        }
+        .manual-float-btn:hover {
+            transform: scale(1.05);
+            background: #8e44ad;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+        }
+
+        /* ===== BACK BUTTON ===== */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 2rem;
+            background: #1e3a8a;
+            color: white;
+            text-decoration: none;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .back-btn:hover {
+            background: #3b82f6;
+            transform: scale(1.05);
+            color: white;
+        }
+
+        /* ── PRINT ── */
+        @media print {
+            body { background: white; font-size: 14px; }
+            .page { padding: 10px; }
+            .section { box-shadow: none; border: 1px solid #ccc; }
+            .cover { border-radius: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<a href="<?= (typeof manualUrl !== 'undefined') ? manualUrl : '#' ?>" target="_blank" class="manual-float-btn" title="คู่มือการใช้งาน">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+    <span>คู่มือ</span>
+</a>
+
+<div class="page">
+
+    <!-- ══════════ COVER ══════════ -->
+    <div class="cover">
+        <div class="cover-eyebrow">รายงานเพื่อผู้บริหาร · สพป.น่าน เขต 1</div>
+        <h1>รายงานวิเคราะห์ผลการประเมิน RT ป.1</h1>
+        <div class="cover-scope">กลุ่มโรงเรียนนาน้อย 2 · อำเภอนาน้อย · สพป.น่าน เขต 1</div>
+        <hr class="cover-divider">
+        <div class="cover-meta">
+            <div class="cover-meta-item">จัดทำโดย <strong>นายพุฒิพงษ์ วงศ์นันท์</strong></div>
+            <div class="cover-meta-item">ศึกษานิเทศก์ประจำกลุ่มโรงเรียนนาน้อย 2</div>
+            <div class="cover-tag">ย้อนหลัง 3 ปี (2566 – 2568)</div>
+        </div>
+    </div>
+
+    <!-- ══════════ SECTION 1: ภาพรวม ══════════ -->
+    <div class="section">
+        <div class="sec-head">
+            <div class="sec-num">1</div>
+            <div class="sec-title">ภาพรวมแนวโน้ม 3 ปี (กลุ่มนาน้อย 2)</div>
+        </div>
+        <div class="sec-subtitle">ค่าเฉลี่ยคะแนน RT (รวม 2 ด้าน) ของกลุ่มโรงเรียนนาน้อย 2 แยกตามปีการศึกษา</div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <canvas id="overviewChart"></canvas>
+                <div class="chart-label">แนวโน้มค่าเฉลี่ยรวมกลุ่ม RT</div>
+            </div>
+            <div class="chart-card">
+                <canvas id="overviewBarChart"></canvas>
+                <div class="chart-label">เปรียบเทียบรายโรงเรียน ปี 2566 – 2568</div>
+            </div>
+        </div>
+
+        <div class="kpi-row">
+            <div class="kpi-card">
+                <div class="kpi-year">ปีการศึกษา 2566</div>
+                <div class="kpi-val">79.48</div>
+                <div class="kpi-chg" style="color:var(--text-muted);">เฉลี่ยรวม</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-year">ปีการศึกษา 2567</div>
+                <div class="kpi-val">84.72</div>
+                <div class="kpi-chg up">▲ +5.24</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-year">ปีการศึกษา 2568</div>
+                <div class="kpi-val">78.09</div>
+                <div class="kpi-chg down">▼ −6.63</div>
+            </div>
+            <div class="kpi-badge">📉 แนวโน้ม: ขึ้นแล้วลง</div>
+        </div>
+    </div>
+
+    <!-- ══════════ SECTION 2: เปรียบเทียบ 3 ระดับ ══════════ -->
+    <div class="section">
+        <div class="sec-head">
+            <div class="sec-num">2</div>
+            <div class="sec-title">เปรียบเทียบกลุ่มนาน้อย 2 vs ระดับเขต vs ระดับประเทศ</div>
+        </div>
+        <div class="sec-subtitle">ค่าเฉลี่ย RT (รวม 2 ด้าน) ของกลุ่มโรงเรียนนาน้อย 2 เทียบกับระดับเขตและระดับประเทศ</div>
+
+        <div class="compare-grid">
+            <div class="comp-card accent-navy">
+                <div class="comp-label">กลุ่มนาน้อย 2</div>
+                <div class="comp-value">78.09</div>
+                <div class="comp-sub">ปี 2568</div>
+            </div>
+            <div class="comp-card accent-blue">
+                <div class="comp-label">ระดับเขต (สพป.น่าน เขต 1)</div>
+                <div class="comp-value">79.85</div>
+                <div class="comp-sub">ปี 2568</div>
+            </div>
+            <div class="comp-card accent-sky">
+                <div class="comp-label">ระดับประเทศ</div>
+                <div class="comp-value">78.57</div>
+                <div class="comp-sub">ปี 2568</div>
+            </div>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <canvas id="compareChart"></canvas>
+                <div class="chart-label">เปรียบเทียบค่าเฉลี่ย RT</div>
+            </div>
+            <div class="chart-card">
+                <canvas id="gapChart"></canvas>
+                <div class="chart-label">ส่วนต่าง (นาน้อย 2 vs ระดับเขต/ประเทศ)</div>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr>
+                    <th>ปีการศึกษา</th>
+                    <th>กลุ่มนาน้อย 2</th>
+                    <th>ระดับเขต</th>
+                    <th>ระดับประเทศ</th>
+                    <th>ส่วนต่าง (กลุ่ม vs เขต)</th>
+                    <th>ส่วนต่าง (กลุ่ม vs ประเทศ)</th>
+                </tr></thead>
+                <tbody>
+                    <tr><td>2566</td><td>79.48</td><td>80.93</td><td>79.00</td><td class="gap-negative">-1.45</td><td class="gap-positive">+0.48</td></tr>
+                    <tr><td>2567</td><td>84.72</td><td>81.32</td><td>78.72</td><td class="gap-positive">+3.40</td><td class="gap-positive">+6.00</td></tr>
+                    <tr><td>2568</td><td>78.09</td><td>79.85</td><td>78.57</td><td class="gap-negative">-1.76</td><td class="gap-negative">-0.48</td></tr>
+                    <tr class="avg-row"><td>📊 ค่าเฉลี่ย 3 ปี</td><td>80.76</td><td>80.70</td><td>78.76</td><td class="gap-positive">+0.06</td><td class="gap-positive">+2.00</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="insight">
+            <div class="insight-title">📌 ข้อสังเกต:</div>
+            <ul>
+                <li>กลุ่มโรงเรียนนาน้อย 2 มีค่าเฉลี่ย <strong>สูงกว่าระดับประเทศ</strong> โดยเฉลี่ย 2.00 คะแนน</li>
+                <li>ปี 2567 เป็นปีที่ทำคะแนน <strong>สูงกว่าระดับประเทศมากที่สุด</strong> (+6.00 คะแนน) และสูงกว่าระดับเขต (+3.40)</li>
+                <li>ปี 2568 คะแนนลดลง <strong>ต่ำกว่าระดับเขต 1.76 คะแนน</strong> และต่ำกว่าระดับประเทศ 0.48 คะแนน ควรเร่งฟื้นฟู</li>
+                <li>ระดับเขตมีแนวโน้มคะแนน <strong>เพิ่มขึ้นอย่างต่อเนื่อง</strong> ในขณะที่กลุ่มนาน้อย 2 ผันผวน</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ══════════ SECTION 3: รายโรงเรียน ══════════ -->
+    <div class="section">
+        <div class="sec-head">
+            <div class="sec-num">3</div>
+            <div class="sec-title">ผลการประเมินรายโรงเรียน</div>
+        </div>
+        <div class="sec-subtitle">คะแนน RT (รวม 2 ด้าน) ของแต่ละโรงเรียนในกลุ่มนาน้อย 2 ย้อนหลัง 3 ปี พร้อมระดับคุณภาพ</div>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr>
+                    <th>โรงเรียน</th>
+                    <th>2566</th>
+                    <th>2567</th>
+                    <th>2568</th>
+                    <th>แนวโน้ม</th>
+                    <th>ระดับคุณภาพ 2568</th>
+                </tr></thead>
+                <tbody id="schoolTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="insight">
+            <div class="insight-title">📌 ข้อสังเกต:</div>
+            <ul>
+                <li><strong>บ้านนาไค้</strong> มีคะแนนสูงสุดในกลุ่ม (90.80%) และอยู่ในระดับดีมากทุกปี</li>
+                <li><strong>บ้านส้าน</strong> พัฒนาขึ้นอย่างโดดเด่น จาก 76.60% ในปี 2566 เป็น 96.00% ในปี 2568</li>
+                <li><strong>บ้านสันทะ</strong> คะแนนลดลงอย่างน่าห่วง จาก 84.00% เหลือ 55.83% ควรเร่งแก้ไข</li>
+                <li><strong>ประกิตเวชศักดิ์</strong> ยังคงมีคะแนนต่ำที่สุดในกลุ่ม (51.72%) จำเป็นต้องได้รับการพัฒนาอย่างเร่งด่วน</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ══════════ SECTION 4: การอ่านออกเสียง ══════════ -->
+    <div class="section">
+        <div class="sec-head">
+            <div class="sec-num">4</div>
+            <div class="sec-title">การอ่านออกเสียง</div>
+        </div>
+        <div class="sec-subtitle">คะแนนเฉลี่ยการอ่านออกเสียงของแต่ละโรงเรียน ย้อนหลัง 3 ปี</div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <canvas id="readingChart"></canvas>
+                <div class="chart-label">แนวโน้มการอ่านออกเสียงรายโรงเรียน</div>
+            </div>
+            <div class="chart-card">
+                <canvas id="readingCompareChart"></canvas>
+                <div class="chart-label">เปรียบเทียบกับระดับเขตและประเทศ</div>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>โรงเรียน</th><th>2566</th><th>2567</th><th>2568</th><th>แนวโน้ม</th></tr></thead>
+                <tbody id="readingTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="table-wrap" style="margin-top:14px;">
+            <table>
+                <thead><tr>
+                    <th>ปี</th>
+                    <th>กลุ่มนาน้อย 2</th>
+                    <th>ระดับเขต</th>
+                    <th>ระดับประเทศ</th>
+                    <th>ส่วนต่าง (กลุ่ม vs เขต)</th>
+                    <th>ส่วนต่าง (กลุ่ม vs ประเทศ)</th>
+                </tr></thead>
+                <tbody>
+                    <tr><td>2566</td><td>80.76</td><td>81.48</td><td>79.93</td><td class="gap-negative">-0.72</td><td class="gap-positive">+0.83</td></tr>
+                    <tr><td>2567</td><td>88.60</td><td>83.66</td><td>80.28</td><td class="gap-positive">+4.94</td><td class="gap-positive">+8.32</td></tr>
+                    <tr><td>2568</td><td>81.17</td><td>84.60</td><td>80.26</td><td class="gap-negative">-3.43</td><td class="gap-positive">+0.91</td></tr>
+                    <tr class="avg-row"><td>เฉลี่ย 3 ปี</td><td>83.51</td><td>83.25</td><td>80.16</td><td class="gap-positive">+0.26</td><td class="gap-positive">+3.35</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══════════ SECTION 5: การอ่านรู้เรื่อง ══════════ -->
+    <div class="section">
+        <div class="sec-head">
+            <div class="sec-num">5</div>
+            <div class="sec-title">การอ่านรู้เรื่อง</div>
+        </div>
+        <div class="sec-subtitle">คะแนนเฉลี่ยการอ่านรู้เรื่องของแต่ละโรงเรียน ย้อนหลัง 3 ปี</div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <canvas id="comprehensionChart"></canvas>
+                <div class="chart-label">แนวโน้มการอ่านรู้เรื่องรายโรงเรียน</div>
+            </div>
+            <div class="chart-card">
+                <canvas id="comprehensionCompareChart"></canvas>
+                <div class="chart-label">เปรียบเทียบกับระดับเขตและประเทศ</div>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>โรงเรียน</th><th>2566</th><th>2567</th><th>2568</th><th>แนวโน้ม</th></tr></thead>
+                <tbody id="comprehensionTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="table-wrap" style="margin-top:14px;">
+            <table>
+                <thead><tr>
+                    <th>ปี</th>
+                    <th>กลุ่มนาน้อย 2</th>
+                    <th>ระดับเขต</th>
+                    <th>ระดับประเทศ</th>
+                    <th>ส่วนต่าง (กลุ่ม vs เขต)</th>
+                    <th>ส่วนต่าง (กลุ่ม vs ประเทศ)</th>
+                </tr></thead>
+                <tbody>
+                    <tr><td>2566</td><td>78.15</td><td>80.37</td><td>78.06</td><td class="gap-negative">-2.22</td><td class="gap-positive">+0.09</td></tr>
+                    <tr><td>2567</td><td>80.89</td><td>78.97</td><td>77.16</td><td class="gap-positive">+1.92</td><td class="gap-positive">+3.73</td></tr>
+                    <tr><td>2568</td><td>75.00</td><td>75.10</td><td>76.86</td><td class="gap-negative">-0.10</td><td class="gap-negative">-1.86</td></tr>
+                    <tr class="avg-row"><td>เฉลี่ย 3 ปี</td><td>78.01</td><td>78.15</td><td>77.36</td><td class="gap-negative">-0.14</td><td class="gap-positive">+0.65</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══════════ SECTION 6: สรุปภาพรวม ══════════ -->
+    <div class="section">
+        <div class="sec-head">
+            <div class="sec-num">6</div>
+            <div class="sec-title">สรุปภาพรวม 3 ปี</div>
+        </div>
+        <div class="sec-subtitle">ค่าเฉลี่ยของกลุ่มโรงเรียนนาน้อย 2 เทียบกับระดับเขตและระดับประเทศ</div>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>รายการ</th><th>2566</th><th>2567</th><th>2568</th><th>เฉลี่ย 3 ปี</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>กลุ่มนาน้อย 2</strong></td><td>79.48</td><td>84.72</td><td>78.09</td><td>80.76</td></tr>
+                    <tr><td>ระดับเขต (สพป.น่าน เขต 1)</td><td>80.93</td><td>81.32</td><td>79.85</td><td>80.70</td></tr>
+                    <tr><td>ระดับประเทศ</td><td>79.00</td><td>78.72</td><td>78.57</td><td>78.76</td></tr>
+                    <tr class="avg-row"><td>ส่วนต่าง (กลุ่ม vs เขต)</td><td class="gap-negative">-1.45</td><td class="gap-positive">+3.40</td><td class="gap-negative">-1.76</td><td class="gap-positive">+0.06</td></tr>
+                    <tr class="avg-row"><td>ส่วนต่าง (กลุ่ม vs ประเทศ)</td><td class="gap-positive">+0.48</td><td class="gap-positive">+6.00</td><td class="gap-negative">-0.48</td><td class="gap-positive">+2.00</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="insight">
+            <div class="insight-title">📌 สรุปข้อค้นพบที่สำคัญ:</div>
+            <ul>
+                <li>กลุ่มโรงเรียนนาน้อย 2 มีคะแนน RT <strong>สูงกว่าระดับประเทศ</strong> โดยเฉลี่ย 2.00 คะแนน ✅</li>
+                <li>เทียบกับระดับเขต กลุ่มนาน้อย 2 <strong>เท่ากับระดับเขต</strong> โดยเฉลี่ย (+0.06) อยู่ในเกณฑ์ที่ดี</li>
+                <li>ปี 2567 เป็นปีที่ทำคะแนนได้ดีที่สุด (84.72) สูงกว่าระดับประเทศถึง 6.00 คะแนน 🎉</li>
+                <li>ปี 2568 คะแนนลดลง <strong>ต่ำกว่าทั้งระดับเขตและระดับประเทศ</strong> ควรเร่งฟื้นฟู</li>
+                <li><strong>บ้านสันทะ</strong> และ <strong>ประกิตเวชศักดิ์</strong> ต้องได้รับการพัฒนาอย่างเร่งด่วน</li>
+                <li><strong>บ้านนาไค้</strong> และ <strong>บ้านห้วยส้ม</strong> เป็นโรงเรียนต้นแบบที่ดีในกลุ่ม</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        ข้อมูลจากระบบ RPS · สพป.น่าน เขต 1 · วิเคราะห์โดย นายพุฒิพงษ์ วงศ์นันท์ ศึกษานิเทศก์
+    </div>
+
+    <!-- ===== BACK BUTTONS FOOTER ===== -->
+    <div style="margin-top: 2rem; text-align: center; margin-bottom: 2rem; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+        <a href="<?= url ?>?page=system6" class="back-btn" target="_top" style="background: #1f4e7a;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            กลับหน้าภารกิจ (งานพื้นที่)
+        </a>
+        <a href="<?= url ?>?page=dashboard" class="back-btn" target="_top" style="background: #1e3a8a;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            กลับสู่หน้าหลัก Dashboard
+        </a>
+    </div>
+
+</div>
+
+<script>
+    // ── DATA ──────────────────────────────────────────────────
+    const schools = ['ชุมชนบ้านอ้อย','บ้านเชตวัน','บ้านทัพม่าน','บ้านนาไค้','บ้านสันทะ','บ้านส้าน','บ้านห้วยส้ม','ประกิตเวชศักดิ์'];
+
+    const overall = {
+        2566: [82.00,89.60,70.50,86.00,84.00,76.60,89.60,57.55],
+        2567: [68.47,94.75,86.20,98.33,84.00,75.50,97.60,72.93],
+        2568: [83.10,82.40,75.50,90.80,55.83,96.00,89.33,51.72]
+    };
+    const reading = {
+        2566: [86.33,90.40,67.00,94.33,85.66,82.40,96.00,44.35],
+        2567: [66.00,98.50,88.40,99.00,84.85,97.00,100.00,74.65],
+        2568: [76.80,82.80,82.00,100.00,60.00,100.00,97.33,50.43]
+    };
+    const comprehension = {
+        2566: [77.66,88.80,74.00,77.66,82.33,70.80,83.20,70.75],
+        2567: [70.95,91.00,84.00,97.66,83.14,54.00,95.20,71.20],
+        2568: [89.40,82.00,69.00,81.60,51.66,92.00,81.33,53.02]
+    };
+    const district  = { overall:[80.93,81.32,79.85], reading:[81.48,83.66,84.60], comprehension:[80.37,78.97,75.10] };
+    const national  = { overall:[79.00,78.72,78.57], reading:[79.93,80.28,80.26], comprehension:[78.06,77.16,76.86] };
+
+    // ── HELPERS ───────────────────────────────────────────────
+    function avgGroup(data, year) {
+        const v = data[year]; return v.reduce((a,b)=>a+b,0)/v.length;
+    }
+    function getTrend(data,i) {
+        const a=data[2566][i],c=data[2568][i];
+        return c>a?'📈 เพิ่มขึ้น':c<a?'📉 ลดลง':'➡️ คงที่';
+    }
+    function getTrendClass(data,i) {
+        const a=data[2566][i],c=data[2568][i];
+        return c>a?'trend-up':c<a?'trend-down':'trend-steady';
+    }
+    function getQuality(s) {
+        if(s>=75) return '<span class="quality-badge quality-excellent">ดีมาก</span>';
+        if(s>=50) return '<span class="quality-badge quality-good">ดี</span>';
+        if(s>=25) return '<span class="quality-badge quality-fair">พอใช้</span>';
+        return '<span class="quality-badge quality-poor">ปรับปรุง</span>';
+    }
+
+    const gAO=[avgGroup(overall,2566),avgGroup(overall,2567),avgGroup(overall,2568)];
+    const gAR=[avgGroup(reading,2566),avgGroup(reading,2567),avgGroup(reading,2568)];
+    const gAC=[avgGroup(comprehension,2566),avgGroup(comprehension,2567),avgGroup(comprehension,2568)];
+
+    // ── FILL TABLES ───────────────────────────────────────────
+    function fillSchoolTable() {
+        const tbody=document.getElementById('schoolTableBody');
+        schools.forEach((name,i)=>{
+            const v66=overall[2566][i].toFixed(2),v67=overall[2567][i].toFixed(2),v68=overall[2568][i].toFixed(2);
+            tbody.innerHTML+=`<tr><td>${name}</td><td>${v66}</td><td>${v67}</td><td>${v68}</td><td class="${getTrendClass(overall,i)}">${getTrend(overall,i)}</td><td>${getQuality(overall[2568][i])}</td></tr>`;
+        });
+        tbody.innerHTML+=`<tr class="avg-row"><td>📊 ค่าเฉลี่ยรวม</td><td>${gAO[0].toFixed(2)}</td><td>${gAO[1].toFixed(2)}</td><td>${gAO[2].toFixed(2)}</td><td>—</td><td>—</td></tr>`;
+    }
+    function fillSubTable(data,id) {
+        const tbody=document.getElementById(id);
+        schools.forEach((name,i)=>{
+            const v66=data[2566][i].toFixed(2),v67=data[2567][i].toFixed(2),v68=data[2568][i].toFixed(2);
+            tbody.innerHTML+=`<tr><td>${name}</td><td>${v66}</td><td>${v67}</td><td>${v68}</td><td class="${getTrendClass(data,i)}">${getTrend(data,i)}</td></tr>`;
+        });
+        const a66=avgGroup(data,2566),a67=avgGroup(data,2567),a68=avgGroup(data,2568);
+        tbody.innerHTML+=`<tr class="avg-row"><td>📊 ค่าเฉลี่ยรวม</td><td>${a66.toFixed(2)}</td><td>${a67.toFixed(2)}</td><td>${a68.toFixed(2)}</td><td>—</td></tr>`;
+    }
+    fillSchoolTable();
+    fillSubTable(reading,'readingTableBody');
+    fillSubTable(comprehension,'comprehensionTableBody');
+
+    // ── CHART PALETTE ─────────────────────────────────────────
+    const COLORS=['#0d2346','#1e5ba8','#2d7dd2','#4fa3e3','#0e7c3a','#b81c2e','#8a6d00','#4a1070'];
+
+    function makeLine(ctx,d66,d67,d68,cols) {
+        return new Chart(ctx,{
+            type:'line',
+            data:{labels:['2566','2567','2568'],datasets:schools.map((n,i)=>({
+                label:n,data:[d66[i],d67[i],d68[i]],
+                borderColor:cols[i%cols.length],backgroundColor:'transparent',
+                tension:0.25,pointBackgroundColor:cols[i%cols.length],pointRadius:5,pointHoverRadius:7
+            }))},
+            options:{responsive:true,maintainAspectRatio:true,
+                plugins:{legend:{position:'top',labels:{boxWidth:14,font:{size:13,weight:'bold'},padding:10}}},
+                scales:{y:{beginAtZero:true,max:100,ticks:{font:{size:13}},title:{display:true,text:'คะแนนร้อยละ',font:{size:13,weight:'bold'}}},x:{ticks:{font:{size:13}}}}}
+        });
+    }
+    function makeBar3(ctx,g,d,n,c) {
+        return new Chart(ctx,{
+            type:'bar',
+            data:{labels:['2566','2567','2568'],datasets:[
+                {label:'กลุ่มนาน้อย 2',data:g,backgroundColor:c[0],borderRadius:5},
+                {label:'ระดับเขต',data:d,backgroundColor:c[1],borderRadius:5},
+                {label:'ระดับประเทศ',data:n,backgroundColor:c[2],borderRadius:5}
+            ]},
+            options:{responsive:true,maintainAspectRatio:true,
+                plugins:{legend:{position:'top',labels:{boxWidth:14,font:{size:13,weight:'bold'}}}},
+                scales:{y:{beginAtZero:true,max:100,ticks:{font:{size:13}}},x:{ticks:{font:{size:13}}}}}
+        });
+    }
+    function makeGap(ctx,g,d,n) {
+        const gd=g.map((v,i)=>v-d[i]),gn=g.map((v,i)=>v-n[i]);
+        return new Chart(ctx,{
+            type:'bar',
+            data:{labels:['2566','2567','2568'],datasets:[
+                {label:'ส่วนต่าง (นาน้อย 2 - ระดับเขต)',data:gd,backgroundColor:gd.map(v=>v<0?'#b81c2e99':'#0e7c3a99'),borderRadius:5},
+                {label:'ส่วนต่าง (นาน้อย 2 - ระดับประเทศ)',data:gn,backgroundColor:gn.map(v=>v<0?'#e8b80099':'#1e5ba899'),borderRadius:5}
+            ]},
+            options:{responsive:true,maintainAspectRatio:true,
+                plugins:{legend:{position:'top',labels:{boxWidth:14,font:{size:13,weight:'bold'}}}},
+                scales:{y:{ticks:{font:{size:13}}},x:{ticks:{font:{size:13}}}}}
+        });
+    }
+
+    // ── RENDER ────────────────────────────────────────────────
+    window.onload=function(){
+        // Overview line
+        new Chart(document.getElementById('overviewChart'),{
+            type:'line',
+            data:{labels:['2566','2567','2568'],datasets:[{
+                label:'ค่าเฉลี่ย RT กลุ่มนาน้อย 2',data:gAO,
+                borderColor:'#0d2346',backgroundColor:'rgba(13,35,70,0.07)',
+                tension:0.25,fill:true,pointBackgroundColor:'#0d2346',pointRadius:8,pointHoverRadius:10
+            }]},
+            options:{responsive:true,maintainAspectRatio:true,
+                plugins:{legend:{labels:{font:{size:14,weight:'bold'}}}},
+                scales:{y:{beginAtZero:true,max:100,ticks:{font:{size:13}}},x:{ticks:{font:{size:13}}}}}
+        });
+
+        // Overview bar by school
+        new Chart(document.getElementById('overviewBarChart'),{
+            type:'bar',
+            data:{labels:schools,datasets:[
+                {label:'2566',data:overall[2566],backgroundColor:'#0d234699',borderRadius:4},
+                {label:'2567',data:overall[2567],backgroundColor:'#2d7dd299',borderRadius:4},
+                {label:'2568',data:overall[2568],backgroundColor:'#4fa3e399',borderRadius:4}
+            ]},
+            options:{responsive:true,maintainAspectRatio:true,
+                plugins:{legend:{labels:{font:{size:13,weight:'bold'}}}},
+                scales:{y:{beginAtZero:true,max:100,ticks:{font:{size:13}}},x:{ticks:{font:{size:12}}}}}
+        });
+
+        makeBar3(document.getElementById('compareChart'),gAO,district.overall,national.overall,['#0d2346','#2d7dd2','#4fa3e3']);
+        makeGap(document.getElementById('gapChart'),gAO,district.overall,national.overall);
+        makeLine(document.getElementById('readingChart'),reading[2566],reading[2567],reading[2568],COLORS);
+        makeBar3(document.getElementById('readingCompareChart'),gAR,district.reading,national.reading,['#0d2346','#2d7dd2','#4fa3e3']);
+        makeLine(document.getElementById('comprehensionChart'),comprehension[2566],comprehension[2567],comprehension[2568],COLORS);
+        makeBar3(document.getElementById('comprehensionCompareChart'),gAC,district.comprehension,national.comprehension,['#0d2346','#2d7dd2','#4fa3e3']);
+    };
+</script>
+</body>
+</html>

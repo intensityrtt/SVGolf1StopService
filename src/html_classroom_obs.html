@@ -1,0 +1,1001 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบการนิเทศชั้นเรียน (Classroom Observation) - SV.GOLF</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root { --primary: #10b981; --secondary: #34d399; --accent: #f59e0b; --bg: #f8fafc; --text: #1e293b; --danger: #ef4444; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Sarabun', sans-serif; background-color: var(--bg); color: var(--text); overflow-x: hidden; }
+    .app-container { max-width: 900px; margin: auto; padding: 20px; padding-bottom: 100px; }
+    header { text-align: center; margin-bottom: 30px; }
+    .card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); z-index: 1000; }
+    .nav-item { border: none; background: none; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; font-size: 0.7rem; opacity: 0.6; flex:1; }
+    .nav-item.active { color: var(--primary); opacity: 1; font-weight: 700; }
+    .step { display: none; } .step.active { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .form-group { margin-bottom: 15px; }
+    .form-label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
+    input, select, textarea { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; font-family: inherit; font-size: 1rem; }
+    .row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .flex-fill { flex: 1; }
+    .score-group { display: flex; gap: 8px; margin: 10px 0; }
+    .score-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-align: center; }
+    .score-btn.active[data-score="5"] { background: #dcfce7; border-color: #22c55e; color: #166534; }
+    .score-btn.active[data-score="4"] { background: #dbeafe; border-color: #3b82f6; color: #1e40af; }
+    .score-btn.active[data-score="3"] { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+    .score-btn.active[data-score="2"] { background: #ffedd5; border-color: #f97316; color: #9a3412; }
+    .score-btn.active[data-score="1"] { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+    .progress-bar { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin: 20px 0; position: relative; }
+    .progress-fill { height: 100%; background: var(--primary); border-radius: 4px; transition: 0.3s; width: 0%; }
+    .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; }
+    .btn-secondary { background: #f1f5f9; color: var(--text); border: none; padding: 12px 25px; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; width: 100%; }
+    .stat-card { background: var(--primary); color: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; }
+    .stat-val { font-size: 2.5rem; font-weight: 800; }
+    .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f1f5f9; }
+    .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; align-items: center; justify-content: center; z-index: 20000; }
+    .action-btns { display: flex; gap: 5px; margin-top: 5px; }
+    .btn-icon { padding: 5px 8px; border-radius: 5px; border: 1px solid #e2e8f0; background: white; cursor: pointer; font-size: 0.7rem; }
+    .btn-delete { color: var(--danger); border-color: #fecaca; }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .summary-card { background: white; border-radius: 15px; padding: 15px; border: 1px solid #e2e8f0; text-align: center; }
+    .summary-val { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+    .data-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9rem; }
+    .data-table th, .data-table td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; }
+    .data-table th { background: #f8fafc; font-weight: 700; text-align: center; }
+    
+    .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .photo-box { border: 2px dashed #cbd5e1; border-radius: 10px; height: 150px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; background: #f8fafc; }
+    .photo-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .photo-box span { color: #64748b; font-size: 0.9rem; }
+    
+    .pdf-container-wrapper { position: absolute; left: -9999px; width: 800px; }
+    .pdf-page { width: 800px; height: 1130px; background: white; padding: 50px; color: black; font-family: 'Sarabun', sans-serif; line-height: 1.5; box-sizing: border-box; page-break-after: always; position: relative; }
+    .pdf-header { text-align: center; margin-bottom: 20px; }
+    .pdf-title { font-size: 18px; font-weight: 700; }
+    .pdf-subtitle { font-size: 16px; font-weight: 700; }
+    .pdf-text { font-size: 15px; margin-bottom: 8px; }
+    .pdf-bold { font-weight: 700; }
+    .pdf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; font-size: 15px; }
+    .pdf-photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+    .pdf-photo-box { border: 1px solid #000; height: 200px; display: flex; align-items: center; justify-content: center; }
+    .pdf-photo-box img { width: 100%; height: 100%; object-fit: cover; }
+    .pdf-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 14px; }
+    .pdf-table th, .pdf-table td { border: 1px solid #000; padding: 8px; vertical-align: top; }
+    .pdf-table th { text-align: center; font-weight: 700; }
+    .pdf-sig-box { width: 300px; text-align: center; float: right; margin-top: 40px; font-size: 15px; }
+    
+    /* Utilities */
+    .text-primary { color: var(--primary) !important; }
+    .text-muted { color: #64748b !important; }
+    .text-center { text-align: center !important; }
+    .text-end { text-align: right !important; }
+    .fw-bold { font-weight: 700 !important; }
+    .small { font-size: 0.875rem !important; }
+    .mb-0 { margin-bottom: 0 !important; }
+    .mb-2 { margin-bottom: 0.5rem !important; }
+    .mt-2 { margin-top: 0.5rem !important; }
+    .mt-3 { margin-top: 1rem !important; }
+    .mt-4 { margin-top: 1.5rem !important; }
+    .py-4 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+    @keyframes spinner-border { to { transform: rotate(360deg); } }
+    .spinner-border { display: inline-block; width: 2rem; height: 2rem; vertical-align: text-bottom; border: 0.25em solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spinner-border .75s linear infinite; }
+    
+  </style>
+</head>
+<body>
+
+  <div class="loading-overlay" id="loader">
+    <div style="text-align: center;"><div class="spinner-border text-primary" role="status"></div><p id="loader-text" style="margin-top: 10px; font-weight: 600;">กำลังประมวลผล...</p></div>
+  </div>
+  
+  <div class="pdf-container-wrapper" id="pdf-wrapper">
+    <!-- หน้า 1 -->
+    <div class="pdf-page" id="pdf-page-1">
+      <div class="pdf-header">
+        <div class="pdf-title">แบบสังเกตชั้นเรียน</div>
+        <div class="pdf-subtitle">การจัดการเรียนรู้เชิงรุก (Active Learning)</div>
+      </div>
+      
+      <div style="margin-top: 30px;">
+        <div class="pdf-text"><span class="pdf-bold">โรงเรียน:</span> <span id="p-school">...........................................................................</span></div>
+        <div class="pdf-grid">
+          <div><span class="pdf-bold">ระดับชั้นที่สังเกตชั้นเรียน:</span> <span id="p-grade">....................................</span></div>
+          <div><span class="pdf-bold">ชื่อผู้สอน:</span> <span id="p-teacher">......................................................</span></div>
+        </div>
+        <div class="pdf-grid">
+          <div><span class="pdf-bold">ชื่อเรื่องที่สอน:</span> <span id="p-topic">........................................................</span></div>
+          <div><span class="pdf-bold">ชื่อกิจกรรมที่สอน:</span> <span id="p-activity">..............................................</span></div>
+        </div>
+        <div class="pdf-grid">
+          <div><span class="pdf-bold">วัน เดือน ปี ที่สังเกต:</span> <span id="p-date">..........................................</span></div>
+          <div><span class="pdf-bold">เริ่มเวลา:</span> <span id="p-start">...............</span> <span class="pdf-bold">เสร็จสิ้นเวลา:</span> <span id="p-end">...............</span></div>
+        </div>
+        <div class="pdf-text"><span class="pdf-bold">ผู้สังเกต:</span> <span id="p-observer">...........................................................................</span></div>
+      </div>
+
+      <div style="margin-top: 30px;">
+        <div class="pdf-bold" style="font-size: 16px; margin-bottom: 10px;">ข้อมูลเบื้องต้นเกี่ยวกับชั้นเรียน</div>
+        <div class="pdf-text" style="padding-left: 20px;">
+          จำนวนผู้เรียนในห้อง ชาย <span id="p-male">........</span> คน หญิง <span id="p-female">........</span> คน รวม <span id="p-total">........</span> คน (นักเรียนบกพร่องฯ <span id="p-special">........</span> คน)<br>
+          จำนวนผู้ขาดเรียน <span id="p-absent">........</span> คน
+        </div>
+      </div>
+
+      <div style="margin-top: 30px;">
+        <div class="pdf-bold" style="font-size: 16px;">ลักษณะทางกายภาพของห้องเรียน (ถ่ายภาพประกอบ)</div>
+        <div class="pdf-photo-grid">
+          <div class="pdf-photo-box"><img id="p-img-1" style="display:none;"></div>
+          <div class="pdf-photo-box"><img id="p-img-2" style="display:none;"></div>
+          <div class="pdf-photo-box"><img id="p-img-3" style="display:none;"></div>
+          <div class="pdf-photo-box"><img id="p-img-4" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- หน้า 2 -->
+    <div class="pdf-page" id="pdf-page-2">
+      <div class="pdf-bold" style="font-size: 16px; margin-bottom: 10px;">ภาพรวมการจัดกิจกรรมการเรียนการสอน</div>
+      <div class="pdf-text">1. จุดประสงค์การจัดกิจกรรมการเรียนการสอน</div>
+      <div id="p-obj" style="padding-left: 20px; font-size: 15px; min-height: 60px;">-</div>
+      
+      <div class="pdf-text" style="margin-top: 20px;">2. ลำดับกิจกรรมการเรียนการสอน</div>
+      <table class="pdf-table">
+        <thead>
+          <tr>
+            <th style="width: 40%">พฤติกรรมผู้สอน</th>
+            <th style="width: 40%">พฤติกรรมผู้เรียน</th>
+            <th style="width: 20%">หมายเหตุ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="3" class="pdf-bold" style="background:#f1f5f9;">ขั้นนำเข้าสู่บทเรียน</td>
+          </tr>
+          <tr>
+            <td id="p-intro-teach" style="height: 100px;"></td>
+            <td id="p-intro-std"></td>
+            <td id="p-intro-note"></td>
+          </tr>
+          <tr>
+            <td colspan="3" class="pdf-bold" style="background:#f1f5f9;">ขั้นสอน</td>
+          </tr>
+          <tr>
+            <td id="p-dev-teach" style="height: 250px;"></td>
+            <td id="p-dev-std"></td>
+            <td id="p-dev-note"></td>
+          </tr>
+          <tr>
+            <td colspan="3" class="pdf-bold" style="background:#f1f5f9;">ขั้นสรุป</td>
+          </tr>
+          <tr>
+            <td id="p-con-teach" style="height: 100px;"></td>
+            <td id="p-con-std"></td>
+            <td id="p-con-note"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- หน้า 3 -->
+    <div class="pdf-page" id="pdf-page-3">
+      <div class="pdf-bold" style="font-size: 16px; margin-bottom: 10px;">3. สรุปภาพรวมของการจัดการเรียนการสอนในชั้นเรียน</div>
+      <div class="pdf-bold" style="font-size: 15px; margin-left: 15px;">3.1 จุดเด่น</div>
+      <div id="p-strengths" style="padding-left: 30px; font-size: 15px; min-height: 60px; margin-bottom: 20px;">-</div>
+      
+      <div class="pdf-bold" style="font-size: 15px; margin-left: 15px;">3.2 ประเด็นที่ควรพัฒนา</div>
+      <div id="p-improvements" style="padding-left: 30px; font-size: 15px; min-height: 60px; margin-bottom: 20px;">-</div>
+      
+      <div class="pdf-bold" style="font-size: 15px;">ข้อเสนอแนะ:</div>
+      <div id="p-suggestions" style="padding-left: 30px; font-size: 15px; min-height: 60px;">-</div>
+    </div>
+    
+    <!-- หน้า 4 -->
+    <div class="pdf-page" id="pdf-page-4">
+      <div style="text-align: right; margin-bottom: 10px;"><span style="border:1px solid #000; padding:5px 10px; font-size:14px;">นิเทศ 01</span></div>
+      <div class="pdf-header">
+        <div class="pdf-subtitle">แบบสังเกตการจัดกิจกรรมการเรียนการสอน</div>
+      </div>
+      
+      <div class="pdf-text" style="text-align: center; margin-bottom: 20px;">
+        ชื่อครูผู้สอน <span id="p4-teacher">......................................</span> ห้องที่สอน <span id="p4-grade">..................</span> จำนวนนักเรียน <span id="p4-total">..........</span> คน<br>
+        รายวิชา <span id="p4-topic">......................................</span> เรื่อง <span id="p4-activity">....................................................</span><br>
+        วันที่ <span id="p4-date">..........................................</span>
+      </div>
+
+      <table class="pdf-table">
+        <thead>
+          <tr>
+            <th rowspan="2" style="width: 5%">ที่</th>
+            <th rowspan="2" style="width: 50%">รายการ</th>
+            <th colspan="5">ระดับคุณภาพ</th>
+            <th rowspan="2" style="width: 25%">ข้อสังเกต</th>
+          </tr>
+          <tr>
+            <th style="width: 4%">5</th>
+            <th style="width: 4%">4</th>
+            <th style="width: 4%">3</th>
+            <th style="width: 4%">2</th>
+            <th style="width: 4%">1</th>
+          </tr>
+        </thead>
+        <tbody id="p4-checklist-body">
+          <!-- Inject by JS -->
+        </tbody>
+        <tfoot>
+          <tr style="font-weight: bold; background: #f8fafc;">
+            <td colspan="2" style="text-align: center;">รวม</td>
+            <td id="p4-sum-5" style="text-align:center;"></td>
+            <td id="p4-sum-4" style="text-align:center;"></td>
+            <td id="p4-sum-3" style="text-align:center;"></td>
+            <td id="p4-sum-2" style="text-align:center;"></td>
+            <td id="p4-sum-1" style="text-align:center;"></td>
+            <td style="text-align:center;">เฉลี่ย <span id="p4-avg">......</span></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div style="font-size: 11px; text-align: center; margin-bottom: 20px;">เกณฑ์ 5 = มากที่สุด (4.21-5.00) 4 = มาก (3.41-4.20) 3 = ปานกลาง (2.61-3.40) 2 = น้อย (1.81-2.60) 1= น้อยที่สุด (1.00-1.80)</div>
+
+      <div class="pdf-text"><span class="pdf-bold">จุดเด่น</span> <br><div id="p4-strengths" style="padding-left:10px;">-</div></div>
+      <div class="pdf-text" style="margin-top:10px;"><span class="pdf-bold">จุดควรพัฒนา</span> <br><div id="p4-improvements" style="padding-left:10px;">-</div></div>
+      <div class="pdf-text" style="margin-top:10px;"><span class="pdf-bold">ข้อเสนอแนะในการพัฒนาให้ดีกว่าเดิม</span> <br><div id="p4-suggestions" style="padding-left:10px;">-</div></div>
+
+      <div class="pdf-sig-box">
+        <div style="margin-bottom: 10px;">ลงชื่อ..........................................................ผู้นิเทศการสอน</div>
+        <div style="margin-bottom: 10px;">(<span id="p4-observer" style="display:inline-block; min-width: 150px; border-bottom: 1px dotted #000;"></span>)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-container" id="app">
+    <header style="position: relative;">
+      <a href="<?= url ?>?page=system6" target="_top" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); border: none; background: #e2e8f0; padding: 8px 15px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px; text-decoration: none; color: #1e293b; font-weight: 600;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        เมนูหลัก
+      </a>
+      <h1 id="view-title">การนิเทศชั้นเรียน</h1>
+      <p class="text-muted" id="view-subtitle">Classroom Observation</p>
+    </header>
+    
+    <div id="view-dashboard" class="view">
+      <div class="stat-card">
+        <p>การสังเกตชั้นเรียนทั้งหมด</p>
+        <div class="stat-val" id="stat-total">0</div>
+        <p>ครั้ง</p>
+      </div>
+      <div class="card">
+        <h3>ประวัติการนิเทศล่าสุด</h3>
+        <div id="history-list" style="margin-top: 15px;">
+          <p class="text-muted text-center py-4">ยังไม่มีข้อมูลการบันทึก</p>
+        </div>
+      </div>
+    </div>
+    
+    <div id="view-form" class="view" style="display:none;">
+      <div class="progress-bar"><div class="progress-fill" id="form-progress"></div></div>
+      
+      <!-- Step 1: Basic Info -->
+      <div class="step active" data-step="1">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">ส่วนที่ 1: ข้อมูลเบื้องต้น <span id="edit-mode-badge" style="display:none; font-size: 0.8rem; background: #f59e0b; color: white; padding: 2px 8px; border-radius: 10px; margin-left: 10px;">โหมดแก้ไข</span></h3>
+            <button onclick="confirmReset()" class="btn-icon btn-delete">ล้างข้อมูล (Reset)</button>
+          </div>
+          <input type="hidden" id="f-id">
+          <div class="form-group mt-3">
+            <label class="form-label">โรงเรียน</label>
+            <select id="f-school"><option value="">-- เลือกโรงเรียน --</option></select>
+          </div>
+          <div class="row">
+            <div class="form-group flex-fill"><label class="form-label">ระดับชั้น</label><input type="text" id="f-grade" placeholder="เช่น ป.1/1"></div>
+            <div class="form-group flex-fill"><label class="form-label">ชื่อผู้สอน</label><input type="text" id="f-teacher" placeholder="ชื่อ-สกุล ครูผู้สอน"></div>
+          </div>
+          <div class="row">
+            <div class="form-group flex-fill"><label class="form-label">รายวิชา/เรื่องที่สอน</label><input type="text" id="f-topic" placeholder="เช่น คณิตศาสตร์ เรื่อง เศษส่วน"></div>
+            <div class="form-group flex-fill"><label class="form-label">ชื่อกิจกรรม</label><input type="text" id="f-activity" placeholder="เช่น เกมบิงโกเศษส่วน"></div>
+          </div>
+          <div class="row">
+            <div class="form-group flex-fill"><label class="form-label">วันที่</label><input type="date" id="f-date"></div>
+            <div class="form-group flex-fill"><label class="form-label">เริ่มเวลา</label><input type="time" id="f-start-time"></div>
+            <div class="form-group flex-fill"><label class="form-label">สิ้นสุดเวลา</label><input type="time" id="f-end-time"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ผู้สังเกต/ผู้นิเทศ</label>
+            <input type="text" id="f-observer" value="ศน.พุฒิพงษ์ วงศ์นันท์">
+          </div>
+          
+          <h4 class="mt-4 mb-2 text-primary">จำนวนนักเรียนในห้อง</h4>
+          <div class="row">
+            <div class="form-group flex-fill"><label class="form-label">ชาย (คน)</label><input type="number" id="f-std-male" value="0" oninput="calcStd()"></div>
+            <div class="form-group flex-fill"><label class="form-label">หญิง (คน)</label><input type="number" id="f-std-female" value="0" oninput="calcStd()"></div>
+            <div class="form-group flex-fill"><label class="form-label">รวม (คน)</label><input type="number" id="f-std-total" value="0" readonly style="background:#f1f5f9; font-weight:bold;"></div>
+          </div>
+          <div class="row">
+            <div class="form-group flex-fill"><label class="form-label">นร.บกพร่อง (คน)</label><input type="number" id="f-std-special" value="0"></div>
+            <div class="form-group flex-fill"><label class="form-label">ขาดเรียน (คน)</label><input type="number" id="f-std-absent" value="0"></div>
+          </div>
+
+          <h4 class="mt-4 mb-2 text-primary">ลักษณะทางกายภาพ (แนบภาพ 4 ภาพ)</h4>
+          <div class="photo-grid">
+            <label class="photo-box" id="box-img1">
+              <span>คลิกเพื่อแนบภาพ 1</span>
+              <img id="preview-img1">
+              <input type="file" accept="image/*" style="display:none;" onchange="handleImage(this, 'preview-img1', 'box-img1')">
+            </label>
+            <label class="photo-box" id="box-img2">
+              <span>คลิกเพื่อแนบภาพ 2</span>
+              <img id="preview-img2">
+              <input type="file" accept="image/*" style="display:none;" onchange="handleImage(this, 'preview-img2', 'box-img2')">
+            </label>
+            <label class="photo-box" id="box-img3">
+              <span>คลิกเพื่อแนบภาพ 3</span>
+              <img id="preview-img3">
+              <input type="file" accept="image/*" style="display:none;" onchange="handleImage(this, 'preview-img3', 'box-img3')">
+            </label>
+            <label class="photo-box" id="box-img4">
+              <span>คลิกเพื่อแนบภาพ 4</span>
+              <img id="preview-img4">
+              <input type="file" accept="image/*" style="display:none;" onchange="handleImage(this, 'preview-img4', 'box-img4')">
+            </label>
+          </div>
+
+          <button onclick="nextStep(2)" class="btn-primary mt-4">ต่อไป</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Activities -->
+      <div class="step" data-step="2">
+        <div class="card">
+          <h3>ส่วนที่ 2: ภาพรวมกิจกรรม</h3>
+          <div class="form-group mt-3">
+            <label class="form-label">1. จุดประสงค์การเรียนการสอน</label>
+            <textarea id="f-obj" rows="3"></textarea>
+          </div>
+          <h4 class="mt-4 mb-2 text-primary">2. ลำดับกิจกรรมการเรียนการสอน</h4>
+          
+          <div style="background:#f8fafc; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #e2e8f0;">
+            <h5 class="mb-2">ขั้นนำเข้าสู่บทเรียน</h5>
+            <div class="row">
+              <div class="form-group flex-fill"><label class="form-label">พฤติกรรมผู้สอน</label><textarea id="f-intro-teach" rows="2"></textarea></div>
+              <div class="form-group flex-fill"><label class="form-label">พฤติกรรมผู้เรียน</label><textarea id="f-intro-std" rows="2"></textarea></div>
+            </div>
+            <div class="form-group"><label class="form-label">หมายเหตุ</label><input type="text" id="f-intro-note"></div>
+          </div>
+
+          <div style="background:#f8fafc; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #e2e8f0;">
+            <h5 class="mb-2">ขั้นสอน</h5>
+            <div class="row">
+              <div class="form-group flex-fill"><label class="form-label">พฤติกรรมผู้สอน</label><textarea id="f-dev-teach" rows="4"></textarea></div>
+              <div class="form-group flex-fill"><label class="form-label">พฤติกรรมผู้เรียน</label><textarea id="f-dev-std" rows="4"></textarea></div>
+            </div>
+            <div class="form-group"><label class="form-label">หมายเหตุ</label><input type="text" id="f-dev-note"></div>
+          </div>
+
+          <div style="background:#f8fafc; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #e2e8f0;">
+            <h5 class="mb-2">ขั้นสรุป</h5>
+            <div class="row">
+              <div class="form-group flex-fill"><label class="form-label">พฤติกรรมผู้สอน</label><textarea id="f-con-teach" rows="2"></textarea></div>
+              <div class="form-group flex-fill"><label class="form-label">พฤติกรรมผู้เรียน</label><textarea id="f-con-std" rows="2"></textarea></div>
+            </div>
+            <div class="form-group"><label class="form-label">หมายเหตุ</label><input type="text" id="f-con-note"></div>
+          </div>
+
+          <button onclick="nextStep(3)" class="btn-primary mt-3">ต่อไป</button>
+          <button onclick="prevStep()" class="btn-secondary">ย้อนกลับ</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Summary -->
+      <div class="step" data-step="3">
+        <div class="card">
+          <h3>ส่วนที่ 3: สรุปภาพรวมของชั้นเรียน</h3>
+          <div class="form-group mt-3"><label class="form-label">3.1 จุดเด่น</label><textarea id="f-strengths" rows="4"></textarea></div>
+          <div class="form-group"><label class="form-label">3.2 ประเด็นที่ควรพัฒนา</label><textarea id="f-improvements" rows="4"></textarea></div>
+          <div class="form-group"><label class="form-label">ข้อเสนอแนะเพิ่มเติม</label><textarea id="f-suggestions" rows="4"></textarea></div>
+          
+          <button onclick="nextStep(4)" class="btn-primary mt-3">ต่อไป</button>
+          <button onclick="prevStep()" class="btn-secondary">ย้อนกลับ</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Checklist -->
+      <div class="step" data-step="4">
+        <div class="card">
+          <h3>ส่วนที่ 4: แบบประเมิน (10 รายการ)</h3>
+          <p class="text-muted" style="font-size:0.9rem; margin-bottom:15px;">5=มากที่สุด, 4=มาก, 3=ปานกลาง, 2=น้อย, 1=น้อยที่สุด</p>
+          <div id="checklist-container"></div>
+          
+          <button onclick="submitForm()" class="btn-primary mt-4" id="btn-submit">บันทึกข้อมูล</button>
+          <button onclick="prevStep()" class="btn-secondary">ย้อนกลับ</button>
+        </div>
+      </div>
+      
+    </div>
+    
+    <div id="view-summary" class="view" style="display:none;">
+      <div class="summary-grid">
+        <div class="summary-card"><div class="summary-label">จำนวนชั้นเรียนที่นิเทศ</div><div class="summary-val" id="sum-count">0</div></div>
+        <div class="summary-card"><div class="summary-label">คะแนนเฉลี่ยรวม</div><div class="summary-val" id="sum-avg">0.00</div></div>
+        <div class="summary-card"><div class="summary-label">จำนวนโรงเรียน</div><div class="summary-val" id="sum-schools">0</div></div>
+        <div class="summary-card"><div class="summary-label">จำนวนครูผู้สอน</div><div class="summary-val" id="sum-teachers">0</div></div>
+        <div class="summary-card" style="grid-column: span 2;"><div class="summary-label">จำนวนนักเรียนทั้งหมด</div><div class="summary-val" id="sum-students">0</div></div>
+      </div>
+      <div class="card">
+        <h3>คะแนนเฉลี่ย 10 รายการ</h3>
+        <canvas id="barChartSummary" style="margin-top:20px; max-height: 400px;"></canvas>
+      </div>
+    </div>
+    
+    <div id="view-reports" class="view" style="display:none;">
+      <div class="card"><h3>รายการนิเทศชั้นเรียนทั้งหมด</h3><div id="full-history-list"></div></div>
+    </div>
+    
+    
+    <nav class="bottom-nav">
+      <button class="nav-item active" onclick="switchView('dashboard')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>หน้าหลัก</span></button>
+      <button class="nav-item" onclick="switchView('form')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>กรอกผล</span></button>
+      <button class="nav-item" onclick="switchView('summary')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg><span>สรุปผล</span></button>
+      <button class="nav-item" onclick="switchView('reports')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><span>รายงาน</span></button>
+    </nav>
+  </div>
+
+  <script>
+    let initialData = { schools: [], checklist: [] };
+    let currentStep = 1, formData = { results: {} }, imgDataStore = { img1: '', img2: '', img3: '', img4: '' };
+    let isAdmin = false;
+    let chartInstance = null;
+
+    document.addEventListener('DOMContentLoaded', initApp);
+
+    function checkAdmin(callback) {
+      if (isAdmin) return callback();
+      Swal.fire({
+        title: '🔒 กรุณาใส่รหัสผ่านผู้นิเทศ',
+        input: 'password',
+        inputAttributes: { maxlength: 4, autocapitalize: 'off', autocorrect: 'off' },
+        showCancelButton: true,
+        confirmButtonText: 'ตกลง',
+        cancelButtonText: 'ยกเลิก',
+        inputValidator: (value) => { if (!value) return 'กรุณาใส่รหัสผ่าน'; }
+      }).then((result) => {
+        if (result.value === '2569') { isAdmin = true; callback(); }
+        else if (result.isConfirmed) { Swal.fire('Error', 'รหัสผ่านไม่ถูกต้อง', 'error'); }
+      });
+    }
+    
+    function initApp() { 
+      showLoader(true); 
+      google.script.run.withSuccessHandler(data => { 
+        initialData = data; 
+        renderSchools(); 
+        renderChecklist(); 
+        loadDashboard(); 
+        showLoader(false); 
+      }).getClassroomObsInitialData(); 
+    }
+    
+    function renderSchools() { 
+      const s = document.getElementById('f-school'); 
+      s.innerHTML = '<option value="">-- เลือกโรงเรียน --</option>'; 
+      initialData.schools.forEach(i => { 
+        const o = document.createElement('option'); o.value = i.id; o.text = i.name; s.add(o); 
+      }); 
+    }
+
+    function renderChecklist() {
+      const container = document.getElementById('checklist-container');
+      container.innerHTML = '';
+      initialData.checklist.forEach((item, index) => {
+        let html = `
+          <div class="form-group" style="padding:15px; border:1px solid #e2e8f0; border-radius:10px; background:#fff;">
+            <p class="fw-bold mb-2"><b>${index+1}.</b> ${item.name}</p>
+            <div class="score-group" id="score-group-${item.id}">
+              <div class="score-btn" onclick="setScore('${item.id}', 5)" data-score="5">5</div>
+              <div class="score-btn" onclick="setScore('${item.id}', 4)" data-score="4">4</div>
+              <div class="score-btn" onclick="setScore('${item.id}', 3)" data-score="3">3</div>
+              <div class="score-btn" onclick="setScore('${item.id}', 2)" data-score="2">2</div>
+              <div class="score-btn" onclick="setScore('${item.id}', 1)" data-score="1">1</div>
+            </div>
+            <input type="text" id="comment-${item.id}" placeholder="ข้อสังเกตเพิ่มเติม" class="mt-2" onchange="setComment('${item.id}', this.value)">
+          </div>`;
+        container.insertAdjacentHTML('beforeend', html);
+      });
+    }
+
+    function handleImage(input, previewId, boxId) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var MAX_WIDTH = 800;
+            var MAX_HEIGHT = 800;
+            var width = img.width;
+            var height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+            } else {
+              if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            var dataUrl = canvas.toDataURL('image/jpeg', 0.6); // Compress to 60% quality JPEG
+
+            document.getElementById(previewId).src = dataUrl;
+            document.getElementById(previewId).style.display = 'block';
+            document.querySelector(`#${boxId} span`).style.display = 'none';
+            
+            if(previewId === 'preview-img1') imgDataStore.img1 = dataUrl;
+            if(previewId === 'preview-img2') imgDataStore.img2 = dataUrl;
+            if(previewId === 'preview-img3') imgDataStore.img3 = dataUrl;
+            if(previewId === 'preview-img4') imgDataStore.img4 = dataUrl;
+          }
+          img.src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function calcStd() { 
+      const m = +document.getElementById('f-std-male').value||0;
+      const f = +document.getElementById('f-std-female').value||0;
+      document.getElementById('f-std-total').value = m + f; 
+    }
+
+    function setScore(id, s) { 
+      formData.results[id] = { item_id: id, score: s, comment: document.getElementById(`comment-${id}`)?.value||'' }; 
+      const p = document.getElementById(`score-group-${id}`); 
+      if (p) { 
+        p.querySelectorAll('.score-btn').forEach(b => b.classList.remove('active')); 
+        const b = p.querySelector(`.score-btn[data-score="${s}"]`); 
+        if (b) b.classList.add('active'); 
+      } 
+    }
+    
+    function setComment(id, c) { 
+      if (!formData.results[id]) formData.results[id] = { item_id: id, score: 0 }; 
+      formData.results[id].comment = c; 
+    }
+
+    function nextStep(n) { 
+      if (n === 2 && !document.getElementById('f-school').value) return Swal.fire('แจ้งเตือน', 'กรุณาเลือกโรงเรียน', 'warning'); 
+      if (n === 2 && !document.getElementById('f-teacher').value) return Swal.fire('แจ้งเตือน', 'กรุณากรอกชื่อผู้สอน', 'warning'); 
+      
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active')); 
+      const next = document.querySelector(`.step[data-step="${n}"]`); 
+      if (next) { 
+        next.classList.add('active'); 
+        currentStep = n; 
+        document.getElementById('form-progress').style.width = ((currentStep-1)/3)*100+'%'; 
+        window.scrollTo(0,0); 
+      } 
+    }
+    function prevStep() { nextStep(currentStep - 1); }
+    
+    function switchView(v) { 
+      if (v === 'form') return checkAdmin(() => doSwitchView(v));
+      doSwitchView(v);
+    }
+    
+    function doSwitchView(v) {
+      document.querySelectorAll('.view').forEach(i => i.style.display = 'none'); 
+      document.getElementById('view-'+v).style.display = 'block'; 
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); 
+      const nav = document.querySelector(`.nav-item[onclick*="switchView('${v}')"]`); 
+      if (nav) nav.classList.add('active'); 
+      if (v==='dashboard') loadDashboard(); 
+      if (v==='summary') loadSummary(); 
+      if (v==='reports') loadDashboard(); 
+    }
+
+    function submitForm() {
+      // Validate
+      if (Object.keys(formData.results).length < initialData.checklist.length) {
+        return Swal.fire('แจ้งเตือน', 'กรุณาประเมินให้ครบทั้ง 10 รายการ', 'warning');
+      }
+
+      showLoader(true); 
+      const data = {
+        obs_id: document.getElementById('f-id').value,
+        school_id: document.getElementById('f-school').value,
+        grade_level: document.getElementById('f-grade').value,
+        teacher_name: document.getElementById('f-teacher').value,
+        topic: document.getElementById('f-topic').value,
+        activity_name: document.getElementById('f-activity').value,
+        obs_date: document.getElementById('f-date').value,
+        start_time: document.getElementById('f-start-time').value,
+        end_time: document.getElementById('f-end-time').value,
+        observer_name: document.getElementById('f-observer').value,
+        std_male: +document.getElementById('f-std-male').value,
+        std_female: +document.getElementById('f-std-female').value,
+        std_total: +document.getElementById('f-std-total').value,
+        std_special: +document.getElementById('f-std-special').value,
+        std_absent: +document.getElementById('f-std-absent').value,
+        obj_text: document.getElementById('f-obj').value,
+        intro_teach: document.getElementById('f-intro-teach').value,
+        intro_std: document.getElementById('f-intro-std').value,
+        intro_note: document.getElementById('f-intro-note').value,
+        dev_teach: document.getElementById('f-dev-teach').value,
+        dev_std: document.getElementById('f-dev-std').value,
+        dev_note: document.getElementById('f-dev-note').value,
+        con_teach: document.getElementById('f-con-teach').value,
+        con_std: document.getElementById('f-con-std').value,
+        con_note: document.getElementById('f-con-note').value,
+        strengths: document.getElementById('f-strengths').value,
+        improvements: document.getElementById('f-improvements').value,
+        suggestions: document.getElementById('f-suggestions').value,
+        photo_1: imgDataStore.img1,
+        photo_2: imgDataStore.img2,
+        photo_3: imgDataStore.img3,
+        photo_4: imgDataStore.img4,
+        results: Object.values(formData.results)
+      };
+
+      google.script.run.withSuccessHandler(res => { 
+        showLoader(false); 
+        if (res.success) { 
+          Swal.fire({
+            title: 'บันทึกสำเร็จ',
+            text: 'ข้อมูลได้ถูกบันทึกเรียบร้อยแล้ว',
+            icon: 'success',
+            confirmButtonText: 'ตกลง'
+          }).then(() => {
+            loadDashboard(); 
+            switchView('dashboard');
+            performReset();
+          });
+        } else {
+          Swal.fire('Error', 'ไม่สามารถบันทึกข้อมูลได้: ' + (res.error || 'ไม่ทราบสาเหตุ (อาจเกิดจากรูปภาพมีขนาดใหญ่เกินไป)'), 'error');
+        }
+      }).saveClassroomObsData(data);
+    }
+
+    function loadDashboard() { 
+      google.script.run.withSuccessHandler(d => { 
+        if (d.error) Swal.fire('Debug Error', 'Dashboard Error: ' + d.error, 'error');
+        
+        document.getElementById('stat-total').innerText = d.total; 
+        const l = document.getElementById('history-list'), f = document.getElementById('full-history-list'); 
+        
+        const formatDateSafe = (dateStr) => {
+          if (!dateStr) return '-';
+          try { const dt = new Date(dateStr); return isNaN(dt.getTime()) ? String(dateStr) : dt.toLocaleDateString('th-TH'); }
+          catch(e) { return String(dateStr); }
+        };
+        
+        if (d.list.length === 0) {
+          l.innerHTML = '<p class="text-muted text-center py-4">ยังไม่มีข้อมูลการบันทึก</p>';
+          f.innerHTML = '<p class="text-muted text-center py-4">ยังไม่มีข้อมูลการบันทึก</p>';
+          return;
+        }
+
+        const render = (items) => items.map(r => `
+          <div class="list-item">
+            <div style="flex:1">
+              <p class="fw-bold mb-0">${(initialData.schools || []).find(s=>s.id===r.school_id)?.name||r.school_id} - คร.${r.teacher} (${r.grade||'-'})</p>
+              <p class="text-muted small mb-0">${formatDateSafe(r.date)} | คะแนนเฉลี่ย: ${r.score}</p>
+            </div>
+            <div class="text-end">
+              <div class="action-btns">
+                <button onclick="showDetails('${r.id}')" class="btn-icon text-success">ดูรายงาน</button>
+                <button onclick="editObs('${r.id}')" class="btn-icon">แก้ไข</button>
+                <button onclick="exportPDF('${r.id}')" class="btn-icon text-primary">PDF</button>
+                <button onclick="confirmDelete('${r.id}')" class="btn-icon btn-delete">ลบ</button>
+              </div>
+            </div>
+          </div>`).join(''); 
+        l.innerHTML = render(d.list.slice(0,5)); 
+        f.innerHTML = render(d.list); 
+      }).getClassroomObsDashboardData(); 
+    }
+
+    function confirmDelete(id) { 
+      checkAdmin(() => {
+        Swal.fire({ title: 'ลบข้อมูล?', icon: 'warning', showCancelButton: true }).then(r => { 
+          if (r.isConfirmed) { 
+            showLoader(true); 
+            google.script.run.withSuccessHandler(() => { 
+              showLoader(false); loadDashboard(); 
+            }).deleteClassroomObs(id); 
+          } 
+        }); 
+      });
+    }
+
+    function editObs(id) { 
+      checkAdmin(() => {
+        showLoader(true); 
+        google.script.run.withSuccessHandler(res => { 
+          showLoader(false); 
+          if (res.success) { 
+            populateForm(res.data); 
+            doSwitchView('form'); 
+            document.getElementById('edit-mode-badge').style.display = 'block'; 
+          } 
+        }).getClassroomObsDetails(id); 
+      });
+    }
+
+    function populateForm(d) {
+      performReset(); 
+      document.getElementById('f-id').value = d.id; 
+      document.getElementById('f-school').value = d.school_id; 
+      document.getElementById('f-grade').value = d.grade_level || '';
+      document.getElementById('f-teacher').value = d.teacher_name || '';
+      document.getElementById('f-topic').value = d.topic || '';
+      document.getElementById('f-activity').value = d.activity_name || '';
+      if(d.obs_date) {
+        try { document.getElementById('f-date').value = new Date(d.obs_date).toISOString().split('T')[0]; } catch(e){}
+      }
+      document.getElementById('f-start-time').value = d.start_time || '';
+      document.getElementById('f-end-time').value = d.end_time || '';
+      document.getElementById('f-observer').value = d.observer_name || '';
+      
+      document.getElementById('f-std-male').value = d.std_male || 0;
+      document.getElementById('f-std-female').value = d.std_female || 0;
+      document.getElementById('f-std-total').value = d.std_total || 0;
+      document.getElementById('f-std-special').value = d.std_special || 0;
+      document.getElementById('f-std-absent').value = d.std_absent || 0;
+      
+      document.getElementById('f-obj').value = d.obj_text || '';
+      document.getElementById('f-intro-teach').value = d.intro_teach || '';
+      document.getElementById('f-intro-std').value = d.intro_std || '';
+      document.getElementById('f-intro-note').value = d.intro_note || '';
+      document.getElementById('f-dev-teach').value = d.dev_teach || '';
+      document.getElementById('f-dev-std').value = d.dev_std || '';
+      document.getElementById('f-dev-note').value = d.dev_note || '';
+      document.getElementById('f-con-teach').value = d.con_teach || '';
+      document.getElementById('f-con-std').value = d.con_std || '';
+      document.getElementById('f-con-note').value = d.con_note || '';
+      
+      document.getElementById('f-strengths').value = d.strengths || '';
+      document.getElementById('f-improvements').value = d.improvements || '';
+      document.getElementById('f-suggestions').value = d.suggestions || '';
+      
+      if(d.photo_1) { imgDataStore.img1 = d.photo_1; document.getElementById('preview-img1').src = d.photo_1; document.getElementById('preview-img1').style.display='block'; document.querySelector('#box-img1 span').style.display='none'; }
+      if(d.photo_2) { imgDataStore.img2 = d.photo_2; document.getElementById('preview-img2').src = d.photo_2; document.getElementById('preview-img2').style.display='block'; document.querySelector('#box-img2 span').style.display='none'; }
+      if(d.photo_3) { imgDataStore.img3 = d.photo_3; document.getElementById('preview-img3').src = d.photo_3; document.getElementById('preview-img3').style.display='block'; document.querySelector('#box-img3 span').style.display='none'; }
+      if(d.photo_4) { imgDataStore.img4 = d.photo_4; document.getElementById('preview-img4').src = d.photo_4; document.getElementById('preview-img4').style.display='block'; document.querySelector('#box-img4 span').style.display='none'; }
+      
+      d.results.forEach(r => { 
+        formData.results[r.item_id] = r; 
+        const i = document.getElementById(`comment-${r.item_id}`); 
+        if (i) i.value = r.comment||''; 
+        const p = document.getElementById(`score-group-${r.item_id}`); 
+        if (p) { 
+          const b = p.querySelector(`.score-btn[data-score="${r.score}"]`); 
+          if (b) b.classList.add('active'); 
+        } 
+      });
+    }
+
+    function performReset() { 
+      document.getElementById('f-id').value = ''; 
+      document.querySelectorAll('#view-form input[type="text"], #view-form input[type="date"], #view-form input[type="time"]').forEach(i => i.value = ''); 
+      document.querySelectorAll('#view-form input[type="number"]').forEach(i => i.value = '0'); 
+      document.querySelectorAll('#view-form textarea').forEach(t => t.value = ''); 
+      document.getElementById('f-observer').value = 'ศน.พุฒิพงษ์ วงศ์นันท์'; 
+      document.getElementById('f-school').value = ''; 
+      document.getElementById('edit-mode-badge').style.display = 'none'; 
+      
+      imgDataStore = { img1: '', img2: '', img3: '', img4: '' };
+      [1,2,3,4].forEach(n => {
+        document.getElementById(`preview-img${n}`).src = '';
+        document.getElementById(`preview-img${n}`).style.display = 'none';
+        document.querySelector(`#box-img${n} span`).style.display = 'block';
+      });
+
+      formData = { results: {} }; 
+      document.querySelectorAll('.score-btn').forEach(b => b.classList.remove('active')); 
+      currentStep = 1; nextStep(1); 
+    }
+    
+    function confirmReset() {
+      Swal.fire({
+        title: 'ต้องการล้างข้อมูลในฟอร์ม?',
+        text: 'ข้อมูลที่คุณกรอกจะหายไปทั้งหมด',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'ล้างข้อมูล',
+        cancelButtonText: 'ยกเลิก'
+      }).then((r) => {
+        if (r.isConfirmed) performReset();
+      });
+    }
+
+    function loadSummary() { 
+      showLoader(true); 
+      google.script.run.withSuccessHandler(res => { 
+        showLoader(false); 
+        if (res.success) { 
+          document.getElementById('sum-count').innerText = res.totalObs; 
+          document.getElementById('sum-avg').innerText = res.avgScore; 
+          document.getElementById('sum-schools').innerText = res.uniqueSchools || 0; 
+          document.getElementById('sum-teachers').innerText = res.uniqueTeachers || 0; 
+          document.getElementById('sum-students').innerText = res.totalStudents || 0; 
+          
+          if (res.itemAverages && res.itemAverages.length > 0) {
+            const ctx = document.getElementById('barChartSummary').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+            
+            chartInstance = new Chart(ctx, {
+              type: 'radar',
+              data: {
+                labels: res.itemAverages.map(d => {
+                  const name = d.name;
+                  let lines = [];
+                  for (let i = 0; i < name.length; i += 30) {
+                    lines.push(name.substring(i, i + 30));
+                  }
+                  return lines;
+                }),
+                datasets: [{
+                  label: 'คะแนนเฉลี่ย',
+                  data: res.itemAverages.map(d => d.avg),
+                  backgroundColor: 'rgba(52, 211, 153, 0.4)',
+                  borderColor: '#10b981',
+                  pointBackgroundColor: '#10b981',
+                  pointBorderColor: '#fff',
+                  pointHoverBackgroundColor: '#fff',
+                  pointHoverBorderColor: '#10b981'
+                }]
+              },
+              options: {
+                responsive: true,
+                scales: { 
+                  r: { 
+                    beginAtZero: true, 
+                    max: 5,
+                    ticks: { stepSize: 1 }
+                  } 
+                },
+                plugins: {
+                  tooltip: {
+                    callbacks: {
+                      title: (ctx) => res.itemAverages[ctx[0].dataIndex].name
+                    }
+                  }
+                }
+              }
+            });
+          }
+        } 
+      }).getClassroomObsSummaryData(); 
+    }
+
+    async function exportPDF(id) {
+      showLoader(true, 'กำลังสร้างรายงาน PDF (4 หน้า)...');
+      google.script.run.withSuccessHandler(async (res) => {
+        if (!res.success) { showLoader(false); return Swal.fire('Error', res.error, 'error'); }
+        const d = res.data;
+        const schoolName = initialData.schools.find(s => s.id === d.school_id)?.name || d.school_id;
+        
+        // --- Populate Page 1 ---
+        document.getElementById('p-school').innerText = schoolName;
+        document.getElementById('p-grade').innerText = d.grade_level || '-';
+        document.getElementById('p-teacher').innerText = d.teacher_name || '-';
+        document.getElementById('p-topic').innerText = d.topic || '-';
+        document.getElementById('p-activity').innerText = d.activity_name || '-';
+        document.getElementById('p-date').innerText = d.obs_date ? new Date(d.obs_date).toLocaleDateString('th-TH') : '-';
+        document.getElementById('p-start').innerText = d.start_time || '-';
+        document.getElementById('p-end').innerText = d.end_time || '-';
+        document.getElementById('p-observer').innerText = d.observer_name || '-';
+        document.getElementById('p-male').innerText = d.std_male;
+        document.getElementById('p-female').innerText = d.std_female;
+        document.getElementById('p-total').innerText = d.std_total;
+        document.getElementById('p-special').innerText = d.std_special;
+        document.getElementById('p-absent').innerText = d.std_absent;
+        
+        if(d.photo_1) { document.getElementById('p-img-1').src = d.photo_1; document.getElementById('p-img-1').style.display='block'; } else { document.getElementById('p-img-1').style.display='none'; }
+        if(d.photo_2) { document.getElementById('p-img-2').src = d.photo_2; document.getElementById('p-img-2').style.display='block'; } else { document.getElementById('p-img-2').style.display='none'; }
+        if(d.photo_3) { document.getElementById('p-img-3').src = d.photo_3; document.getElementById('p-img-3').style.display='block'; } else { document.getElementById('p-img-3').style.display='none'; }
+        if(d.photo_4) { document.getElementById('p-img-4').src = d.photo_4; document.getElementById('p-img-4').style.display='block'; } else { document.getElementById('p-img-4').style.display='none'; }
+
+        // --- Populate Page 2 ---
+        document.getElementById('p-obj').innerText = d.obj_text || '-';
+        document.getElementById('p-intro-teach').innerText = d.intro_teach || '-';
+        document.getElementById('p-intro-std').innerText = d.intro_std || '-';
+        document.getElementById('p-intro-note').innerText = d.intro_note || '-';
+        document.getElementById('p-dev-teach').innerText = d.dev_teach || '-';
+        document.getElementById('p-dev-std').innerText = d.dev_std || '-';
+        document.getElementById('p-dev-note').innerText = d.dev_note || '-';
+        document.getElementById('p-con-teach').innerText = d.con_teach || '-';
+        document.getElementById('p-con-std').innerText = d.con_std || '-';
+        document.getElementById('p-con-note').innerText = d.con_note || '-';
+
+        // --- Populate Page 3 ---
+        document.getElementById('p-strengths').innerText = d.strengths || '-';
+        document.getElementById('p-improvements').innerText = d.improvements || '-';
+        document.getElementById('p-suggestions').innerText = d.suggestions || '-';
+
+        // --- Populate Page 4 ---
+        document.getElementById('p4-teacher').innerText = d.teacher_name || '-';
+        document.getElementById('p4-grade').innerText = d.grade_level || '-';
+        document.getElementById('p4-total').innerText = d.std_total || '-';
+        document.getElementById('p4-topic').innerText = d.topic || '-';
+        document.getElementById('p4-activity').innerText = d.activity_name || '-';
+        document.getElementById('p4-date').innerText = d.obs_date ? new Date(d.obs_date).toLocaleDateString('th-TH') : '-';
+        document.getElementById('p4-observer').innerText = d.observer_name || '-';
+
+        const tbody = document.getElementById('p4-checklist-body');
+        tbody.innerHTML = '';
+        let sum = {5:0, 4:0, 3:0, 2:0, 1:0};
+        
+        initialData.checklist.forEach((item, index) => {
+          const resItem = d.results.find(r => r.item_id === item.id);
+          const score = resItem ? parseInt(resItem.score) : 0;
+          if(score >= 1 && score <= 5) sum[score]++;
+          
+          const row = `
+            <tr>
+              <td style="text-align:center;">${index+1}</td>
+              <td>${item.name}</td>
+              <td style="text-align:center;">${score === 5 ? '✓' : ''}</td>
+              <td style="text-align:center;">${score === 4 ? '✓' : ''}</td>
+              <td style="text-align:center;">${score === 3 ? '✓' : ''}</td>
+              <td style="text-align:center;">${score === 2 ? '✓' : ''}</td>
+              <td style="text-align:center;">${score === 1 ? '✓' : ''}</td>
+              <td>${resItem ? resItem.comment : ''}</td>
+            </tr>
+          `;
+          tbody.insertAdjacentHTML('beforeend', row);
+        });
+
+        document.getElementById('p4-sum-5').innerText = sum[5] || '';
+        document.getElementById('p4-sum-4').innerText = sum[4] || '';
+        document.getElementById('p4-sum-3').innerText = sum[3] || '';
+        document.getElementById('p4-sum-2').innerText = sum[2] || '';
+        document.getElementById('p4-sum-1').innerText = sum[1] || '';
+        document.getElementById('p4-avg').innerText = d.score_avg || '';
+        
+        document.getElementById('p4-strengths').innerText = d.strengths || '-';
+        document.getElementById('p4-improvements').innerText = d.improvements || '-';
+        document.getElementById('p4-suggestions').innerText = d.suggestions || '-';
+
+        // --- Render PDF ---
+        const pdf = new jspdf.jsPDF('p', 'pt', 'a4');
+        const pages = ['pdf-page-1', 'pdf-page-2', 'pdf-page-3', 'pdf-page-4'];
+        
+        for (let i = 0; i < pages.length; i++) {
+          const el = document.getElementById(pages[i]);
+          const canvas = await html2canvas(el, { scale: 2, useCORS: true });
+          const imgData = canvas.toDataURL('image/png');
+          
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = pdf.internal.pageSize.getHeight();
+          const imgProps = pdf.getImageProperties(imgData);
+          const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+          
+          if (i > 0) pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
+        }
+
+        pdf.save(`แบบสังเกตชั้นเรียน_${d.teacher_name}.pdf`);
+        showLoader(false);
+        
+      }).getClassroomObsDetails(id);
+    }
+
+    function showLoader(s, text = 'กำลังประมวลผล...') { 
+      document.getElementById('loader').style.display = s ? 'flex' : 'none'; 
+      document.getElementById('loader-text').innerText = text;
+    }
+    function showDetails(id) {
+      const url = '<?= url ?>?page=classroom_obs_report&id=' + id;
+      window.open(url, '_blank');
+    }
+  </script>
+</body>
+</html>

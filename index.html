@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SV.Golf 1 Stop Service</title>
+    <!-- สามารถเพิ่ม Meta tags สำหรับ SEO ได้ที่นี่ -->
+    <meta name="description" content="ระบบจัดการข้อมูล SV.Golf 1 Stop Service">
+
+    <style>
+        /* รีเซ็ตค่าเริ่มต้นของเบราว์เซอร์ */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            /* ป้องกันการเลื่อนหน้าจอซ้อนกัน (scroll) */
+            background-color: #f3f4f6;
+            /* สีพื้นหลังระหว่างรอโหลด */
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+        }
+
+        /* ตั้งค่า iframe ให้เต็มหน้าจอ */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* รูปแบบหน้าจอโหลดดิ้ง (Loading Screen) */
+        #loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1;
+            color: #4b5563;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border-left-color: #3b82f6;
+            /* สีน้ำเงินฟ้า */
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- หน้าต่างแสดงการโหลด -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <div class="loading-text">กำลังโหลดระบบ...<br><small>กรุณารอสักครู่</small></div>
+    </div>
+
+    <!-- ซ่อนลิงก์ iframe โดยใช้ JavaScript + Base64 Encoding -->
+    <iframe id="app-frame"
+        src=""
+        onload="document.getElementById('loader').style.display='none';"
+        allow="camera; microphone; fullscreen"></iframe>
+
+    <script>
+        // นี่คือลิงก์ Apps Script ของคุณที่ถูกแปลงเป็น Base64 แล้ว เพื่อซ่อนไม่ให้เห็นในซอร์สโค้ดตรงๆ
+        const encodedAppUrl = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9hL2VkbmFuMS5nby50aC9tYWNyb3Mvcy9BS2Z5Y2J4RENnd3E5anI0aE5MZVc1QkJNeWxEaVlVMXRBeFk5Uk5zSGFMNjRxeWs2QTV2eXBOMFlfOTF6NzZlVHlnY2tabEVHUS9leGVj";
+        
+        // ถอดรหัสและใส่กลับเข้าไปใน iframe อัตโนมัติเมื่อหน้าเว็บเริ่มทำงาน
+        document.getElementById('app-frame').src = atob(encodedAppUrl);
+    </script>
+
+</body>
+
+</html>

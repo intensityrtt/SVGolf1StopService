@@ -1,0 +1,67 @@
+# ==========================================
+# SV.GOLF One Stop Service - .gitignore
+# ==========================================
+
+# OS Generated Files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Google Drive for Desktop Cloud Links / Placeholders
+# (DO NOT commit cloud virtual links or reparse pointers)
+*.gsheet
+*.gscript
+*.gdoc
+*.gslides
+*.gdraw
+*.gtable
+*.gform
+
+# Google Drive Cloud Folder Placeholders (Local Mirrored Folders)
+แนบClassroomObs/
+ไฟล์นิเทศการสอน/
+เก็บหลักฐานการประชุม/
+เอกสารอ้างอิง/
+P1-AL-On-demand/
+
+# Archive & Temporary Dumps
+archive/
+*.tmp
+*.bak
+*b64.txt
+INDEX_B64.txt
+b64.txt
+temp_*.txt
+
+# Clasp / Credentials / Environment
+.env
+.env.*
+!.env.example
+.clasp.json
+!.clasp.json.example
+
+# Editor & IDE Settings
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*~
+
+# Logs & Runtime
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

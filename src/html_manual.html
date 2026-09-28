@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คู่มือการใช้งาน SV.GOLF</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #f4f7f6;
+      color: #333;
+    }
+    .hero-section {
+      background: linear-gradient(135deg, #0056b3, #00aaff);
+      color: white;
+      padding: 40px 0;
+      text-align: center;
+      margin-bottom: 30px;
+      border-radius: 0 0 30px 30px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .nav-pills .nav-link {
+      color: #495057;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-weight: 500;
+      padding: 12px 20px;
+      transition: all 0.3s;
+      text-align: left;
+    }
+    .nav-pills .nav-link:hover {
+      background-color: #e9ecef;
+    }
+    .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+      background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+      color: white;
+      box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+    }
+    .content-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      padding: 30px;
+      border: none;
+      min-height: 500px;
+    }
+    .step-box {
+      border-left: 4px solid #0d6efd;
+      padding-left: 15px;
+      margin-bottom: 20px;
+      background: #f8f9fa;
+      padding: 15px 20px;
+      border-radius: 0 10px 10px 0;
+    }
+    .step-title {
+      font-weight: 700;
+      color: #0056b3;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+    h2 {
+      font-weight: 700;
+      color: #1e3a8a;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+      margin-bottom: 25px;
+    }
+    ul {
+      padding-left: 20px;
+      margin-bottom: 0;
+    }
+    ul li {
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+    /* Home Button Styles */
+    .home-btn {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      z-index: 9999;
+      background: #1e3a8a;
+      color: white !important;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .home-btn:hover {
+      transform: scale(1.1);
+      background: #3b82f6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Home Button -->
+  <a href="<?= (typeof url !== 'undefined') ? url : '#' ?>" target="_top" class="home-btn" title="กลับหน้าหลัก">
+    <i class="bi bi-house-door-fill fs-5"></i>
+  </a>
+
+  <div class="hero-section">
+    <div class="container">
+      <h1 class="fw-bold"><i class="bi bi-book-half"></i> คู่มือการใช้งานระบบ</h1>
+      <p class="lead mb-0">SV.GOLF One Stop Service Platform</p>
+    </div>
+  </div>
+
+  <div class="container mb-5">
+    <div class="row">
+      <!-- Sidebar Navigation -->
+      <div class="col-md-3 mb-4">
+        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+          <button class="nav-link" id="v-pills-main-tab" data-bs-toggle="pill" data-bs-target="#v-pills-main" type="button" role="tab" aria-controls="v-pills-main" aria-selected="true">
+            <i class="bi bi-grid-fill me-2"></i> Dashboard ระบบ (Main)
+          </button>
+          <button class="nav-link" id="v-pills-management-tab" data-bs-toggle="pill" data-bs-target="#v-pills-management" type="button" role="tab" aria-controls="v-pills-management" aria-selected="false">
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <span><i class="bi bi-folder-fill me-2"></i> RT-NT Management</span>
+              <span class="badge <?= (typeof statuses !== 'undefined' && statuses.management === 'closed') ? 'bg-danger' : 'bg-success' ?> rounded-pill" style="font-size: 0.7rem;"><?= (typeof statuses !== 'undefined' && statuses.management === 'closed') ? 'ปิดระบบ' : 'เปิดระบบ' ?></span>
+            </div>
+          </button>
+          <button class="nav-link" id="v-pills-toolkit-tab" data-bs-toggle="pill" data-bs-target="#v-pills-toolkit" type="button" role="tab" aria-controls="v-pills-toolkit" aria-selected="false">
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <span><i class="bi bi-tools me-2"></i> RT Toolkit</span>
+              <span class="badge <?= (typeof statuses !== 'undefined' && statuses.toolkit === 'closed') ? 'bg-danger' : 'bg-success' ?> rounded-pill" style="font-size: 0.7rem;"><?= (typeof statuses !== 'undefined' && statuses.toolkit === 'closed') ? 'ปิดระบบ' : 'เปิดระบบ' ?></span>
+            </div>
+          </button>
+          <button class="nav-link" id="v-pills-assessment-tab" data-bs-toggle="pill" data-bs-target="#v-pills-assessment" type="button" role="tab" aria-controls="v-pills-assessment" aria-selected="false">
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <span><i class="bi bi-laptop me-2"></i> Pre-RT Online NAN1</span>
+              <span class="badge <?= (typeof statuses !== 'undefined' && statuses.assessment === 'closed') ? 'bg-danger' : 'bg-success' ?> rounded-pill" style="font-size: 0.7rem;"><?= (typeof statuses !== 'undefined' && statuses.assessment === 'closed') ? 'ปิดระบบ' : 'เปิดระบบ' ?></span>
+            </div>
+          </button>
+          <button class="nav-link" id="v-pills-supervision-tab" data-bs-toggle="pill" data-bs-target="#v-pills-supervision" type="button" role="tab" aria-controls="v-pills-supervision" aria-selected="false">
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <span><i class="bi bi-clipboard2-check-fill me-2"></i> ระบบนิเทศออนไลน์</span>
+              <span class="badge <?= (typeof statuses !== 'undefined' && statuses.classroom_obs === 'closed') ? 'bg-danger' : 'bg-success' ?> rounded-pill" style="font-size: 0.7rem;"><?= (typeof statuses !== 'undefined' && statuses.classroom_obs === 'closed') ? 'ปิดระบบ' : 'เปิดระบบ' ?></span>
+            </div>
+          </button>
+          <button class="nav-link" id="v-pills-meeting-tab" data-bs-toggle="pill" data-bs-target="#v-pills-meeting" type="button" role="tab" aria-controls="v-pills-meeting" aria-selected="false">
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <span><i class="bi bi-camera-video-fill me-2"></i> ระบบประชุมออนไลน์</span>
+              <span class="badge <?= (typeof statuses !== 'undefined' && statuses.meeting === 'closed') ? 'bg-danger' : 'bg-success' ?> rounded-pill" style="font-size: 0.7rem;"><?= (typeof statuses !== 'undefined' && statuses.meeting === 'closed') ? 'ปิดระบบ' : 'เปิดระบบ' ?></span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Content Area -->
+      <div class="col-md-9">
+        <div class="tab-content content-card shadow-sm" id="v-pills-tabContent">
+          
+          <!-- Dashboard ระบบ -->
+          <div class="tab-pane fade" id="v-pills-main" role="tabpanel" aria-labelledby="v-pills-main-tab">
+            <h2><i class="bi bi-grid-fill text-primary"></i> 1. หน้าหลักของระบบ (Dashboard)</h2>
+            <p class="text-muted">หน้าแรกที่รวมทุกระบบไว้ในที่เดียว เข้าถึงได้ง่ายด้วยคลิกเดียว</p>
+            
+            <!-- Video Guide -->
+            <div class="card mb-4 border-0 shadow-sm rounded-3 overflow-hidden">
+              <div class="card-header bg-gradient bg-primary text-white py-2 px-3 d-flex align-items-center">
+                <i class="bi bi-play-btn-fill fs-5 me-2"></i>
+                <span class="fw-bold">วิดีโอแนะนำการใช้งาน: แนะนำระบบ (Main Dashboard)</span>
+              </div>
+              <div class="card-body p-0">
+                <div class="ratio ratio-16x9">
+                  <iframe src="https://www.youtube.com/embed/_B-V_ftcIkY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+              </div>
+            </div>
+            
+            <div class="step-box">
+              <div class="step-title">1.1 เข้าสู่ระบบครั้งแรก</div>
+              <ul>
+                <li>เปิดลิงก์ของระบบ จะเห็นหน้าต้อนรับก่อน</li>
+                <li>กดปุ่ม <strong>"เข้าสู่ระบบ / Enter Dashboard"</strong> เพื่อเข้าหน้าเมนูหลัก</li>
+              </ul>
+            </div>
+
+            <div class="step-box">
+              <div class="step-title">1.2 ใช้งานหน้าเมนูหลัก</div>
+              <ul>
+                <li>หน้านี้จะแสดงระบบต่างๆ เป็นการ์ดสี่เหลี่ยม ให้กดเลือกระบบที่ต้องการใช้งาน</li>
+                <li><strong>วิธีเข้าระบบย่อย:</strong> กดปุ่ม <strong>"เข้าใช้งานระบบ"</strong> บนการ์ดนั้นๆ ได้เลย</li>
+                <li><strong>ป้ายสถานะ:</strong> ถ้าการ์ดแสดงคำว่า <strong>"ปิดระบบ"</strong> หมายถึงระบบนั้นยังไม่เปิดให้ใช้งานในขณะนี้</li>
+                <li><strong>ดูสถิติ:</strong> ที่ด้านบนของหน้าจะมีตัวเลขสรุปภาพรวม เช่น จำนวนผู้เข้าใช้งานและการนิเทศโรงเรียน</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- RT-NT Management -->
+          <div class="tab-pane fade" id="v-pills-management" role="tabpanel" aria-labelledby="v-pills-management-tab">
+            <h2><i class="bi bi-folder-fill text-primary"></i> 2. ระบบ RT-NT Management</h2>
+            <p class="text-muted">ระบบเก็บและแสดงผลคะแนนสอบ RT และ NT ระดับเขตพื้นที่การศึกษา</p>
+            
+            <div class="step-box">
+              <div class="step-title">2.1 วิธีเข้าใช้งาน</div>
+              <ul>
+                <li>กดเลือก <strong>"RT-NT Management"</strong> จากหน้าเมนูหลัก</li>
+                <li>ถ้าปุ่มแสดงว่า <strong>"เปิดระบบ"</strong> กดเข้าใช้งานได้เลย</li>
+              </ul>
+            </div>
+
+            <div class="step-box">
+              <div class="step-title">2.2 จัดการข้อมูลผลสอบ</div>
+              <ul>
+                <li>ผู้ดูแลระบบสามารถนำเข้าคะแนนจากไฟล์ Excel หรือ CSV ได้</li>
+                <li>ตรวจสอบความถูกต้องของข้อมูลแยกรายโรงเรียนหรือรายกลุ่มเครือข่าย</li>
+                <li>หากพบข้อผิดพลาด สามารถแก้ไขได้โดยตรงในหน้าจอ</li>
+              </ul>
+            </div>
+
+            <div class="step-box">
+              <div class="step-title">2.3 ดูและพิมพ์รายงาน</div>
+              <ul>
+                <li>ดูรายงานสรุปผลสอบในรูปแบบตารางและกราฟได้ทันที</li>
+                <li>กดดาวน์โหลดหรือพิมพ์เป็น PDF เพื่อนำไปใช้ในการประชุมหรือจัดทำรายงานประจำปี</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- RT Toolkit -->
+          <div class="tab-pane fade" id="v-pills-toolkit" role="tabpanel" aria-labelledby="v-pills-toolkit-tab">
+            <h2><i class="bi bi-tools text-primary"></i> 3. ระบบ RT Toolkit (สร้างใบงานอ่านภาษาไทย)</h2>
+            <p class="text-muted">ครูสามารถสร้างใบงานฝึกอ่านภาษาไทยได้ง่ายๆ ไม่ต้องพิมพ์เองทีละใบ ระบบช่วยจัดทำให้อัตโนมัติ</p>
+            
+            <!-- Video Guide -->
+            <div class="card mb-4 border-0 shadow-sm rounded-3 overflow-hidden">
+              <div class="card-header bg-gradient bg-primary text-white py-2 px-3 d-flex align-items-center">
+                <i class="bi bi-play-btn-fill fs-5 me-2"></i>
+                <span class="fw-bold">วิดีโอแนะนำการใช้งาน: ระบบ RT Toolkit</span>
+              </div>
+              <div class="card-body p-0">
+                <div class="ratio ratio-16x9">
+                  <iframe src="https://www.youtube.com/embed/7cQFHrgprvM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+              </div>
+            </div>
+            
+            <div class="step-box">
+              <div class="step-title">3.1 เข้าใช้งานระบบ</div>
+              <ul>
+                <li>กดเลือก <strong>"RT Toolkit"</strong> จากหน้าเมนูหลัก</li>
+                <li>กรอก <strong>ชื่อของคุณครู</strong> แล้วเลือก <strong>โรงเรียน</strong> จากรายการ</li>
+                <li>กดปุ่ม <strong>"เข้าสู่ระบบสร้างใบงาน"</strong></li>
+              </ul>
+            </div>
+
+            <div class="step-box">
+              <div class="step-title">3.2 สร้างใบงาน</div>
+              <ul>
+                <li>ด้านซ้ายเป็นแผงตั้งค่า ด้านขวาเป็นตัวอย่างใบงานที่จะพิมพ์ออกมา</li>
+                <li><strong>เลือกรายละเอียด:</strong> ระบุชั้นเรียน วิชา และคำชี้แจงที่ต้องการ</li>
+                <li><strong>เพิ่มคำศัพท์:</strong> พิมพ์คำที่ต้องการลงในช่อง แล้วกดปุ่ม <strong>"เพิ่มคำศัพท์"</strong> (วางทีละหลายคำก็ได้)</li>
+                <li>คำที่เพิ่มแล้วจะปรากฏด้านล่าง กดปุ่มถังขยะเพื่อลบคำที่ไม่ต้องการ</li>
+                <li><strong>ให้ระบบเลือกคำให้:</strong> กดปุ่ม <strong>"สุ่มคำศัพท์จากฐานข้อมูล"</strong> ระบบจะเลือกคำมาให้อัตโนมัติ</li>
+              </ul>
+            </div>
+
+            <div class="step-box">
+              <div class="step-title">3.3 พิมพ์ใบงาน</div>
+              <ul>
+                <li>ดูตัวอย่างใบงานที่ด้านขวาก่อน เพื่อตรวจสอบความถูกต้อง</li>
+                <li>กดปุ่ม <strong>"พิมพ์ใบงาน / Print PDF"</strong></li>
+                <li>ระบบจะสร้างไฟล์ PDF พร้อมพิมพ์ได้ทันที</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- RT Assessment -->
+          <div class="tab-pane fade" id="v-pills-assessment" role="tabpanel" aria-labelledby="v-pills-assessment-tab">
+            <h2><i class="bi bi-laptop text-primary"></i> 4. ระบบสอบออนไลน์ Pre-RT NAN1</h2>
+            <p class="text-muted">ระบบสอบและประเมินการอ่านออนไลน์ แบ่งการใช้งานตามบทบาทของแต่ละคน ได้แก่ นักเรียน ครู ผู้บริหารโรงเรียน และผู้บริหารเขต</p>
+            
+            <!-- Video Guide -->
+            <div class="card mb-4 border-0 shadow-sm rounded-3 overflow-hidden">
+              <div class="card-header bg-gradient bg-primary text-white py-2 px-3 d-flex align-items-center">
+                <i class="bi bi-play-btn-fill fs-5 me-2"></i>
+                <span class="fw-bold">วิดีโอแนะนำการใช้งาน: ระบบ Pre-RT Online</span>
+              </div>
+              <div class="card-body p-0">
+                <div class="ratio ratio-16x9">
+                  <iframe src="https://www.youtube.com/embed/t-z9FtQS3ko" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+              </div>
+            </div>
+            
+            <div class="step-box">
+              <div class="step-title">4.1 วิธีเข้าใช้งาน</div>
+              <ul>
+                <li>กดเลือกการ์ด <strong>"Pre-RT Online NAN1"</strong> จากหน้าเมนูหลัก</li>
+                <li>ครูและผู้บริหารเข้าด้วย <strong>บัญชีผู้ใช้</strong> ที่ได้รับมา ส่วนนักเรียนกรอกข้อมูลเพื่อสมัครสอบได้เลย</li>
+              </ul>
+            </div>
+
+            <div class="step-box" style="border-left-color: #198754;">
+              <div class="step-title" style="color: #198754;"><i class="bi bi-person-fill"></i> 4.2 สำหรับนักเรียน</div>
+              <p class="small text-muted px-3">นักเรียนชั้น ป.1 ทำแบบทดสอบผ่านหน้าจอ โดย <strong>ครูเป็นคนสมัครสมาชิกและตั้งรหัสให้นักเรียนล่วงหน้า</strong></p>
+              <ul>
+                <li><strong>เข้าห้องสอบ:</strong> นักเรียนกรอก <strong>ชื่อผู้ใช้ (Username)</strong> และ <strong>รหัสผ่าน (Password)</strong> ที่คุณครูแจกให้ แล้วกดปุ่ม <strong>"เข้าสู่ห้องสอบ"</strong></li>
+                <li><strong>เลือกชุดข้อสอบ:</strong> เลือกชุดที่ครูเปิดให้ทำในวันนั้น</li>
+                <li><strong>ทำข้อสอบ (ข้อ 1-10):</strong> อ่านโจทย์แล้วเลือกคำตอบที่ถูกต้องทางด้านขวาของหน้าจอ</li>
+                <li><strong>ส่งคำตอบ:</strong> เมื่อทำครบแล้ว กดปุ่ม <strong>"ส่งคำตอบ ✅"</strong> ระบบบันทึกคะแนนให้อัตโนมัติ</li>
+              </ul>
+            </div>
+
+            <div class="step-box" style="border-left-color: #ffc107;">
+              <div class="step-title" style="color: #b58900;"><i class="bi bi-journal-bookmark-fill"></i> 4.3 สำหรับครูผู้สอน</div>
+              <p class="small text-muted px-3">ครูจัดการข้อมูลนักเรียน ให้คะแนน และดูผลสอบของโรงเรียนตนเอง</p>
+              <ul>
+                <li><strong>เพิ่มรายชื่อนักเรียน:</strong>
+                  <ul>
+                    <li>เพิ่มทีละคนโดยระบุห้อง หรืออัปโหลดรายชื่อทีเดียวผ่านไฟล์ <strong>CSV</strong></li>
+                    <li>ดาวน์โหลดไฟล์ CSV ตัวอย่างได้จากระบบ เปิดแก้ไขใน Excel ได้ทันที ไม่มีปัญหาตัวอักษรภาษาไทย</li>
+                  </ul>
+                </li>
+                <li><strong>ดาวน์โหลดข้อสอบ:</strong> กดดาวน์โหลด PDF <strong>ตัวข้อสอบ</strong> และ <strong>คู่มือให้คะแนน</strong> สำหรับใช้ในการสอบอ่านออกเสียง</li>
+                <li><strong>ให้คะแนนอ่านออกเสียง (ข้อ 11-15):</strong>
+                  <ul>
+                    <li>ในตารางนักเรียน กดปุ่ม <strong>"📝 ให้คะแนนอ่านรู้เรื่อง"</strong> หรือ <strong>"🎤 ประเมินอ่านออกเสียง"</strong> แล้วเลือกคะแนน 0, 1 หรือ 2 ต่อข้อ</li>
+                    <li>ระบบรวมคะแนนให้อัตโนมัติ</li>
+                  </ul>
+                </li>
+                <li><strong>การจัดเรียงรายชื่อ:</strong> ระบบจัดเรียงรายชื่อตามห้อง (ห้อง 1 → 2 → 10) แล้วเรียงตามตัวอักษร ก-ฮ โดยอัตโนมัติ</li>
+                <li><strong>วิเคราะห์ผลรายคน:</strong> กดปุ่ม <strong>"📊 วิเคราะห์ผล"</strong> เพื่อดูกราฟแมงมุมจุดเด่น-จุดด้อย และพิมพ์ผลสอบรายบุคคลได้ทันที</li>
+              </ul>
+            </div>
+
+            <div class="step-box" style="border-left-color: #0dcaf0;">
+              <div class="step-title" style="color: #0aa2c0;"><i class="bi bi-people-fill"></i> 4.4 สำหรับผู้บริหารโรงเรียน / ศึกษานิเทศก์</div>
+              <p class="small text-muted px-3">ดูและติดตามผลสอบของทุกโรงเรียนในกลุ่มเครือข่ายของตนเอง</p>
+              <ul>
+                <li><strong>ดูข้อมูลได้แค่ไหน:</strong> เห็นผลสอบของทุกโรงเรียนในกลุ่มเครือข่ายของตนเอง</li>
+                <li><strong>ข้อมูลที่ดูได้:</strong> จำนวนผู้เข้าสอบ คะแนนเฉลี่ย กราฟเปรียบเทียบทักษะรายด้าน และผลสอบแยกรายโรงเรียน</li>
+                <li><strong>สิทธิ์ให้คะแนน:</strong> สามารถกดให้คะแนนอ่านออกเสียง (ข้อ 11-15) และดาวน์โหลดข้อสอบได้เช่นเดียวกับครู</li>
+              </ul>
+            </div>
+
+            <div class="step-box" style="border-left-color: #6f42c1;">
+              <div class="step-title" style="color: #6f42c1;"><i class="bi bi-safe-fill"></i> 4.5 สำหรับผู้บริหารเขตพื้นที่การศึกษา</div>
+              <p class="small text-muted px-3">ดูภาพรวมผลสอบทั้งเขตพื้นที่</p>
+              <ul>
+                <li><strong>ข้อมูลที่เห็น:</strong> เข้าระบบแล้วจะเห็นผลสอบของทุกโรงเรียนและทุกกลุ่มเครือข่ายในเขตพื้นที่ทันที</li>
+                <li><strong>กรองดูเฉพาะกลุ่ม:</strong> ใช้ปุ่มเลือกกลุ่มเครือข่ายด้านบนสุด เพื่อกรองดูเฉพาะกลุ่มที่สนใจ กราฟและตารางจะอัปเดตทันที</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- ระบบนิเทศออนไลน์ -->
+          <div class="tab-pane fade" id="v-pills-supervision" role="tabpanel" aria-labelledby="v-pills-supervision-tab">
+            <h2><i class="bi bi-clipboard2-check-fill text-primary"></i> 5. ระบบนิเทศออนไลน์</h2>
+            <p class="text-muted">ศึกษานิเทศก์และผู้บริหารใช้บันทึกผลการนิเทศชั้นเรียน และออกรายงานได้ทันที</p>
+            
+            <!-- Video Guide -->
+            <div class="card mb-4 border-0 shadow-sm rounded-3 overflow-hidden">
+              <div class="card-header bg-gradient bg-primary text-white py-2 px-3 d-flex align-items-center">
+                <i class="bi bi-play-btn-fill fs-5 me-2"></i>
+                <span class="fw-bold">วิดีโอแนะนำการใช้งาน: ระบบนิเทศออนไลน์</span>
+              </div>
+              <div class="card-body p-0">
+                <div class="ratio ratio-16x9">
+                  <iframe src="https://www.youtube.com/embed/0yn1ZP7qkFk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+              </div>
+            </div>
+            
+            <div class="step-box">
+              <div class="step-title">5.1 เข้าใช้งานระบบ</div>
+              <ul>
+                <li>กดเลือก <strong>"ระบบนิเทศออนไลน์"</strong> จากหน้าเมนูหลัก</li>
+                <li>กดปุ่ม <strong>"เข้าสู่ระบบสำหรับศึกษานิเทศก์"</strong> แล้วกรอกรหัส PIN ของตนเอง</li>
+              </ul>
+            </div>
+
+            <div class="step-box">
+              <div class="step-title">5.2 บันทึกการนิเทศ (3 ขั้นตอน)</div>
+              <ul>
+                <li>กดปุ่ม <strong>"+ บันทึกการนิเทศใหม่"</strong></li>
+                <li><strong>ขั้นที่ 1 — ข้อมูลทั่วไป:</strong> กรอกชื่อโรงเรียน ครูผู้สอน วิชา วันที่นิเทศ และจำนวนนักเรียน</li>
+                <li><strong>ขั้นที่ 2 — บันทึกการสอน:</strong>
+                  <ul>
+                    <li>บันทึกรายละเอียดการสอนแต่ละขั้น (ขั้นนำ / ขั้นสอน / ขั้นสรุป)</li>
+                    <li>ให้คะแนนรายการสังเกต 10 รายการ โดยเลือกคะแนน 1-5</li>
+                  </ul>
+                </li>
+                <li><strong>ขั้นที่ 3 — สรุปและแนบรูป:</strong>
+                  <ul>
+                    <li>กรอกจุดเด่น จุดที่ควรพัฒนา และข้อเสนอแนะ</li>
+                    <li>แนบรูปภาพได้สูงสุด 4 ภาพ</li>
+                  </ul>
+                </li>
+                <li>ตรวจสอบแล้วกดปุ่ม <strong>"บันทึกข้อมูล"</strong></li>
+              </ul>
+            </div>
+
+            <div class="step-box">
+              <div class="step-title">5.3 ดูสรุปผลและพิมพ์รายงาน</div>
+              <ul>
+                <li><strong>หน้าสรุป:</strong> แสดงภาพรวมการนิเทศทั้งหมด และกราฟแมงมุมค่าเฉลี่ยรายด้าน</li>
+                <li><strong>พิมพ์รายงาน:</strong> กดปุ่ม <strong>"ดูรายงาน"</strong> ของรายการที่ต้องการ แล้วกด <strong>"Print PDF"</strong> เพื่อพิมพ์หรือบันทึกเป็นไฟล์ PDF ได้ทันที</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- ระบบกิจกรรมประชุมออนไลน์ -->
+          <div class="tab-pane fade" id="v-pills-meeting" role="tabpanel" aria-labelledby="v-pills-meeting-tab">
+            <h2><i class="bi bi-camera-video-fill text-primary"></i> 6. ระบบประชุมออนไลน์</h2>
+            <p class="text-muted">ลงทะเบียนและเข้าร่วมการประชุม อบรม หรือสัมมนาออนไลน์ได้ในที่เดียว</p>
+            
+            <div class="step-box">
+              <div class="step-title">6.1 เข้าร่วมประชุม</div>
+              <ul>
+                <li>กดเลือก <strong>"ระบบประชุมออนไลน์"</strong> จากหน้าเมนูหลัก</li>
+                <li>ดูรายการประชุมที่เปิดให้เข้าร่วม แล้วกดลิงก์เพื่อเข้าห้องประชุม (เช่น Google Meet หรือ Zoom)</li>
+              </ul>
+            </div>
+
+            <div class="step-box">
+              <div class="step-title">6.2 ลงทะเบียนและเช็คชื่อ</div>
+              <ul>
+                <li>กรอกชื่อและข้อมูลของตนเองเพื่อลงทะเบียนหรือเช็คชื่อ</li>
+                <li>ระบบบันทึกเวลาและข้อมูลการเข้าร่วมให้อัตโนมัติ</li>
+              </ul>
+            </div>
+
+            <div class="step-box">
+              <div class="step-title">6.3 รับเอกสารและวุฒิบัตร (ถ้ามี)</div>
+              <ul>
+                <li>หลังประชุมเสร็จ สามารถดาวน์โหลดเอกสารประกอบได้จากระบบ</li>
+                <li>หากมีวุฒิบัตร ให้ทำแบบประเมินก่อน แล้วดาวน์โหลดวุฒิบัตรได้ทันที</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var tabId = '#v-pills-<?= (typeof activeTab !== "undefined") ? activeTab : "main" ?>-tab';
+      var triggerEl = document.querySelector(tabId);
+      if (triggerEl) {
+        var tab = new bootstrap.Tab(triggerEl);
+        tab.show();
+      } else {
+        var defaultTab = new bootstrap.Tab(document.querySelector('#v-pills-main-tab'));
+        defaultTab.show();
+      }
+    });
+  </script>
+</body>
+</html>

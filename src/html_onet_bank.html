@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คลังข้อสอบ O-NET อัจฉริยะ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-orange: #f97316;
+      --primary-rose: #f43f5e;
+      --bg-dark: #0b0f19;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: var(--bg-dark);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Ambient Background Glows */
+    .glow-1 {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.15) 0%, rgba(0,0,0,0) 70%);
+      top: -100px;
+      left: -100px;
+      filter: blur(50px);
+    }
+
+    .glow-2 {
+      position: absolute;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(244, 63, 94, 0.15) 0%, rgba(0,0,0,0) 70%);
+      bottom: -150px;
+      right: -100px;
+      filter: blur(50px);
+    }
+
+    .container {
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      z-index: 10;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 3.5rem 2rem;
+      border-radius: 32px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .icon-wrapper {
+      width: 90px;
+      height: 90px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-rose) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 2rem;
+      box-shadow: 0 15px 30px rgba(249, 115, 22, 0.3);
+      animation: pulse 3s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 15px 30px rgba(249, 115, 22, 0.3);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 20px 40px rgba(249, 115, 22, 0.5);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 15px 30px rgba(249, 115, 22, 0.3);
+      }
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.description {
+      color: #94a3b8;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Launch Button */
+    .launch-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 1.1rem 2.8rem;
+      background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-rose) 100%);
+      color: white;
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border-radius: 9999px;
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.2);
+    }
+
+    .launch-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(249, 115, 22, 0.4);
+      filter: brightness(1.05);
+    }
+
+    .launch-btn:active {
+      transform: translateY(-1px);
+    }
+
+    .launch-btn svg {
+      transition: transform 0.3s;
+    }
+
+    .launch-btn:hover svg {
+      transform: translateX(4px);
+    }
+
+    /* Home Button / Back to dashboard */
+    .back-link {
+      display: inline-block;
+      margin-top: 2rem;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s;
+    }
+
+    .back-link:hover {
+      color: #cbd5e1;
+    }
+
+    /* Browser Security Note */
+    .security-note {
+      font-size: 0.8rem;
+      color: #475569;
+      margin-top: 1.5rem;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+
+  <div class="container">
+    <div class="icon-wrapper">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+      </svg>
+    </div>
+
+    <h2>คลังข้อสอบ O-NET อัจฉริยะ</h2>
+    <p class="description">
+      พร้อมใช้งานแล้วในหน้าต่างใหม่ เพื่อความปลอดภัยและความเป็นส่วนตัวในการเข้าทำข้อสอบ กรุณาคลิกปุ่มด้านล่างเพื่อเปิดระบบ
+    </p>
+
+    <a href="https://script.google.com/a/macros/ednan1.go.th/s/AKfycbyDZUs_QoGGoasOAgo_4t5ygjEWMQJT4dnQ8z0VvDBDernrr5hxAeCz2xwSlIbhLq1PrA/exec" 
+       target="_top" 
+       class="launch-btn">
+      <span>เข้าสู่คลังข้อสอบ O-NET</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </a>
+
+    <br>
+    <a href="<?= url ?>?page=dashboard" target="_top" class="back-link">
+      ← กลับสู่หน้าหลัก Dashboard
+    </a>
+
+    <div class="security-note">
+      * ระบบความปลอดภัยของเบราว์เซอร์บล็อกการนำทางอัตโนมัติจากภายในเฟรมระบบหลัก จึงจำเป็นต้องคลิกปุ่มเพื่อเปิดใช้งาน
+    </div>
+  </div>
+
+</body>
+</html>

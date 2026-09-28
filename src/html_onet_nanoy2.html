@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>รายงานวิเคราะห์ผลสอบ O-NET กลุ่มโรงเรียนนาน้อย 2</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Sarabun', 'TH Sarabun New', 'Segoe UI', sans-serif;
+            background: #eef2f7;
+            color: #1e2a41;
+            font-size: 20px;
+            min-height: 100vh;
+        }
+
+        /* ===== TOP NAVIGATION BAR ===== */
+        .topbar {
+            background: linear-gradient(135deg, #06111f 0%, #0b2340 100%);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+        }
+
+        .topbar-inner {
+            max-width: 1440px;
+            margin: 0 auto;
+            display: flex;
+            align-items: stretch;
+            padding: 0 32px;
+        }
+
+        .topbar-brand {
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 700;
+            padding: 18px 0;
+            margin-right: 40px;
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+            opacity: 0.95;
+        }
+
+        .topbar-brand span {
+            color: #f5d742;
+        }
+
+        .tab-buttons {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.65);
+            font-family: inherit;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 0 36px;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+            letter-spacing: 0.3px;
+            border-bottom: 4px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .tab-btn.active {
+            color: #f5d742;
+            border-bottom-color: #f5d742;
+        }
+
+        .tab-btn .level-badge {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 2px 12px;
+            font-size: 0.9rem;
+            margin-left: 8px;
+            font-weight: 400;
+            vertical-align: middle;
+        }
+
+        .tab-btn.active .level-badge {
+            background: rgba(255, 215, 0, 0.25);
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            background: linear-gradient(135deg, #0b1a33 0%, #1a3a5c 50%, #0d2640 100%);
+            color: #fff;
+            padding: 44px 48px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.04);
+            pointer-events: none;
+        }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: 30%;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+            pointer-events: none;
+        }
+
+        .page-header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+            line-height: 1.2;
+            position: relative;
+        }
+
+        .page-header .level-tag {
+            display: inline-block;
+            background: #f5d742;
+            color: #0b1a33;
+            font-size: 1.1rem;
+            font-weight: 800;
+            padding: 4px 18px;
+            border-radius: 20px;
+            margin-left: 14px;
+            vertical-align: middle;
+            letter-spacing: 0.5px;
+        }
+
+        .page-header .sub {
+            font-size: 1.45rem;
+            opacity: 0.88;
+            margin-top: 10px;
+            font-weight: 300;
+            position: relative;
+        }
+
+        .page-header .by {
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 1.2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .page-header .by .name {
+            font-weight: 700;
+            color: #f5d742;
+            font-size: 1.35rem;
+        }
+
+        .page-header .badge {
+            background: rgba(255, 215, 0, 0.15);
+            padding: 7px 22px;
+            border-radius: 30px;
+            font-size: 1.05rem;
+            border: 1px solid rgba(255, 215, 0, 0.25);
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 36px 32px 60px;
+        }
+
+        /* ===== TAB PANELS ===== */
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* ===== SLIDE CARDS ===== */
+        .slide {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px 44px 44px;
+            margin-bottom: 44px;
+            box-shadow: 0 6px 24px rgba(0, 20, 50, 0.07);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .slide-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #0b1a33;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .slide-title .emoji-big {
+            font-size: 2.6rem;
+        }
+
+        .slide-sub {
+            font-size: 1.2rem;
+            color: #2a405c;
+            border-left: 5px solid #d4a11e;
+            background: #f8fafd;
+            border-radius: 0 12px 12px 0;
+            padding: 14px 22px;
+            margin-bottom: 26px;
+        }
+
+        /* ===== CHART GRID ===== */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            margin: 18px 0 14px;
+        }
+
+        @media (max-width: 900px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-box {
+            background: #fafcff;
+            padding: 18px 18px 14px;
+            border-radius: 16px;
+            border: 1px solid #e9edf4;
+        }
+
+        .chart-box canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 320px;
+        }
+
+        .chart-box.comparison-chart canvas {
+            max-height: 280px;
+        }
+
+        .chart-box .label {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-top: 10px;
+            color: #1e3a5f;
+        }
+
+        .legend-note {
+            font-size: 0.95rem;
+            color: #4f6582;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        /* ===== TABLES ===== */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 20px 0 8px;
+            border-radius: 14px;
+            border: 1px solid #e6ecf5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.15rem;
+            min-width: 660px;
+        }
+
+        th {
+            background: #eef3fa;
+            color: #0b1a33;
+            font-weight: 700;
+            padding: 16px 18px;
+            text-align: center;
+            border-bottom: 2px solid #cdd8e8;
+            font-size: 1.1rem;
+        }
+
+        td {
+            padding: 14px 18px;
+            text-align: center;
+            border-bottom: 1px solid #e2e9f2;
+            font-size: 1.1rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .trend-up {
+            color: #1e7e34;
+            font-weight: 700;
+        }
+
+        .trend-down {
+            color: #b22234;
+            font-weight: 700;
+        }
+
+        .trend-steady {
+            color: #b68b1a;
+            font-weight: 700;
+        }
+
+        .avg-row {
+            background: #f0f6ff;
+            font-weight: 700;
+            border-top: 3px solid #b8cde0;
+        }
+
+        .avg-row td {
+            background: #f0f6ff;
+            font-size: 1.15rem;
+        }
+
+        .gap-negative {
+            color: #b22234;
+            font-weight: 700;
+        }
+
+        .gap-positive {
+            color: #1e7e34;
+            font-weight: 700;
+        }
+
+        /* ===== SUMMARY BOX ===== */
+        .summary-box {
+            background: #eaf1fb;
+            border-radius: 16px;
+            padding: 22px 28px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px 20px;
+            margin-top: 18px;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 1.15rem;
+        }
+
+        .summary-item .yr {
+            font-weight: 400;
+            color: #2b4b72;
+        }
+
+        .summary-item .val {
+            font-weight: 700;
+            font-size: 1.55rem;
+            color: #0b1a33;
+        }
+
+        .summary-item .chg {
+            font-size: 1.05rem;
+            margin-left: 4px;
+        }
+
+        /* ===== INSIGHT BOX ===== */
+        .insight-box {
+            background: #fef9e7;
+            border-left: 6px solid #d4a11e;
+            padding: 20px 26px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .insight-box strong {
+            color: #0b1a33;
+            font-size: 1.15rem;
+        }
+
+        .insight-box ul {
+            margin-top: 10px;
+            padding-left: 24px;
+            font-size: 1.1rem;
+        }
+
+        .insight-box ul li {
+            margin-bottom: 8px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px dashed #d0ddeb;
+            margin: 28px 0 10px;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer-note {
+            margin-top: 36px;
+            text-align: center;
+            color: #4f6582;
+            font-size: 1.05rem;
+            border-top: 1px solid #dce5ef;
+            padding-top: 26px;
+        }
+
+        /* ===== FLOATING MANUAL BUTTON ===== */
+        .manual-float-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            background: #BA55D3;
+            color: white !important;
+            padding: 0 15px;
+            height: 45px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+            font-size: 0.9rem;
+            gap: 8px;
+        }
+
+        .manual-float-btn:hover {
+            transform: scale(1.05);
+            background: #8e44ad;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ===== BACK BUTTON ===== */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 2rem;
+            background: #1e3a8a;
+            color: white;
+            text-decoration: none;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn:hover {
+            background: #3b82f6;
+            transform: scale(1.05);
+            color: white;
+        }
+
+        /* ===== COMPARE GRID 3 LEVELS ===== */
+        .compare-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 16px 0;
+        }
+
+        @media (max-width: 850px) {
+            .compare-grid-3 {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+        }
+
+        .compare-card {
+            background: #f2f6fc;
+            border-radius: 16px;
+            padding: 18px 20px;
+            text-align: center;
+            border: 1px solid #dce5ef;
+        }
+
+        .compare-card .label {
+            font-size: 0.95rem;
+            color: #4f6582;
+            font-weight: 400;
+        }
+
+        .compare-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0b1a33;
+            margin-top: 4px;
+        }
+
+        .compare-card .sub {
+            font-size: 0.85rem;
+            color: #4f6582;
+            margin-top: 2px;
+        }
+
+        .data-note {
+            font-size: 0.85rem;
+            color: #4f6582;
+            font-style: italic;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .note-box {
+            background: #f0f6ff;
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin-top: 12px;
+            font-size: 0.95rem;
+            color: #4f6582;
+            border: 1px dashed #b8cde0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="<?= (typeof manualUrl !== 'undefined') ? manualUrl : '#' ?>" target="_blank" class="manual-float-btn"
+        title="คู่มือการใช้งาน">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        <span>คู่มือ</span>
+    </a>
+
+    <!-- ===== TOP NAV ===== -->
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="topbar-brand">📊 O-NET <span>กลุ่มนาน้อย 2</span></div>
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab('p6', this)">
+                    ระดับ ป.6 <span class="level-badge">ประถมศึกษา</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('m3', this)">
+                    ระดับ ม.3 <span class="level-badge">มัธยมศึกษา</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TAB PANEL: ป.6 ===== -->
+    <div id="panel-p6" class="tab-panel active">
+        <div class="page-header">
+            <h1>📊 รายงานวิเคราะห์ผลสอบ O-NET <span class="level-tag">ป.6</span></h1>
+            <div class="sub">กลุ่มโรงเรียนนาน้อย 2 · อำเภอนาน้อย · สพป.น่าน เขต 1</div>
+            <div class="by">
+                <span>จัดทำโดย <span class="name">นายพุฒิพงษ์ วงศ์นันท์</span></span>
+                <span>ศึกษานิเทศก์ประจำกลุ่มโรงเรียนนาน้อย 2</span>
+                <span class="badge">ย้อนหลัง 3 ปี (2566 – 2568)</span>
+            </div>
+        </div>
+        <div class="container">
+
+            <!-- SLIDE 1: ภาพรวม -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">📈</span> ภาพรวมแนวโน้ม 3 ปี (กลุ่มนาน้อย 2)</div>
+                <div class="slide-sub">ค่าเฉลี่ยคะแนนของทั้งกลุ่ม (ทุกโรงเรียนในนาน้อย 2) แยกตามรายวิชา</div>
+                <div class="chart-grid">
+                    <div class="chart-box"><canvas id="p6_overviewChart"></canvas>
+                        <div class="label">คะแนนเฉลี่ยรวมกลุ่ม (4 วิชา)</div>
+                    </div>
+                    <div class="chart-box"><canvas id="p6_overviewBarChart"></canvas>
+                        <div class="label">เปรียบเทียบรายวิชา ปี 2566 – 2568</div>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    <div class="summary-item"><span class="yr">📅 2566</span><span class="val">37.07</span><span
+                            class="chg">(เฉลี่ยรวม)</span></div>
+                    <div class="summary-item"><span class="yr">📅 2567</span><span class="val">37.08</span><span
+                            class="chg">(+0.01)</span></div>
+                    <div class="summary-item"><span class="yr">📅 2568</span><span class="val">31.39</span><span
+                            class="chg" style="color:#b22234;">▼ -5.69</span></div>
+                    <div class="summary-item"><span
+                            style="background:#d4a11e20;padding:4px 20px;border-radius:30px;font-size:1.1rem;">📉
+                            แนวโน้มโดยรวม: ลดลง</span></div>
+                </div>
+            </div>
+
+            <!-- SLIDE 2: เปรียบเทียบ 3 ระดับ -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">🏆</span> เปรียบเทียบกลุ่มนาน้อย 2 vs ระดับเขต vs
+                    ระดับชาติ</div>
+                <div class="slide-sub">ค่าเฉลี่ยรวม 4 วิชา ของกลุ่มโรงเรียนนาน้อย 2 เทียบกับระดับเขตและระดับชาติ</div>
+
+                <div class="compare-grid-3">
+                    <div class="compare-card" style="border-left: 4px solid #1a4a7a;">
+                        <div class="label">กลุ่มนาน้อย 2</div>
+                        <div class="value">31.39</div>
+                        <div class="sub">ปี 2568</div>
+                    </div>
+                    <div class="compare-card" style="border-left: 4px solid #2a6a9a;">
+                        <div class="label">ระดับเขต</div>
+                        <div class="value">37.52</div>
+                        <div class="sub">ปี 2568</div>
+                    </div>
+                    <div class="compare-card" style="border-left: 4px solid #8ab0d0;">
+                        <div class="label">ระดับชาติ</div>
+                        <div class="value">35.38</div>
+                        <div class="sub">ปี 2568</div>
+                    </div>
+                    <div class="compare-card" style="border-left: 4px solid #d4a11e;">
+                        <div class="label">ส่วนต่าง (กลุ่ม vs ชาติ)</div>
+                        <div class="value" style="color:#b22234;">-3.99</div>
+                        <div class="sub">ปี 2568</div>
+                    </div>
+                </div>
+                <div class="data-note">*ข้อมูลระดับชาติจากเอกสาร O-NET ระดับประเทศ</div>
+
+                <div class="chart-grid">
+                    <div class="chart-box comparison-chart"><canvas id="p6_compareOverviewChart"></canvas>
+                        <div class="label">เปรียบเทียบค่าเฉลี่ย O-NET ป.6 (3 ระดับ)</div>
+                    </div>
+                    <div class="chart-box comparison-chart"><canvas id="p6_compareGapChart"></canvas>
+                        <div class="label">ส่วนต่าง (กลุ่ม vs เขต / กลุ่ม vs ชาติ)</div>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ปี</th>
+                                <th>กลุ่มนาน้อย 2</th>
+                                <th>ระดับเขต</th>
+                                <th>ระดับชาติ</th>
+                                <th>ส่วนต่าง (กลุ่ม vs เขต)</th>
+                                <th>ส่วนต่าง (กลุ่ม vs ชาติ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2566</td>
+                                <td>37.07</td>
+                                <td>43.12</td>
+                                <td>41.33</td>
+                                <td class="gap-negative">-6.05</td>
+                                <td class="gap-negative">-4.26</td>
+                            </tr>
+                            <tr>
+                                <td>2567</td>
+                                <td>37.08</td>
+                                <td>42.46</td>
+                                <td>39.94</td>
+                                <td class="gap-negative">-5.38</td>
+                                <td class="gap-negative">-2.86</td>
+                            </tr>
+                            <tr>
+                                <td>2568</td>
+                                <td>31.39</td>
+                                <td>37.52</td>
+                                <td>35.38</td>
+                                <td class="gap-negative">-6.13</td>
+                                <td class="gap-negative">-3.99</td>
+                            </tr>
+                            <tr class="avg-row">
+                                <td>เฉลี่ย 3 ปี</td>
+                                <td>35.18</td>
+                                <td>41.03</td>
+                                <td>38.88</td>
+                                <td class="gap-negative">-5.85</td>
+                                <td class="gap-negative">-3.70</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="insight-box">
+                    <strong>📌 ข้อสังเกต:</strong>
+                    <ul>
+                        <li>กลุ่มนาน้อย 2 มีคะแนน <strong>ต่ำกว่าระดับชาติ</strong> ทุกปี เฉลี่ย -3.70 คะแนน</li>
+                        <li>ปี 2567 ช่องว่างกับระดับชาติ <strong>แคบที่สุด</strong> (-2.86 คะแนน)</li>
+                        <li>ปี 2568 ช่องว่างกับระดับชาติ <strong>กว้างขึ้น</strong> (-3.99 คะแนน)</li>
+                        <li>ทั้ง 3 ระดับ มีแนวโน้มคะแนน <strong>ลดลงในปี 2568</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: ภาษาไทย -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">📖</span> ภาษาไทย</div>
+                <div class="slide-sub">แนวโน้มรายโรงเรียนย้อนหลัง 3 ปี และเปรียบเทียบกับระดับเขตและระดับชาติ</div>
+                <div class="chart-grid">
+                    <div class="chart-box"><canvas id="p6_thaiChart"></canvas>
+                        <div class="label">แนวโน้มคะแนนเฉลี่ยภาษาไทยรายโรงเรียน</div>
+                        <div class="legend-note">*เฉพาะโรงเรียนที่มีข้อมูลครบ 3 ปี</div>
+                    </div>
+                    <div class="chart-box comparison-chart"><canvas id="p6_thaiCompareChart"></canvas>
+                        <div class="label">เปรียบเทียบค่าเฉลี่ยกับระดับเขตและชาติ</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>โรงเรียน</th>
+                                <th>2566</th>
+                                <th>2567</th>
+                                <th>2568</th>
+                                <th>แนวโน้ม</th>
+                            </tr>
+                        </thead>
+                        <tbody id="p6_thaiTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="table-wrap" style="margin-top:12px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ปี</th>
+                                <th>กลุ่มนาน้อย 2</th>
+                                <th>ระดับเขต</th>
+                                <th>ระดับชาติ</th>
+                                <th>ส่วนต่าง (กลุ่ม vs เขต)</th>
+                                <th>ส่วนต่าง (กลุ่ม vs ชาติ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2566</td>
+                                <td>53.79</td>
+                                <td>61.18</td>
+                                <td>57.30</td>
+                                <td class="gap-negative">-7.39</td>
+                                <td class="gap-negative">-3.51</td>
+                            </tr>
+                            <tr>
+                                <td>2567</td>
+                                <td>51.20</td>
+                                <td>57.70</td>
+                                <td>54.20</td>
+                                <td class="gap-negative">-6.50</td>
+                                <td class="gap-negative">-3.00</td>
+                            </tr>
+                            <tr>
+                                <td>2568</td>
+                                <td>46.21</td>
+                                <td>51.88</td>
+                                <td>47.60</td>
+                                <td class="gap-negative">-5.67</td>
+                                <td class="gap-negative">-1.39</td>
+                            </tr>
+                            <tr class="avg-row">
+                                <td>เฉลี่ย 3 ปี</td>
+                                <td>50.40</td>
+                                <td>56.92</td>
+                                <td>53.03</td>
+                                <td class="gap-negative">-6.52</td>
+                                <td class="gap-negative">-2.63</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SLIDE 4: คณิตศาสตร์ -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">🧮</span> คณิตศาสตร์</div>
+                <div class="slide-sub">แนวโน้มรายโรงเรียนย้อนหลัง 3 ปี และเปรียบเทียบกับระดับเขตและระดับชาติ</div>
+                <div class="chart-grid">
+                    <div class="chart-box"><canvas id="p6_mathChart"></canvas>
+                        <div class="label">แนวโน้มคะแนนเฉลี่ยคณิตศาสตร์รายโรงเรียน</div>
+                        <div class="legend-note">*เฉพาะโรงเรียนที่มีข้อมูลครบ 3 ปี</div>
+                    </div>
+                    <div class="chart-box comparison-chart"><canvas id="p6_mathCompareChart"></canvas>
+                        <div class="label">เปรียบเทียบค่าเฉลี่ยกับระดับเขตและชาติ</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>โรงเรียน</th>
+                                <th>2566</th>
+                                <th>2567</th>
+                                <th>2568</th>
+                                <th>แนวโน้ม</th>
+                            </tr>
+                        </thead>
+                        <tbody id="p6_mathTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="table-wrap" style="margin-top:12px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ปี</th>
+                                <th>กลุ่มนาน้อย 2</th>
+                                <th>ระดับเขต</th>
+                                <th>ระดับชาติ</th>
+                                <th>ส่วนต่าง (กลุ่ม vs เขต)</th>
+                                <th>ส่วนต่าง (กลุ่ม vs ชาติ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2566</td>
+                                <td>27.00</td>
+                                <td>32.50</td>
+                                <td>29.96</td>
+                                <td class="gap-negative">-5.50</td>
+                                <td class="gap-negative">-2.96</td>
+                            </tr>
+                            <tr>
+                                <td>2567</td>
+                                <td>26.83</td>
+                                <td>32.89</td>
+                                <td>29.21</td>
+                                <td class="gap-negative">-6.06</td>
+                                <td class="gap-negative">-2.38</td>
+                            </tr>
+                            <tr>
+                                <td>2568</td>
+                                <td>22.85</td>
+                                <td>27.66</td>
+                                <td>24.90</td>
+                                <td class="gap-negative">-4.81</td>
+                                <td class="gap-negative">-2.05</td>
+                            </tr>
+                            <tr class="avg-row">
+                                <td>เฉลี่ย 3 ปี</td>
+                                <td>25.56</td>
+                                <td>31.02</td>
+                                <td>28.02</td>
+                                <td class="gap-negative">-5.46</td>
+                                <td class="gap-negative">-2.46</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SLIDE 5: วิทยาศาสตร์ -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">🔬</span> วิทยาศาสตร์</div>
+                <div class="slide-sub">แนวโน้มรายโรงเรียนย้อนหลัง 3 ปี และเปรียบเทียบกับระดับเขตและระดับชาติ</div>
+                <div class="chart-grid">
+                    <div class="chart-box"><canvas id="p6_sciChart"></canvas>
+                        <div class="label">แนวโน้มคะแนนเฉลี่ยวิทยาศาสตร์รายโรงเรียน</div>
+                        <div class="legend-note">*เฉพาะโรงเรียนที่มีข้อมูลครบ 3 ปี</div>
+                    </div>
+                    <div class="chart-box comparison-chart"><canvas id="p6_sciCompareChart"></canvas>
+                        <div class="label">เปรียบเทียบค่าเฉลี่ยกับระดับเขตและชาติ</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>โรงเรียน</th>
+                                <th>2566</th>
+                                <th>2567</th>
+                                <th>2568</th>
+                                <th>แนวโน้ม</th>
+                            </tr>
+                        </thead>
+                        <tbody id="p6_sciTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="table-wrap" style="margin-top:12px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ปี</th>
+                                <th>กลุ่มนาน้อย 2</th>
+                                <th>ระดับเขต</th>
+                                <th>ระดับชาติ</th>
+                                <th>ส่วนต่าง (กลุ่ม vs เขต)</th>
+                                <th>ส่วนต่าง (กลุ่ม vs ชาติ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2566</td>
+                                <td>37.09</td>
+                                <td>42.04</td>
+                                <td>40.75</td>
+                                <td class="gap-negative">-4.95</td>
+                                <td class="gap-negative">-3.66</td>
+                            </tr>
+                            <tr>
+                                <td>2567</td>
+                                <td>40.85</td>
+                                <td>45.12</td>
+                                <td>42.87</td>
+                                <td class="gap-negative">-4.27</td>
+                                <td class="gap-negative">-2.02</td>
+                            </tr>
+                            <tr>
+                                <td>2568</td>
+                                <td>30.96</td>
+                                <td>37.08</td>
+                                <td>35.43</td>
+                                <td class="gap-negative">-6.12</td>
+                                <td class="gap-negative">-4.47</td>
+                            </tr>
+                            <tr class="avg-row">
+                                <td>เฉลี่ย 3 ปี</td>
+                                <td>36.30</td>
+                                <td>41.41</td>
+                                <td>39.68</td>
+                                <td class="gap-negative">-5.11</td>
+                                <td class="gap-negative">-3.38</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SLIDE 6: ภาษาอังกฤษ -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">🌍</span> ภาษาอังกฤษ</div>
+                <div class="slide-sub">แนวโน้มรายโรงเรียนย้อนหลัง 3 ปี และเปรียบเทียบกับระดับเขตและระดับชาติ</div>
+                <div class="chart-grid">
+                    <div class="chart-box"><canvas id="p6_engChart"></canvas>
+                        <div class="label">แนวโน้มคะแนนเฉลี่ยภาษาอังกฤษรายโรงเรียน</div>
+                        <div class="legend-note">*เฉพาะโรงเรียนที่มีข้อมูลครบ 3 ปี</div>
+                    </div>
+                    <div class="chart-box comparison-chart"><canvas id="p6_engCompareChart"></canvas>
+                        <div class="label">เปรียบเทียบค่าเฉลี่ยกับระดับเขตและชาติ</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>โรงเรียน</th>
+                                <th>2566</th>
+                                <th>2567</th>
+                                <th>2568</th>
+                                <th>แนวโน้ม</th>
+                            </tr>
+                        </thead>
+                        <tbody id="p6_engTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="table-wrap" style="margin-top:12px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ปี</th>
+                                <th>กลุ่มนาน้อย 2</th>
+                                <th>ระดับเขต</th>
+                                <th>ระดับชาติ</th>
+                                <th>ส่วนต่าง (กลุ่ม vs เขต)</th>
+                                <th>ส่วนต่าง (กลุ่ม vs ชาติ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2566</td>
+                                <td>30.40</td>
+                                <td>36.75</td>
+                                <td>37.32</td>
+                                <td class="gap-negative">-6.35</td>
+                                <td class="gap-negative">-6.92</td>
+                            </tr>
+                            <tr>
+                                <td>2567</td>
+                                <td>29.44</td>
+                                <td>34.11</td>
+                                <td>33.49</td>
+                                <td class="gap-negative">-4.67</td>
+                                <td class="gap-negative">-4.05</td>
+                            </tr>
+                            <tr>
+                                <td>2568</td>
+                                <td>25.54</td>
+                                <td>33.47</td>
+                                <td>33.58</td>
+                                <td class="gap-negative">-7.93</td>
+                                <td class="gap-negative">-8.04</td>
+                            </tr>
+                            <tr class="avg-row">
+                                <td>เฉลี่ย 3 ปี</td>
+                                <td>28.46</td>
+                                <td>34.78</td>
+                                <td>34.80</td>
+                                <td class="gap-negative">-6.32</td>
+                                <td class="gap-negative">-6.34</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SLIDE 7: สรุป -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">📋</span> สรุปภาพรวมการเปรียบเทียบ 3 ปี</div>
+                <div class="slide-sub">ค่าเฉลี่ยของกลุ่มโรงเรียนนาน้อย 2 เทียบกับระดับเขตและระดับชาติ รายวิชา</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>วิชา</th>
+                                <th>กลุ่มนาน้อย 2 (เฉลี่ย 3 ปี)</th>
+                                <th>ระดับเขต (เฉลี่ย 3 ปี)</th>
+                                <th>ระดับชาติ (เฉลี่ย 3 ปี)</th>
+                                <th>ส่วนต่าง (กลุ่ม vs ชาติ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ภาษาไทย</td>
+                                <td>50.40</td>
+                                <td>56.92</td>
+                                <td>53.03</td>
+                                <td class="gap-negative">-2.63</td>
+                            </tr>
+                            <tr>
+                                <td>คณิตศาสตร์</td>
+                                <td>25.56</td>
+                                <td>31.02</td>
+                                <td>28.02</td>
+                                <td class="gap-negative">-2.46</td>
+                            </tr>
+                            <tr>
+                                <td>วิทยาศาสตร์</td>
+                                <td>36.30</td>
+                                <td>41.41</td>
+                                <td>39.68</td>
+                                <td class="gap-negative">-3.38</td>
+                            </tr>
+                            <tr>
+                                <td>ภาษาอังกฤษ</td>
+                                <td>28.46</td>
+                                <td>34.78</td>
+                                <td>34.80</td>
+                                <td class="gap-negative">-6.34</td>
+                            </tr>
+                            <tr class="avg-row">
+                                <td>📊 ค่าเฉลี่ยรวม 4 วิชา</td>
+                                <td>35.18</td>
+                                <td>41.03</td>
+                                <td>38.88</td>
+                                <td class="gap-negative">-3.70</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="insight-box">
+                    <strong>📌 สรุปข้อค้นพบที่สำคัญ:</strong>
+                    <ul>
+                        <li>กลุ่มนาน้อย 2 มีคะแนน O-NET ป.6 <strong>ต่ำกว่าระดับชาติ</strong> ทุกปี เฉลี่ย <strong>-3.70
+                                คะแนน</strong></li>
+                        <li>ปี 2567 ช่องว่างกับระดับชาติ <strong>แคบที่สุด</strong> (-2.86 คะแนน) แสดงถึงพัฒนาการที่ดี
+                        </li>
+                        <li>ปี 2568 ช่องว่าง <strong>กว้างขึ้นอีกครั้ง</strong> (-3.99 คะแนน)
+                            โดยเฉพาะวิทยาศาสตร์และภาษาอังกฤษ</li>
+                        <li><strong>ภาษาอังกฤษ</strong> เป็นวิชาที่มีช่องว่างมากที่สุด (-6.34 คะแนน)
+                            ต้องเร่งพัฒนาอย่างยิ่ง</li>
+                        <li><strong>ภาษาไทย</strong> มีช่องว่างน้อยที่สุด (-2.63 คะแนน) และมีแนวโน้มแคบลง</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-note">ข้อมูลจากระบบ RPS · สพป.น่าน เขต 1 · วิเคราะห์โดย นายพุฒิพงษ์ วงศ์นันท์
+                ศึกษานิเทศก์</div>
+        </div><!-- /container -->
+    </div><!-- /panel-p6 -->
+
+
+    <!-- ===== TAB PANEL: ม.3 ===== -->
+    <div id="panel-m3" class="tab-panel">
+        <div class="page-header">
+            <h1>📊 รายงานวิเคราะห์ผลสอบ O-NET <span class="level-tag">ม.3</span></h1>
+            <div class="sub">กลุ่มโรงเรียนนาน้อย 2 · อำเภอนาน้อย · สพป.น่าน เขต 1</div>
+            <div class="by">
+                <span>จัดทำโดย <span class="name">นายพุฒิพงษ์ วงศ์นันท์</span></span>
+                <span>ศึกษานิเทศก์ประจำกลุ่มโรงเรียนนาน้อย 2</span>
+                <span class="badge">ย้อนหลัง 3 ปี (2566 – 2568)</span>
+            </div>
+        </div>
+        <div class="container">
+
+            <!-- SLIDE 1: ภาพรวม -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">📈</span> ภาพรวมแนวโน้ม 3 ปี (กลุ่มนาน้อย 2)</div>
+                <div class="slide-sub">ค่าเฉลี่ยคะแนนของทั้งกลุ่ม (โรงเรียนในนาน้อย 2 ที่มีข้อมูล ม.3) แยกตามรายวิชา
+                </div>
+                <div class="chart-grid">
+                    <div class="chart-box"><canvas id="m3_overviewChart"></canvas>
+                        <div class="label">คะแนนเฉลี่ยรวมกลุ่ม (4 วิชา)</div>
+                    </div>
+                    <div class="chart-box"><canvas id="m3_overviewBarChart"></canvas>
+                        <div class="label">เปรียบเทียบรายวิชา ปี 2566 – 2568</div>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    <div class="summary-item"><span class="yr">📅 2566</span><span class="val">34.73</span><span
+                            class="chg">(เฉลี่ยรวม)</span></div>
+                    <div class="summary-item"><span class="yr">📅 2567</span><span class="val">33.50</span><span
+                            class="chg" style="color:#b22234;">▼ -1.23</span></div>
+                    <div class="summary-item"><span class="yr">📅 2568</span><span class="val">35.99</span><span
+                            class="chg" style="color:#1e7e34;">▲ +2.49</span></div>
+                    <div class="summary-item"><span
+                            style="background:#1e7e3420;padding:4px 20px;border-radius:30px;font-size:1.1rem;">📈
+                            แนวโน้มโดยรวม: ฟื้นตัว</span></div>
+                </div>
+                <div class="note-box">
+                    ⚠️ หมายเหตุ: ข้อมูลกลุ่มนาน้อย 2 ม.3 คำนวณจาก 3 โรงเรียนหลัก (ชุมชนบ้านอ้อย, บ้านสันทะ,
+                    ประกิตเวชศักดิ์) ที่มีข้อมูลครบ 3 ปี
+                </div>
+            </div>
+
+            <!-- SLIDE 2: เปรียบเทียบ 3 ระดับ -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">🏆</span> เปรียบเทียบกลุ่มนาน้อย 2 vs ระดับเขต vs
+                    ระดับชาติ</div>
+                <div class="slide-sub">ค่าเฉลี่ยรวม 4 วิชา ของกลุ่มโรงเรียนนาน้อย 2 เทียบกับระดับเขตและระดับชาติ</div>
+
+                <div class="compare-grid-3">
+                    <div class="compare-card" style="border-left: 4px solid #1a4a7a;">
+                        <div class="label">กลุ่มนาน้อย 2</div>
+                        <div class="value">35.99</div>
+                        <div class="sub">ปี 2568</div>
+                    </div>
+                    <div class="compare-card" style="border-left: 4px solid #2a6a9a;">
+                        <div class="label">ระดับเขต</div>
+                        <div class="value">34.23</div>
+                        <div class="sub">ปี 2568</div>
+                    </div>
+                    <div class="compare-card" style="border-left: 4px solid #8ab0d0;">
+                        <div class="label">ระดับชาติ</div>
+                        <div class="value">35.21</div>
+                        <div class="sub">ปี 2568</div>
+                    </div>
+                    <div class="compare-card" style="border-left: 4px solid #d4a11e;">
+                        <div class="label">ส่วนต่าง (กลุ่ม vs ชาติ)</div>
+                        <div class="value" style="color:#1e7e34;">+0.78</div>
+                        <div class="sub">ปี 2568</div>
+                    </div>
+                </div>
+                <div class="data-note">*ข้อมูลระดับชาติจากเอกสาร O-NET ระดับประเทศ</div>
+
+                <div class="chart-grid">
+                    <div class="chart-box comparison-chart"><canvas id="m3_compareOverviewChart"></canvas>
+                        <div class="label">เปรียบเทียบค่าเฉลี่ย O-NET ม.3 (3 ระดับ)</div>
+                    </div>
+                    <div class="chart-box comparison-chart"><canvas id="m3_compareGapChart"></canvas>
+                        <div class="label">ส่วนต่าง (กลุ่ม vs เขต / กลุ่ม vs ชาติ)</div>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ปี</th>
+                                <th>กลุ่มนาน้อย 2</th>
+                                <th>ระดับเขต</th>
+                                <th>ระดับชาติ</th>
+                                <th>ส่วนต่าง (กลุ่ม vs เขต)</th>
+                                <th>ส่วนต่าง (กลุ่ม vs ชาติ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2566</td>
+                                <td>34.73</td>
+                                <td>32.61</td>
+                                <td>34.47</td>
+                                <td class="gap-positive">+2.12</td>
+                                <td class="gap-positive">+0.26</td>
+                            </tr>
+                            <tr>
+                                <td>2567</td>
+                                <td>33.50</td>
+                                <td>33.39</td>
+                                <td>35.15</td>
+                                <td class="gap-positive">+0.11</td>
+                                <td class="gap-negative">-1.65</td>
+                            </tr>
+                            <tr>
+                                <td>2568</td>
+                                <td>35.99</td>
+                                <td>34.23</td>
+                                <td>35.21</td>
+                                <td class="gap-positive">+1.76</td>
+                                <td class="gap-positive">+0.78</td>
+                            </tr>
+                            <tr class="avg-row">
+                                <td>เฉลี่ย 3 ปี</td>
+                                <td>34.74</td>
+                                <td>33.41</td>
+                                <td>34.94</td>
+                                <td class="gap-positive">+1.33</td>
+                                <td class="gap-negative">-0.20</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="insight-box">
+                    <strong>📌 ข้อสังเกต:</strong>
+                    <ul>
+                        <li>กลุ่มนาน้อย 2 มีคะแนน <strong>สูงกว่าระดับเขต</strong> ทุกปี เฉลี่ย +1.33 คะแนน ✅</li>
+                        <li>กลุ่มนาน้อย 2 มีคะแนน <strong>ใกล้เคียงระดับชาติ</strong> โดยเฉลี่ย -0.20 คะแนน
+                            (ไม่ต่างกันมาก)</li>
+                        <li>ปี 2568 กลุ่มนาน้อย 2 <strong>สูงกว่าระดับชาติ</strong> (+0.78 คะแนน) แสดงถึงการฟื้นตัวที่ดี
+                        </li>
+                        <li>ปี 2567 เป็นปีที่กลุ่มนาน้อย 2 <strong>ต่ำกว่าระดับชาติมากที่สุด</strong> (-1.65 คะแนน)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: ภาษาไทย -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">📖</span> ภาษาไทย</div>
+                <div class="slide-sub">แนวโน้มรายโรงเรียนย้อนหลัง 3 ปี และเปรียบเทียบกับระดับเขตและระดับชาติ</div>
+                <div class="chart-grid">
+                    <div class="chart-box"><canvas id="m3_thaiChart"></canvas>
+                        <div class="label">แนวโน้มคะแนนเฉลี่ยภาษาไทยรายโรงเรียน</div>
+                        <div class="legend-note">*เฉพาะโรงเรียนที่มีข้อมูลครบ 3 ปี (บ้านนาไค้มีข้อมูลเฉพาะปี 2566)</div>
+                    </div>
+                    <div class="chart-box comparison-chart"><canvas id="m3_thaiCompareChart"></canvas>
+                        <div class="label">เปรียบเทียบค่าเฉลี่ยกับระดับเขตและชาติ</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>โรงเรียน</th>
+                                <th>2566</th>
+                                <th>2567</th>
+                                <th>2568</th>
+                                <th>แนวโน้ม</th>
+                            </tr>
+                        </thead>
+                        <tbody id="m3_thaiTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="table-wrap" style="margin-top:12px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ปี</th>
+                                <th>กลุ่มนาน้อย 2</th>
+                                <th>ระดับเขต</th>
+                                <th>ระดับชาติ</th>
+                                <th>ส่วนต่าง (กลุ่ม vs เขต)</th>
+                                <th>ส่วนต่าง (กลุ่ม vs ชาติ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2566</td>
+                                <td>50.30</td>
+                                <td>51.44</td>
+                                <td>50.73</td>
+                                <td class="gap-negative">-1.14</td>
+                                <td class="gap-negative">-0.43</td>
+                            </tr>
+                            <tr>
+                                <td>2567</td>
+                                <td>44.73</td>
+                                <td>47.84</td>
+                                <td>48.93</td>
+                                <td class="gap-negative">-3.11</td>
+                                <td class="gap-negative">-4.20</td>
+                            </tr>
+                            <tr>
+                                <td>2568</td>
+                                <td>51.56</td>
+                                <td>49.19</td>
+                                <td>47.60</td>
+                                <td class="gap-positive">+2.37</td>
+                                <td class="gap-positive">+3.96</td>
+                            </tr>
+                            <tr class="avg-row">
+                                <td>เฉลี่ย 3 ปี</td>
+                                <td>48.86</td>
+                                <td>49.49</td>
+                                <td>49.09</td>
+                                <td class="gap-negative">-0.63</td>
+                                <td class="gap-negative">-0.23</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SLIDE 4: ภาษาอังกฤษ -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">🌍</span> ภาษาอังกฤษ</div>
+                <div class="slide-sub">แนวโน้มรายโรงเรียนย้อนหลัง 3 ปี และเปรียบเทียบกับระดับเขตและระดับชาติ</div>
+                <div class="chart-grid">
+                    <div class="chart-box"><canvas id="m3_engChart"></canvas>
+                        <div class="label">แนวโน้มคะแนนเฉลี่ยภาษาอังกฤษรายโรงเรียน</div>
+                        <div class="legend-note">*เฉพาะโรงเรียนที่มีข้อมูลครบ 3 ปี (บ้านนาไค้มีข้อมูลเฉพาะปี 2566)</div>
+                    </div>
+                    <div class="chart-box comparison-chart"><canvas id="m3_engCompareChart"></canvas>
+                        <div class="label">เปรียบเทียบค่าเฉลี่ยกับระดับเขตและชาติ</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>โรงเรียน</th>
+                                <th>2566</th>
+                                <th>2567</th>
+                                <th>2568</th>
+                                <th>แนวโน้ม</th>
+                            </tr>
+                        </thead>
+                        <tbody id="m3_engTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="table-wrap" style="margin-top:12px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ปี</th>
+                                <th>กลุ่มนาน้อย 2</th>
+                                <th>ระดับเขต</th>
+                                <th>ระดับชาติ</th>
+                                <th>ส่วนต่าง (กลุ่ม vs เขต)</th>
+                                <th>ส่วนต่าง (กลุ่ม vs ชาติ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2566</td>
+                                <td>29.47</td>
+                                <td>27.85</td>
+                                <td>31.76</td>
+                                <td class="gap-positive">+1.62</td>
+                                <td class="gap-negative">-2.29</td>
+                            </tr>
+                            <tr>
+                                <td>2567</td>
+                                <td>26.51</td>
+                                <td>27.02</td>
+                                <td>30.93</td>
+                                <td class="gap-negative">-0.51</td>
+                                <td class="gap-negative">-4.42</td>
+                            </tr>
+                            <tr>
+                                <td>2568</td>
+                                <td>25.98</td>
+                                <td>27.21</td>
+                                <td>32.46</td>
+                                <td class="gap-negative">-1.23</td>
+                                <td class="gap-negative">-6.48</td>
+                            </tr>
+                            <tr class="avg-row">
+                                <td>เฉลี่ย 3 ปี</td>
+                                <td>27.32</td>
+                                <td>27.36</td>
+                                <td>31.72</td>
+                                <td class="gap-negative">-0.04</td>
+                                <td class="gap-negative">-4.40</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SLIDE 5: คณิตศาสตร์ -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">🧮</span> คณิตศาสตร์</div>
+                <div class="slide-sub">แนวโน้มรายโรงเรียนย้อนหลัง 3 ปี และเปรียบเทียบกับระดับเขตและระดับชาติ</div>
+                <div class="chart-grid">
+                    <div class="chart-box"><canvas id="m3_mathChart"></canvas>
+                        <div class="label">แนวโน้มคะแนนเฉลี่ยคณิตศาสตร์รายโรงเรียน</div>
+                        <div class="legend-note">*เฉพาะโรงเรียนที่มีข้อมูลครบ 3 ปี (บ้านนาไค้มีข้อมูลเฉพาะปี 2566)</div>
+                    </div>
+                    <div class="chart-box comparison-chart"><canvas id="m3_mathCompareChart"></canvas>
+                        <div class="label">เปรียบเทียบค่าเฉลี่ยกับระดับเขตและชาติ</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>โรงเรียน</th>
+                                <th>2566</th>
+                                <th>2567</th>
+                                <th>2568</th>
+                                <th>แนวโน้ม</th>
+                            </tr>
+                        </thead>
+                        <tbody id="m3_mathTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="table-wrap" style="margin-top:12px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ปี</th>
+                                <th>กลุ่มนาน้อย 2</th>
+                                <th>ระดับเขต</th>
+                                <th>ระดับชาติ</th>
+                                <th>ส่วนต่าง (กลุ่ม vs เขต)</th>
+                                <th>ส่วนต่าง (กลุ่ม vs ชาติ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2566</td>
+                                <td>27.49</td>
+                                <td>22.51</td>
+                                <td>25.38</td>
+                                <td class="gap-positive">+4.98</td>
+                                <td class="gap-positive">+2.11</td>
+                            </tr>
+                            <tr>
+                                <td>2567</td>
+                                <td>27.91</td>
+                                <td>24.64</td>
+                                <td>26.53</td>
+                                <td class="gap-positive">+3.27</td>
+                                <td class="gap-positive">+1.38</td>
+                            </tr>
+                            <tr>
+                                <td>2568</td>
+                                <td>29.75</td>
+                                <td>26.39</td>
+                                <td>26.81</td>
+                                <td class="gap-positive">+3.36</td>
+                                <td class="gap-positive">+2.94</td>
+                            </tr>
+                            <tr class="avg-row">
+                                <td>เฉลี่ย 3 ปี</td>
+                                <td>28.38</td>
+                                <td>24.51</td>
+                                <td>26.24</td>
+                                <td class="gap-positive">+3.87</td>
+                                <td class="gap-positive">+2.14</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SLIDE 6: วิทยาศาสตร์ -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">🔬</span> วิทยาศาสตร์</div>
+                <div class="slide-sub">แนวโน้มรายโรงเรียนย้อนหลัง 3 ปี และเปรียบเทียบกับระดับเขตและระดับชาติ</div>
+                <div class="chart-grid">
+                    <div class="chart-box"><canvas id="m3_sciChart"></canvas>
+                        <div class="label">แนวโน้มคะแนนเฉลี่ยวิทยาศาสตร์รายโรงเรียน</div>
+                        <div class="legend-note">*เฉพาะโรงเรียนที่มีข้อมูลครบ 3 ปี (บ้านนาไค้มีข้อมูลเฉพาะปี 2566)</div>
+                    </div>
+                    <div class="chart-box comparison-chart"><canvas id="m3_sciCompareChart"></canvas>
+                        <div class="label">เปรียบเทียบค่าเฉลี่ยกับระดับเขตและชาติ</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>โรงเรียน</th>
+                                <th>2566</th>
+                                <th>2567</th>
+                                <th>2568</th>
+                                <th>แนวโน้ม</th>
+                            </tr>
+                        </thead>
+                        <tbody id="m3_sciTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="table-wrap" style="margin-top:12px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ปี</th>
+                                <th>กลุ่มนาน้อย 2</th>
+                                <th>ระดับเขต</th>
+                                <th>ระดับชาติ</th>
+                                <th>ส่วนต่าง (กลุ่ม vs เขต)</th>
+                                <th>ส่วนต่าง (กลุ่ม vs ชาติ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2566</td>
+                                <td>31.66</td>
+                                <td>28.63</td>
+                                <td>30.00</td>
+                                <td class="gap-positive">+3.03</td>
+                                <td class="gap-positive">+1.66</td>
+                            </tr>
+                            <tr>
+                                <td>2567</td>
+                                <td>34.85</td>
+                                <td>34.07</td>
+                                <td>34.22</td>
+                                <td class="gap-positive">+0.78</td>
+                                <td class="gap-positive">+0.63</td>
+                            </tr>
+                            <tr>
+                                <td>2568</td>
+                                <td>36.65</td>
+                                <td>34.11</td>
+                                <td>33.95</td>
+                                <td class="gap-positive">+2.54</td>
+                                <td class="gap-positive">+2.70</td>
+                            </tr>
+                            <tr class="avg-row">
+                                <td>เฉลี่ย 3 ปี</td>
+                                <td>34.39</td>
+                                <td>32.27</td>
+                                <td>32.72</td>
+                                <td class="gap-positive">+2.12</td>
+                                <td class="gap-positive">+1.67</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SLIDE 7: สรุป -->
+            <div class="slide">
+                <div class="slide-title"><span class="emoji-big">📋</span> สรุปภาพรวมการเปรียบเทียบ 3 ปี</div>
+                <div class="slide-sub">ค่าเฉลี่ยของกลุ่มโรงเรียนนาน้อย 2 เทียบกับระดับเขตและระดับชาติ รายวิชา</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>วิชา</th>
+                                <th>กลุ่มนาน้อย 2 (เฉลี่ย 3 ปี)</th>
+                                <th>ระดับเขต (เฉลี่ย 3 ปี)</th>
+                                <th>ระดับชาติ (เฉลี่ย 3 ปี)</th>
+                                <th>ส่วนต่าง (กลุ่ม vs ชาติ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ภาษาไทย</td>
+                                <td>48.86</td>
+                                <td>49.49</td>
+                                <td>49.09</td>
+                                <td class="gap-negative">-0.23</td>
+                            </tr>
+                            <tr>
+                                <td>ภาษาอังกฤษ</td>
+                                <td>27.32</td>
+                                <td>27.36</td>
+                                <td>31.72</td>
+                                <td class="gap-negative">-4.40</td>
+                            </tr>
+                            <tr>
+                                <td>คณิตศาสตร์</td>
+                                <td>28.38</td>
+                                <td>24.51</td>
+                                <td>26.24</td>
+                                <td class="gap-positive">+2.14</td>
+                            </tr>
+                            <tr>
+                                <td>วิทยาศาสตร์</td>
+                                <td>34.39</td>
+                                <td>32.27</td>
+                                <td>32.72</td>
+                                <td class="gap-positive">+1.67</td>
+                            </tr>
+                            <tr class="avg-row">
+                                <td>📊 ค่าเฉลี่ยรวม 4 วิชา</td>
+                                <td>34.74</td>
+                                <td>33.41</td>
+                                <td>34.94</td>
+                                <td class="gap-negative">-0.20</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="insight-box">
+                    <strong>📌 สรุปข้อค้นพบที่สำคัญ:</strong>
+                    <ul>
+                        <li>กลุ่มนาน้อย 2 มีคะแนน O-NET ม.3 <strong>ใกล้เคียงระดับชาติ</strong> โดยเฉลี่ย -0.20 คะแนน
+                            (ไม่แตกต่างกันมาก)</li>
+                        <li><strong>คณิตศาสตร์</strong> เป็นวิชาที่แข็งแกร่งที่สุด สูงกว่าระดับชาติเฉลี่ย <strong>+2.14
+                                คะแนน</strong></li>
+                        <li><strong>ภาษาอังกฤษ</strong> เป็นวิชาที่ต้องพัฒนามากที่สุด ต่ำกว่าระดับชาติเฉลี่ย
+                            <strong>-4.40 คะแนน</strong></li>
+                        <li>ปี 2568 กลุ่มนาน้อย 2 <strong>ฟื้นตัวสูงกว่าระดับชาติ</strong> (+0.78) หลังจากปี 2567
+                            ต่ำกว่า (-1.65)</li>
+                        <li>กลุ่มนาน้อย 2 <strong>สูงกว่าระดับเขต</strong> ทุกปี เฉลี่ย +1.33 คะแนน แสดงถึงคุณภาพที่ดี
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-note">ข้อมูลจากระบบ RPS · สพป.น่าน เขต 1 · วิเคราะห์โดย นายพุฒิพงษ์ วงศ์นันท์
+                ศึกษานิเทศก์</div>
+        </div><!-- /container -->
+    </div><!-- /panel-m3 -->
+
+    <!-- ===== BACK BUTTONS FOOTER ===== -->
+    <div
+        style="margin-top: 1rem; text-align: center; margin-bottom: 3rem; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+        <a href="<?= url ?>?page=system6" class="back-btn" target="_top" style="background: #1f4e7a;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            กลับหน้าภารกิจ (งานพื้นที่)
+        </a>
+        <a href="<?= url ?>?page=dashboard" class="back-btn" target="_top" style="background: #1e3a8a;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            กลับสู่หน้าหลัก Dashboard
+        </a>
+    </div>
+
+    <script>
+        /* =============================================
+           TAB SWITCH
+           ============================================= */
+        let p6ChartsBuilt = false;
+        let m3ChartsBuilt = false;
+
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + tab).classList.add('active');
+            btn.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (tab === 'p6' && !p6ChartsBuilt) { buildP6Charts(); p6ChartsBuilt = true; }
+            if (tab === 'm3' && !m3ChartsBuilt) { buildM3Charts(); m3ChartsBuilt = true; }
+        }
+
+        /* =============================================
+           SHARED CHART HELPERS
+           ============================================= */
+        const COLORS = ['#1f4e7a', '#d4a11e', '#b22234', '#2e7d32', '#6a1b9a', '#e65100', '#00695c', '#4a148c'];
+
+        function makeTrendLine(ctx, schools, data66, data67, data68) {
+            const complete = [], d66 = [], d67 = [], d68 = [];
+            schools.forEach((n, i) => {
+                if (data66[i] !== null && data67[i] !== null && data68[i] !== null) {
+                    complete.push(n); d66.push(data66[i]); d67.push(data67[i]); d68.push(data68[i]);
+                }
+            });
+            const datasets = complete.map((n, i) => ({
+                label: n, data: [d66[i], d67[i], d68[i]],
+                borderColor: COLORS[i % COLORS.length], backgroundColor: 'transparent',
+                tension: 0.2, pointBackgroundColor: COLORS[i % COLORS.length], pointRadius: 5, pointHoverRadius: 7, spanGaps: false
+            }));
+            return new Chart(ctx, {
+                type: 'line', data: { labels: ['2566', '2567', '2568'], datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: true,
+                    plugins: { legend: { position: 'top', labels: { boxWidth: 16, font: { size: 13, weight: 'bold' }, padding: 12 } } },
+                    scales: { y: { beginAtZero: true, max: 100, ticks: { font: { size: 14 } }, title: { display: true, text: 'คะแนนเฉลี่ย', font: { size: 14, weight: 'bold' } } }, x: { ticks: { font: { size: 14 } } } }
+                }
+            });
+        }
+
+        function makeSchoolTrendLine(ctx, allSchools, trendSchools, data66, data67, data68) {
+            const colList = ['#1f4e7a', '#b22234', '#2e7d32'];
+            const datasets = trendSchools.map((n, idx) => {
+                const i = allSchools.indexOf(n);
+                return {
+                    label: n, data: [data66[i], data67[i], data68[i]], borderColor: colList[idx % colList.length],
+                    backgroundColor: 'transparent', tension: 0.2, pointBackgroundColor: colList[idx % colList.length], pointRadius: 5, pointHoverRadius: 7, spanGaps: false
+                };
+            });
+            return new Chart(ctx, {
+                type: 'line', data: { labels: ['2566', '2567', '2568'], datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: true,
+                    plugins: { legend: { position: 'top', labels: { boxWidth: 16, font: { size: 13, weight: 'bold' }, padding: 12 } } },
+                    scales: { y: { beginAtZero: true, max: 100, ticks: { font: { size: 14 } }, title: { display: true, text: 'คะแนนเฉลี่ย', font: { size: 14, weight: 'bold' } } }, x: { ticks: { font: { size: 14 } } } }
+                }
+            });
+        }
+
+        // ===== เปรียบเทียบ 3 ระดับ (กลุ่ม, เขต, ชาติ) =====
+        function makeCompare3(ctx, groupData, districtData, nationalData) {
+            return new Chart(ctx, {
+                type: 'bar', data: {
+                    labels: ['2566', '2567', '2568'], datasets: [
+                        { label: 'กลุ่มนาน้อย 2', data: groupData, backgroundColor: '#1a4a7a', borderRadius: 4 },
+                        { label: 'ระดับเขต', data: districtData, backgroundColor: '#4a8aba', borderRadius: 4 },
+                        { label: 'ระดับชาติ', data: nationalData, backgroundColor: '#8ab0d0', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: true,
+                    plugins: { legend: { position: 'top', labels: { boxWidth: 16, font: { size: 13, weight: 'bold' } } } },
+                    scales: { y: { beginAtZero: true, max: 100, ticks: { font: { size: 14 } } }, x: { ticks: { font: { size: 14 } } } }
+                }
+            });
+        }
+
+        function makeGap2(ctx, groupData, districtData, nationalData) {
+            const gapsDistrict = groupData.map((v, i) => v - districtData[i]);
+            const gapsNational = groupData.map((v, i) => v - nationalData[i]);
+            return new Chart(ctx, {
+                type: 'bar', data: {
+                    labels: ['2566', '2567', '2568'], datasets: [
+                        { label: 'ส่วนต่าง (กลุ่ม vs เขต)', data: gapsDistrict, backgroundColor: gapsDistrict.map(v => v < 0 ? '#b2223480' : '#1e7e3480'), borderRadius: 4 },
+                        { label: 'ส่วนต่าง (กลุ่ม vs ชาติ)', data: gapsNational, backgroundColor: gapsNational.map(v => v < 0 ? '#d4a11e80' : '#2a6a9a80'), borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: true,
+                    plugins: { legend: { position: 'top', labels: { boxWidth: 16, font: { size: 13, weight: 'bold' } } } },
+                    scales: { y: { ticks: { font: { size: 14 } } }, x: { ticks: { font: { size: 14 } } } }
+                }
+            });
+        }
+
+        function fillTable(tbodyId, schools, data) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            schools.forEach((name, i) => {
+                const v66 = data[2566][i] !== null ? data[2566][i].toFixed(2) : '-';
+                const v67 = data[2567][i] !== null ? data[2567][i].toFixed(2) : '-';
+                const v68 = data[2568][i] !== null ? data[2568][i].toFixed(2) : '-';
+                let trend = '➡️ คงที่', cls = 'trend-steady';
+                const a = data[2566][i], b = data[2567][i], c = data[2568][i];
+                if (a !== null && b !== null && c !== null) { if (c > a) { trend = '📈 เพิ่มขึ้น'; cls = 'trend-up'; } else if (c < a) { trend = '📉 ลดลง'; cls = 'trend-down'; } }
+                else if (b !== null && c !== null) { if (c > b) { trend = '📈 เพิ่มขึ้น'; cls = 'trend-up'; } else if (c < b) { trend = '📉 ลดลง'; cls = 'trend-down'; } }
+                else if (a !== null) { trend = '📊 มีเฉพาะปี 66'; cls = 'trend-steady'; }
+                tbody.innerHTML += `<tr><td>${name}</td><td>${v66}</td><td>${v67}</td><td>${v68}</td><td class="${cls}">${trend}</td></tr>`;
+            });
+            const avg = yr => { const vals = data[yr].filter(v => v !== null); return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0; };
+            tbody.innerHTML += `<tr class="avg-row"><td>📊 ค่าเฉลี่ยรวม</td><td>${avg(2566).toFixed(2)}</td><td>${avg(2567).toFixed(2)}</td><td>${avg(2568).toFixed(2)}</td><td>—</td></tr>`;
+        }
+
+        function avgArr(data) {
+            const a = yr => { const v = data[yr].filter(x => x !== null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0; };
+            return [a(2566), a(2567), a(2568)];
+        }
+
+        /* =============================================
+           ป.6 DATA & CHARTS
+           ============================================= */
+        const p6_schools = ['ชุมชนบ้านอ้อย', 'บ้านเชตวัน', 'บ้านทัพม่าน', 'บ้านนาไค้', 'บ้านสันทะ', 'บ้านส้าน', 'บ้านห้วยส้ม', 'ประกิตเวชศักดิ์'];
+        const p6_thai = { 2566: [55.34, null, null, 75.30, 59.14, null, 49.94, 39.91], 2567: [45.35, 44.38, 48.25, 54.44, 64.76, 67.30, 44.93, 40.11], 2568: [45.05, 51.43, 44.00, 46.17, 54.90, 38.50, 46.28, 43.31] };
+        const p6_math = { 2566: [21.86, null, null, 28.73, 33.61, null, 31.34, 23.82], 2567: [27.72, 19.81, 34.88, 24.53, 37.04, 23.53, 25.34, 21.77], 2568: [22.78, 29.05, 20.13, 23.34, 26.25, 22.08, 17.40, 21.80] };
+        const p6_sci = { 2566: [38.86, null, null, 49.00, 33.75, null, 35.63, 31.72], 2567: [41.98, 33.75, 44.17, 41.88, 47.94, 48.50, 36.79, 31.88], 2568: [32.63, 43.04, 22.50, 28.13, 29.25, 21.67, 39.17, 31.25] };
+        const p6_eng = { 2566: [39.20, null, null, 37.50, 26.79, null, 30.47, 25.10], 2567: [31.64, 23.44, 39.58, 24.22, 31.25, 31.88, 27.68, 25.39], 2568: [27.14, 29.69, 25.00, 25.26, 24.69, 26.04, 23.61, 22.92] };
+        const p6_dist = { thai: [61.18, 57.70, 51.88], math: [32.50, 32.89, 27.66], sci: [42.04, 45.12, 37.08], eng: [36.75, 34.11, 33.47], overall: [43.12, 42.46, 37.52] };
+        // ระดับชาติ ป.6 (จากข้อมูลที่ท่านส่ง)
+        const p6_nat = { thai: [57.30, 54.20, 47.60], math: [29.96, 29.21, 24.90], sci: [40.75, 42.87, 35.43], eng: [37.32, 33.49, 33.58], overall: [41.33, 39.94, 35.38] };
+
+        function buildP6Charts() {
+            const gThai = avgArr(p6_thai), gMath = avgArr(p6_math), gSci = avgArr(p6_sci), gEng = avgArr(p6_eng);
+            const overall = gThai.map((_, i) => (gThai[i] + gMath[i] + gSci[i] + gEng[i]) / 4);
+
+            // Overview line
+            new Chart(document.getElementById('p6_overviewChart'), {
+                type: 'line', data: { labels: ['2566', '2567', '2568'], datasets: [{ label: 'ภาพรวมเฉลี่ย 4 วิชา', data: overall, borderColor: '#0b1a33', backgroundColor: 'transparent', tension: 0.2, pointBackgroundColor: '#0b1a33', pointRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { font: { size: 16, weight: 'bold' } } } }, scales: { y: { beginAtZero: true, max: 50, ticks: { font: { size: 14 } } }, x: { ticks: { font: { size: 14 } } } } }
+            });
+            // Overview bar
+            new Chart(document.getElementById('p6_overviewBarChart'), {
+                type: 'bar', data: {
+                    labels: ['ภาษาไทย', 'คณิตศาสตร์', 'วิทยาศาสตร์', 'ภาษาอังกฤษ'],
+                    datasets: [
+                        { label: '2566', data: [gThai[0], gMath[0], gSci[0], gEng[0]], backgroundColor: '#1f4e7a80' },
+                        { label: '2567', data: [gThai[1], gMath[1], gSci[1], gEng[1]], backgroundColor: '#d4a11e80' },
+                        { label: '2568', data: [gThai[2], gMath[2], gSci[2], gEng[2]], backgroundColor: '#b2223480' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { font: { size: 14, weight: 'bold' } } } }, scales: { y: { beginAtZero: true, max: 70, ticks: { font: { size: 14 } } }, x: { ticks: { font: { size: 14 } } } } }
+            });
+            // เปรียบเทียบ 3 ระดับ
+            makeCompare3(document.getElementById('p6_compareOverviewChart'), overall, p6_dist.overall, p6_nat.overall);
+            makeGap2(document.getElementById('p6_compareGapChart'), overall, p6_dist.overall, p6_nat.overall);
+
+            makeTrendLine(document.getElementById('p6_thaiChart'), p6_schools, p6_thai[2566], p6_thai[2567], p6_thai[2568]);
+            makeCompare3(document.getElementById('p6_thaiCompareChart'), gThai, p6_dist.thai, p6_nat.thai);
+            makeTrendLine(document.getElementById('p6_mathChart'), p6_schools, p6_math[2566], p6_math[2567], p6_math[2568]);
+            makeCompare3(document.getElementById('p6_mathCompareChart'), gMath, p6_dist.math, p6_nat.math);
+            makeTrendLine(document.getElementById('p6_sciChart'), p6_schools, p6_sci[2566], p6_sci[2567], p6_sci[2568]);
+            makeCompare3(document.getElementById('p6_sciCompareChart'), gSci, p6_dist.sci, p6_nat.sci);
+            makeTrendLine(document.getElementById('p6_engChart'), p6_schools, p6_eng[2566], p6_eng[2567], p6_eng[2568]);
+            makeCompare3(document.getElementById('p6_engCompareChart'), gEng, p6_dist.eng, p6_nat.eng);
+
+            fillTable('p6_thaiTableBody', p6_schools, p6_thai);
+            fillTable('p6_mathTableBody', p6_schools, p6_math);
+            fillTable('p6_sciTableBody', p6_schools, p6_sci);
+            fillTable('p6_engTableBody', p6_schools, p6_eng);
+        }
+
+        /* =============================================
+           ม.3 DATA & CHARTS
+           ============================================= */
+        const m3_allSchools = ['ชุมชนบ้านอ้อย', 'บ้านนาไค้', 'บ้านสันทะ', 'ประกิตเวชศักดิ์'];
+        const m3_trendSchools = ['ชุมชนบ้านอ้อย', 'บ้านสันทะ', 'ประกิตเวชศักดิ์'];
+        const m3_thai = { 2566: [61.06, 41.45, 52.55, 37.30], 2567: [46.35, null, 48.48, 39.35], 2568: [53.47, null, 57.09, 44.13] };
+        const m3_eng = { 2566: [29.55, 29.69, 34.38, 24.48], 2567: [25.85, null, 26.56, 27.11], 2568: [28.13, null, 27.34, 22.46] };
+        const m3_math = { 2566: [32.30, 19.00, 24.83, 25.33], 2567: [30.57, null, 27.47, 25.69], 2568: [31.73, null, 35.03, 22.48] };
+        const m3_sci = { 2566: [31.52, 17.50, 33.05, 30.42], 2567: [36.20, null, 37.34, 31.01], 2568: [36.55, null, 40.31, 33.08] };
+        const m3_dist = { thai: [51.44, 47.84, 49.19], eng: [27.85, 27.02, 27.21], math: [22.51, 24.64, 26.39], sci: [28.63, 34.07, 34.11], overall: [32.61, 33.39, 34.23] };
+        // ระดับชาติ ม.3 (จากข้อมูลที่ท่านส่ง)
+        const m3_nat = { thai: [50.73, 48.93, 47.60], eng: [31.76, 30.93, 32.46], math: [25.38, 26.53, 26.81], sci: [30.00, 34.22, 33.95], overall: [34.47, 35.15, 35.21] };
+
+        function buildM3Charts() {
+            const gThai = avgArr(m3_thai), gEng = avgArr(m3_eng), gMath = avgArr(m3_math), gSci = avgArr(m3_sci);
+            const overall = gThai.map((_, i) => (gThai[i] + gEng[i] + gMath[i] + gSci[i]) / 4);
+
+            new Chart(document.getElementById('m3_overviewChart'), {
+                type: 'line', data: { labels: ['2566', '2567', '2568'], datasets: [{ label: 'ภาพรวมเฉลี่ย 4 วิชา', data: overall, borderColor: '#0b1a33', backgroundColor: 'transparent', tension: 0.2, pointBackgroundColor: '#0b1a33', pointRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { font: { size: 16, weight: 'bold' } } } }, scales: { y: { beginAtZero: true, max: 50, ticks: { font: { size: 14 } } }, x: { ticks: { font: { size: 14 } } } } }
+            });
+            new Chart(document.getElementById('m3_overviewBarChart'), {
+                type: 'bar', data: {
+                    labels: ['ภาษาไทย', 'ภาษาอังกฤษ', 'คณิตศาสตร์', 'วิทยาศาสตร์'],
+                    datasets: [
+                        { label: '2566', data: [gThai[0], gEng[0], gMath[0], gSci[0]], backgroundColor: '#1f4e7a80' },
+                        { label: '2567', data: [gThai[1], gEng[1], gMath[1], gSci[1]], backgroundColor: '#d4a11e80' },
+                        { label: '2568', data: [gThai[2], gEng[2], gMath[2], gSci[2]], backgroundColor: '#b2223480' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { font: { size: 14, weight: 'bold' } } } }, scales: { y: { beginAtZero: true, max: 70, ticks: { font: { size: 14 } } }, x: { ticks: { font: { size: 14 } } } } }
+            });
+            // เปรียบเทียบ 3 ระดับ
+            makeCompare3(document.getElementById('m3_compareOverviewChart'), overall, m3_dist.overall, m3_nat.overall);
+            makeGap2(document.getElementById('m3_compareGapChart'), overall, m3_dist.overall, m3_nat.overall);
+
+            makeSchoolTrendLine(document.getElementById('m3_thaiChart'), m3_allSchools, m3_trendSchools, m3_thai[2566], m3_thai[2567], m3_thai[2568]);
+            makeCompare3(document.getElementById('m3_thaiCompareChart'), gThai, m3_dist.thai, m3_nat.thai);
+            makeSchoolTrendLine(document.getElementById('m3_engChart'), m3_allSchools, m3_trendSchools, m3_eng[2566], m3_eng[2567], m3_eng[2568]);
+            makeCompare3(document.getElementById('m3_engCompareChart'), gEng, m3_dist.eng, m3_nat.eng);
+            makeSchoolTrendLine(document.getElementById('m3_mathChart'), m3_allSchools, m3_trendSchools, m3_math[2566], m3_math[2567], m3_math[2568]);
+            makeCompare3(document.getElementById('m3_mathCompareChart'), gMath, m3_dist.math, m3_nat.math);
+            makeSchoolTrendLine(document.getElementById('m3_sciChart'), m3_allSchools, m3_trendSchools, m3_sci[2566], m3_sci[2567], m3_sci[2568]);
+            makeCompare3(document.getElementById('m3_sciCompareChart'), gSci, m3_dist.sci, m3_nat.sci);
+
+            fillTable('m3_thaiTableBody', m3_allSchools, m3_thai);
+            fillTable('m3_engTableBody', m3_allSchools, m3_eng);
+            fillTable('m3_mathTableBody', m3_allSchools, m3_math);
+            fillTable('m3_sciTableBody', m3_allSchools, m3_sci);
+        }
+
+        /* ===== INIT ===== */
+        window.onload = function () {
+            buildP6Charts();
+            p6ChartsBuilt = true;
+        };
+    </script>
+</body>
+
+</html>

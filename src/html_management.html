@@ -1,0 +1,611 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root {
+      --rt-main: #0077b6;
+      --nt-main: #2d6a4f;
+      --gold: #ffcc00;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: #f0f2f5;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    #loginPage {
+      background: #002d57;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mode-card {
+      cursor: pointer;
+      transition: 0.3s;
+      border-radius: 20px;
+      border: 4px solid transparent;
+    }
+
+    .mode-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-rt {
+      border-color: var(--rt-main);
+      color: var(--rt-main);
+    }
+
+    .card-nt {
+      border-color: var(--nt-main);
+      color: var(--nt-main);
+    }
+
+    .sidebar {
+      width: 280px;
+      height: 100vh;
+      position: fixed;
+      color: white;
+      transition: 0.3s;
+      z-index: 1000;
+    }
+
+    .sidebar-rt {
+      background: var(--rt-main);
+    }
+
+    .sidebar-nt {
+      background: var(--nt-main);
+    }
+
+    .main-content {
+      margin-left: 280px;
+      padding: 30px;
+    }
+
+    .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      padding: 12px 20px;
+      margin: 5px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--gold);
+    }
+
+    .card-custom {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .table-summary {
+      background: #343a40;
+      color: white;
+      font-weight: bold;
+    }
+
+    /* ปรับแต่งขนาด Container ของกราฟ */
+    .chart-container {
+      position: relative;
+      margin: auto;
+      height: 220px;
+      width: 100%;
+    }
+
+    /* Home Button Styles */
+    .home-btn {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      z-index: 9999;
+      background: #1e3a8a; /* primary blue */
+      color: white !important;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .home-btn:hover {
+      transform: scale(1.1);
+      background: #3b82f6; /* primary-light */
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    }
+    .home-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Manual Button Style */
+    .manual-float-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      z-index: 9999;
+      background: var(--rt-main);
+      color: white !important;
+      padding: 0 15px;
+      height: 45px;
+      border-radius: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255,255,255,0.2);
+      font-weight: 600;
+      font-size: 0.9rem;
+      gap: 8px;
+    }
+    .manual-float-btn:hover {
+      transform: scale(1.05);
+      background: #005f8d;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Floating Home Button -->
+  <a href="<?= url ?>" target="_top" class="home-btn" title="กลับหน้าหลัก">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
+  </a>
+
+  <!-- Floating Manual Button -->
+  <a href="<?= (typeof manualUrl !== 'undefined') ? manualUrl : '#' ?>" target="_blank" class="manual-float-btn" title="คู่มือการใช้งาน">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+    <span>คู่มือ</span>
+  </a>
+
+  <div id="loginPage">
+    <div class="card p-5 text-center shadow" style="width: 400px; border-radius: 20px;">
+      <h4 class="fw-bold mb-4 text-primary">ระบบ RT & NT สพป.น่าน เขต 1</h4>
+      <input type="text" id="user" class="form-control mb-2" placeholder="ชื่อผู้ใช้">
+      <input type="password" id="pass" class="form-control mb-3" placeholder="รหัสผ่าน">
+      <button onclick="login()" class="btn btn-primary w-100 fw-bold py-2">เข้าสู่ระบบ</button>
+    </div>
+  </div>
+
+  <div id="mainApp" class="hidden">
+    <div id="modeSelector" class="container py-5">
+      <h2 class="text-center fw-bold mb-5">เลือกระบบที่ต้องการดำเนินการ</h2>
+      <div class="row justify-content-center g-4">
+        <div class="col-md-5" onclick="enterSystem('RT')">
+          <div class="card p-5 text-center mode-card card-rt">
+            <i class="fa fa-file-alt fa-4x mb-3"></i>
+            <h3>ระบบ RT (ป.1)</h3>
+            <button class="btn btn-primary w-100 mt-3">เลือกโหมด ป.1</button>
+          </div>
+        </div>
+        <div class="col-md-5" onclick="enterSystem('NT')">
+          <div class="card p-5 text-center mode-card card-nt">
+            <i class="fa fa-calculator fa-4x mb-3"></i>
+            <h3>ระบบ NT (ป.3)</h3>
+            <button class="btn btn-success w-100 mt-3">เลือกโหมด ป.3</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="systemContent" class="hidden">
+      <div id="sidebarUI" class="sidebar">
+        <div class="p-4 text-center border-bottom border-light mb-3">
+          <h5 id="sysTitle" class="fw-bold m-0 text-warning"></h5>
+          <div id="displaySchool" class="mt-2 badge bg-white text-dark text-wrap"></div>
+          <button class="btn btn-sm btn-outline-light mt-3" onclick="backToMode()">สลับระบบ</button>
+        </div>
+        <div class="nav-link active" id="nav-home" onclick="showPage('home')"><i class="fa fa-chart-line me-2"></i>
+          ภาพรวม</div>
+        <div class="nav-link" id="nav-report" onclick="showPage('report')"><i class="fa fa-edit me-2"></i>
+          บันทึกข้อมูล/เฉลย</div>
+        <div class="nav-link" id="nav-table" onclick="loadTable()"><i class="fa fa-file-invoice me-2"></i> สรุปรายงาน
+        </div>
+        <div id="adminSettings" class="nav-link text-warning hidden" onclick="showPage('settings')"><i
+            class="fa fa-cog me-2"></i> ตั้งค่า Admin</div>
+        <div class="nav-link text-danger mt-5" onclick="logout()"><i class="fa fa-sign-out-alt me-2"></i> ออกจากระบบ
+        </div>
+      </div>
+
+      <div class="main-content">
+        <div id="pg-home" class="pg-item">
+          <h3 class="fw-bold mb-4">สถานะภาพรวม</h3>
+          <div class="row g-3 mb-4 text-center">
+            <div class="col-md-3">
+              <div class="card p-3 card-custom">โรงเรียนส่งแล้ว<h2 id="st-school">0</h2>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card p-3 card-custom text-success">มาสอบรวม<h2 id="st-attended">0</h2>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card p-3 card-custom text-danger">ขาดสอบรวม<h2 id="st-absent">0</h2>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card p-3 card-custom text-info">เด็กพิเศษ<h2 id="st-special">0</h2>
+              </div>
+            </div>
+          </div>
+          <div class="row g-4">
+            <div class="col-md-6 text-center">
+              <h6 class="fw-bold">ประเภทนักเรียน</h6>
+              <div class="chart-container"><canvas id="c1"></canvas></div>
+            </div>
+            <div class="col-md-6 text-center">
+              <h6 class="fw-bold">สถานะการเข้าสอบ</h6>
+              <div class="chart-container"><canvas id="c2"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="pg-report" class="pg-item hidden">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="card p-4 card-custom">
+                <h5 class="fw-bold mb-3 border-start border-4 border-warning ps-2">1. บันทึกจำนวนผู้เข้าสอบ</h5>
+                <div class="row g-2">
+                  <div class="col-6"><label class="small">เด็กปกติ</label><input type="number" id="normal"
+                      class="form-control" oninput="sumTotal()"></div>
+                  <div class="col-6"><label class="small text-danger">เด็กพิเศษ</label><input type="number" id="special"
+                      class="form-control" oninput="sumTotal()"></div>
+                  <div class="col-12"><label class="small fw-bold">รวมผู้มีสิทธิ์สอบ</label><input type="number"
+                      id="eligible" class="form-control bg-light" readonly></div>
+                  <div class="col-6"><label class="small text-success">มาสอบ</label><input type="number" id="attended"
+                      class="form-control border-success"></div>
+                  <div class="col-6"><label class="small text-danger">ขาดสอบ</label><input type="number" id="absent"
+                      class="form-control border-danger"></div>
+                  <div class="col-12"><label class="small">Walk-in</label><input type="number" id="walkin"
+                      class="form-control" value="0"></div>
+                </div>
+                <button id="btnSave" class="btn w-100 mt-4 py-2 fw-bold text-white"
+                  onclick="saveData()">บันทึกข้อมูลจำนวน</button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card p-4 card-custom">
+                <h5 class="fw-bold mb-3 border-start border-4 border-primary ps-2">2. เฉลย & หลักฐาน</h5>
+                <div id="keyBox" class="mb-3"></div>
+                <div id="keyOff" class="alert alert-secondary small text-center hidden">ขณะนี้ยังไม่เปิดให้ดาวน์โหลดเฉลย
+                </div>
+                <hr>
+                <div class="mb-2"><small class="fw-bold">ใบเซ็นชื่อ (สพฐ.2) *</small><input type="file" id="file1"
+                    class="form-control"></div>
+                <div class="mb-2"><small class="fw-bold">แบบบันทึกคะแนน *</small><input type="file" id="file2"
+                    class="form-control"></div>
+                <div class="mb-3"><small>อื่นๆ</small><input type="file" id="file3" class="form-control"></div>
+                <button id="btnUpload" class="btn w-100 py-2 fw-bold text-white"
+                  onclick="uploadFiles()">อัปโหลดไฟล์หลักฐาน</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="pg-table" class="pg-item hidden">
+          <div class="card p-4 card-custom">
+            <h4 class="fw-bold mb-4 text-primary">รายงานสรุปผลภาพรวม</h4>
+            <div class="table-responsive">
+              <table class="table table-bordered table-sm">
+                <thead class="table-dark" id="th"></thead>
+                <tbody id="tb"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="pg-settings" class="pg-item hidden">
+          <div class="card p-4 card-custom">
+            <h5>ตั้งค่า Admin</h5>
+            <hr>
+            <div class="mb-3"><label class="small fw-bold">ลิงก์ RT</label><input type="text" id="setRT"
+                class="form-control"></div>
+            <div class="row mb-3">
+              <div class="col-6"><label class="small fw-bold">ลิงก์ NT ไทย</label><input type="text" id="setNTThai"
+                  class="form-control"></div>
+              <div class="col-6"><label class="small fw-bold">ลิงก์ NT คณิต</label><input type="text" id="setNTMath"
+                  class="form-control"></div>
+            </div>
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="setOpen">
+              <label class="form-check-label">เปิดระบบดาวน์โหลดเฉลย</label>
+            </div>
+            <button class="btn btn-primary px-5" onclick="saveSet()">บันทึกการตั้งค่า</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = {}, currentMode = "", charts = {};
+
+    function login() {
+      const u = document.getElementById('user').value, p = document.getElementById('pass').value;
+      if (!u || !p) return Swal.fire({ icon: 'warning', title: 'เตือน', text: 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน' });
+      
+      const btn = document.querySelector('#loginPage button');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังเข้าสู่ระบบ...';
+
+      google.script.run.withSuccessHandler(res => {
+        btn.disabled = false;
+        btn.innerHTML = 'เข้าสู่ระบบ';
+        if (res.success) {
+          currentUser = res;
+          document.getElementById('loginPage').classList.add('hidden');
+          document.getElementById('mainApp').classList.remove('hidden');
+          document.getElementById('displaySchool').innerText = res.school;
+          if (res.role === 'admin') document.getElementById('adminSettings').classList.remove('hidden');
+        } else {
+          Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: res.msg || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' });
+        }
+      }).withFailureHandler(err => {
+        btn.disabled = false;
+        btn.innerHTML = 'เข้าสู่ระบบ';
+        Swal.fire({ icon: 'error', title: 'ข้อผิดพลาดการเชื่อมต่อ', text: err.message });
+      }).checkLoginManagement(u, p);
+    }
+
+
+    function enterSystem(mode) {
+      currentMode = mode;
+      document.getElementById('modeSelector').classList.add('hidden');
+      document.getElementById('systemContent').classList.remove('hidden');
+      document.getElementById('sysTitle').innerText = "ระบบ " + mode;
+      document.getElementById('sidebarUI').className = "sidebar sidebar-" + mode.toLowerCase();
+      const btnSave = document.getElementById('btnSave');
+      const btnUpload = document.getElementById('btnUpload');
+      if (btnSave) btnSave.style.background = mode === 'RT' ? '#0077b6' : '#2d6a4f';
+      if (btnUpload) btnUpload.style.background = mode === 'RT' ? '#0077b6' : '#2d6a4f';
+      showPage('home');
+    }
+
+    function backToMode() {
+      document.getElementById('modeSelector').classList.remove('hidden');
+      document.getElementById('systemContent').classList.add('hidden');
+    }
+
+    function showPage(id) {
+      document.querySelectorAll('.pg-item').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      document.getElementById('pg-' + id).classList.remove('hidden');
+      document.getElementById('nav-' + id)?.classList.add('active');
+      if (id === 'home') refreshDash();
+      if (id === 'report') checkKey();
+      if (id === 'settings') loadSet();
+    }
+
+    function sumTotal() {
+      const n = parseInt(document.getElementById('normal').value) || 0;
+      const s = parseInt(document.getElementById('special').value) || 0;
+      document.getElementById('eligible').value = n + s;
+    }
+
+    function refreshDash() {
+      if (!currentUser.username || !currentMode) return;
+      google.script.run.withSuccessHandler(s => {
+        document.getElementById('st-school').innerText = s.totalSchools;
+        document.getElementById('st-attended').innerText = s.totalAttended;
+        document.getElementById('st-absent').innerText = s.totalAbsent;
+        document.getElementById('st-special').innerText = s.totalSpecial;
+        updateCharts(s);
+      }).getDashboardStats(currentUser.role, currentUser.username, currentMode);
+    }
+
+    function updateCharts(s) {
+      if (charts.c1 instanceof Chart) charts.c1.destroy();
+      if (charts.c2 instanceof Chart) charts.c2.destroy();
+
+      const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } };
+
+      charts.c1 = new Chart(document.getElementById('c1'), {
+        type: 'doughnut',
+        data: { labels: ['ปกติ', 'พิเศษ'], datasets: [{ data: [s.totalNormal, s.totalSpecial], backgroundColor: ['#0d6efd', '#dc3545'] }] },
+        options: opt
+      });
+
+      charts.c2 = new Chart(document.getElementById('c2'), {
+        type: 'pie',
+        data: { labels: ['มาสอบ', 'ขาดสอบ'], datasets: [{ data: [s.totalAttended, s.totalAbsent], backgroundColor: ['#198754', '#6c757d'] }] },
+        options: opt
+      });
+    }
+
+    function checkKey() {
+      google.script.run.withSuccessHandler(s => {
+        const box = document.getElementById('keyBox'), off = document.getElementById('keyOff');
+        if (!s.is_open) { box.innerHTML = ""; off.classList.remove('hidden'); return; }
+        off.classList.add('hidden');
+        google.script.run.withSuccessHandler(us => {
+          if (currentMode === 'RT') {
+            box.innerHTML = us.rt ? `<div class="alert alert-secondary text-center">✅ รับเฉลย RT แล้ว</div>` : `<button class="btn btn-primary w-100 py-3 fw-bold" onclick="doLogRT()">ดาวน์โหลดเฉลย RT</button>`;
+          } else {
+            let html = `<div class="row g-2">`;
+            html += `<div class="col-6">` + (us.nt_thai ? `<div class="alert alert-secondary text-center py-2 small">รับไทยแล้ว</div>` : `<button class="btn btn-success w-100 py-2 fw-bold" onclick="doLogNT('Thai')">เฉลยไทย</button>`) + `</div>`;
+            html += `<div class="col-6">` + (us.nt_math ? `<div class="alert alert-secondary text-center py-2 small">รับคณิตแล้ว</div>` : `<button class="btn btn-primary w-100 py-2 fw-bold" onclick="doLogNT('Math')">เฉลยคณิต</button>`) + `</div>`;
+            html += `</div>`;
+            box.innerHTML = html;
+          }
+        }).checkDownloadStatus(currentUser.username);
+      }).getKeyStatus();
+    }
+
+    function doLogRT() {
+      Swal.fire({
+        title: 'ยืนยันการรับเฉลย',
+        text: 'ยืนยันรับเฉลย RT?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ตกลง',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          google.script.run.withSuccessHandler(res => {
+            if (res.success && res.rt) {
+              google.script.run.logDownload('RT', currentUser.username, currentUser.school);
+              window.open(res.rt, '_blank');
+              setTimeout(checkKey, 1500);
+            } else {
+              Swal.fire({ icon: 'error', title: 'ไม่สำเร็จ', text: res.msg || "ไม่พบลิงก์" });
+            }
+          }).getSecureKey('RT');
+        }
+      });
+    }
+
+    function doLogNT(sub) {
+      Swal.fire({
+        title: 'ยืนยันการรับเฉลย',
+        text: 'ยืนยันรับเฉลยวิชานี้?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ตกลง',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          google.script.run.withSuccessHandler(res => {
+            if (res.success) {
+              const url = sub === 'Thai' ? res.thai : res.math;
+              if (url) {
+                google.script.run.logDownload(sub === 'Thai' ? 'NT_THAI' : 'NT_MATH', currentUser.username, currentUser.school);
+                window.open(url, '_blank');
+                setTimeout(checkKey, 1500);
+              } else {
+                Swal.fire({ icon: 'error', title: 'ไม่สำเร็จ', text: "ไม่พบลิงก์" });
+              }
+            } else {
+              Swal.fire({ icon: 'error', title: 'ไม่มีสิทธิ์', text: res.msg });
+            }
+          }).getSecureKey('NT', currentUser.permission);
+        }
+      });
+    }
+
+    function saveData() {
+      const d = {
+        school: currentUser.school, username: currentUser.username, examType: currentMode,
+        normalStudent: document.getElementById('normal').value, specialStudent: document.getElementById('special').value,
+        eligible: document.getElementById('eligible').value, attended: document.getElementById('attended').value,
+        absent: document.getElementById('absent').value, walkIn: document.getElementById('walkin').value
+      };
+      if (!d.eligible || !d.attended) return Swal.fire({ icon: 'warning', title: 'เตือน', text: 'กรุณากรอกข้อมูลให้ครบ' });
+      google.script.run.withSuccessHandler(m => { 
+        Swal.fire({ icon: 'success', title: 'สำเร็จ', text: m, timer: 1500 });
+        refreshDash(); 
+      }).saveExamReport(d);
+    }
+
+    async function uploadFiles() {
+      const btn = document.getElementById('btnUpload');
+      const files = [];
+      btn.disabled = true; btn.innerText = "กำลังอัปโหลด...";
+      try {
+        for (let i = 1; i <= 3; i++) {
+          const f = document.getElementById('file' + i).files[0];
+          if (f) {
+            const reader = new FileReader();
+            const data = await new Promise(r => { reader.onload = e => r(e.target.result); reader.readAsDataURL(f); });
+            files.push({ name: f.name, mime: f.type, data: data, label: 'F' + i });
+          }
+        }
+        if (files.length < 2) { 
+          Swal.fire({ icon: 'warning', title: 'เตือน', text: 'กรุณาแนบไฟล์ช่อง 1 และ 2' });
+          btn.disabled = false; btn.innerText = "อัปโหลดไฟล์หลักฐาน"; return; 
+        }
+        google.script.run.withSuccessHandler(m => {
+          Swal.fire({ icon: 'success', title: 'สำเร็จ', text: m });
+          document.getElementById('file1').value = ""; document.getElementById('file2').value = ""; document.getElementById('file3').value = "";
+          btn.disabled = false; btn.innerText = "อัปโหลดไฟล์หลักฐาน";
+        }).uploadFiles(files, currentUser.username, currentMode);
+      } catch (e) { 
+        Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: e });
+        btn.disabled = false; btn.innerText = "อัปโหลดไฟล์หลักฐาน"; 
+      }
+    }
+
+    function loadTable() {
+      showPage('table');
+      google.script.run.withSuccessHandler(res => {
+        let h = ""; res.header.forEach(c => h += `<th>${c}</th>`); document.getElementById('th').innerHTML = `<tr>${h}</tr>`;
+        let b = ""; let sums = [0, 0, 0, 0, 0, 0];
+        res.rows.forEach(r => {
+          b += "<tr>"; r.forEach(c => b += `<td>${c}</td>`); b += "</tr>";
+          for (let i = 0; i < 6; i++) sums[i] += Number(r[i + 4]);
+        });
+        let avg = sums[0] > 0 ? ((sums[1] / sums[0]) * 100).toFixed(2) + "%" : "0%";
+        b += `<tr class="table-summary"><td colspan="4">รวมยอด ${currentMode}</td><td>${sums[0]}</td><td>${sums[1]}</td><td>${sums[2]}</td><td>${sums[3]}</td><td>${sums[4]}</td><td>${sums[5]}</td><td>${avg}</td></tr>`;
+        document.getElementById('tb').innerHTML = b;
+      }).getAllReports(currentUser.role, currentUser.username, currentMode);
+    }
+
+    function loadSet() {
+      google.script.run.withSuccessHandler(s => {
+        document.getElementById('setRT').value = s.rt_url || "";
+        document.getElementById('setNTThai').value = s.nt_thai_url || "";
+        document.getElementById('setNTMath').value = s.nt_math_url || "";
+        document.getElementById('setOpen').checked = s.is_open;
+      }).getKeyStatus();
+    }
+
+    function saveSet() {
+      google.script.run.withSuccessHandler(m => { 
+        Swal.fire({ icon: 'success', title: 'สำเร็จ', text: m, timer: 1500 });
+        loadSet(); 
+      }).updateKeySettings(
+        document.getElementById('setRT').value, document.getElementById('setNTThai').value,
+        document.getElementById('setNTMath').value, document.getElementById('setOpen').checked
+      );
+    }
+
+    function logout() {
+      Swal.fire({
+        title: 'ยืนยันการออกจากระบบ',
+        text: 'คุณต้องการออกจากระบบใช่หรือไม่?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'ใช่, ออกจากระบบ',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.body.innerHTML = '<div style="height:100vh; display:flex; align-items:center; justify-content:center; background:#002d57; color:white; font-family:Sarabun, sans-serif;">กำลังออกจากระบบ...</div>';
+          google.script.run.withSuccessHandler(function (url) {
+            window.open(url, '_top');
+          }).getServiceUrl();
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>

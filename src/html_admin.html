@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Panel - SV.GOLF</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --bg: #f8fafc;
+    }
+    body { font-family: 'Sarabun', sans-serif; background-color: var(--bg); padding: 40px 20px; }
+    .admin-card { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: none; overflow: hidden; max-width: 800px; margin: auto; }
+    .header { background: var(--primary); color: white; padding: 30px; text-align: center; }
+    .system-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #f1f5f9; }
+    .system-item:last-child { border-bottom: none; }
+    .system-info h3 { font-size: 1.1rem; margin-bottom: 2px; font-weight: 700; color: #1e293b; }
+    .system-info p { font-size: 0.85rem; color: #64748b; margin: 0; }
+    .status-badge { font-size: 0.75rem; padding: 4px 12px; border-radius: 9999px; font-weight: 600; margin-left: 10px; }
+    .status-open { background: #dcfce7; color: #166534; }
+    .status-closed { background: #fee2e2; color: #991b1b; }
+    .toggle-btn { min-width: 100px; font-weight: 600; border-radius: 10px; transition: 0.2s; }
+  </style>
+</head>
+<body>
+
+  <div class="admin-card">
+    <div class="header position-relative">
+      <button onclick="window.top.location.href='<?= url ?>?page=dashboard'" 
+              class="btn btn-sm btn-light position-absolute" 
+              style="top: 20px; right: 20px; border-radius: 10px; font-weight: 600;">
+        <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+      </button>
+      <h2 class="mb-0">ศูนย์ควบคุมระบบ (Admin)</h2>
+      <p class="mb-0 opacity-75">จัดการการเปิด-ปิดระบบย่อยทั้งหมด</p>
+    </div>
+
+    <div class="p-4" id="system-list">
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">กำลังโหลดข้อมูลสถานะ...</p>
+      </div>
+    </div>
+    <div class="p-4 bg-light text-center text-muted small">
+      SV.GOLF Platform Management Tool
+    </div>
+  </div>
+
+
+  <div class="admin-card mt-4">
+    <div class="header" style="background: #1e293b;">
+      <h2 class="mb-0">📖 ตั้งค่าลิงก์คู่มือการใช้งาน</h2>
+      <p class="mb-0 opacity-75">กำหนดลิงก์สำหรับปุ่มคู่มือในแต่ละระบบ</p>
+    </div>
+    <div class="p-4" id="manual-links-container">
+      <div class="text-center py-3">กำลังโหลดลิงก์...</div>
+    </div>
+  </div>
+
+  <div class="admin-card mt-4 mb-5">
+    <div class="header" style="background: #0f172a;">
+      <h2 class="mb-0">📊 วิเคราะห์สถิติการใช้งาน</h2>
+      <p class="mb-0 opacity-75">ข้อมูลการเข้าใช้งานระบบย่อยทั้งหมด</p>
+    </div>
+    <div class="p-4">
+      <div class="row">
+        <div class="col-md-7">
+          <canvas id="usageChart" style="max-height: 300px;"></canvas>
+        </div>
+        <div class="col-md-5">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>ระบบ</th>
+                  <th class="text-center">ครั้ง</th>
+                </tr>
+              </thead>
+              <tbody id="stats-table-body">
+                <!-- Data will be inserted here -->
+              </tbody>
+            </table>
+          </div>
+          <div class="alert alert-info py-2" style="font-size: 0.85rem;">
+            <strong>ยอดรวมทั้งหมด:</strong> <span id="total-overall-count">0</span> ครั้ง
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-card mt-4 mb-5" id="exec-stats-section">
+    <div class="header" style="background: #10b981;">
+      <h2 class="mb-0">⏱️ ระบบติดตามเวลาประมวลผล (Execution Time)</h2>
+      <p class="mb-0 opacity-75">เวลาการทำงานของ Google Apps Script สะสม (วินาที)</p>
+    </div>
+    <div class="p-4">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card p-3 text-center bg-light border-0 shadow-sm h-100">
+            <h6 class="text-muted small mb-1">เวลาประมวลผลรวมทั้งหมด</h6>
+            <div class="h2 fw-bold text-success mb-0"><span id="exec-total-seconds">0.00</span> <small class="text-muted" style="font-size: 1rem;">วินาที</small></div>
+            <div class="small text-muted mt-2">ประเมินจากโควต้าบัญชีองค์กร 360 นาที/วัน (21,600 วินาที)</div>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>ระบบ (Mode)</th>
+                  <th class="text-end">เวลา (วินาที)</th>
+                  <th class="text-end" style="width: 100px;">สัดส่วน</th>
+                </tr>
+              </thead>
+              <tbody id="exec-stats-table-body">
+                <tr><td colspan="3" class="text-center py-3 text-muted">กำลังโหลดข้อมูล...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="admin-card mt-4 mb-5" id="toolkit-stats-section">
+    <div class="header" style="background: #0369a1;">
+      <h2 class="mb-0">📈 สถิติการใช้งาน RT Toolkit</h2>
+      <p class="mb-0 opacity-75">บทวิเคราะห์การสร้างใบงานและคำศัพท์ที่นิยม</p>
+    </div>
+    <div class="p-4">
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="card p-3 text-center bg-light border-0 shadow-sm h-100">
+            <h6 class="text-muted small mb-1">ใบงานที่สร้างทั้งหมด</h6>
+            <div id="stat-total-toolkit" class="h2 fw-bold text-primary mb-0">0</div>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="card p-3 border-0 shadow-sm h-100">
+            <h6 class="fw-bold mb-2">รูปแบบใบงานที่นิยม</h6>
+            <canvas id="toolkitTemplateChart" style="max-height: 120px;"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="row g-4">
+        <div class="col-lg-7">
+          <div class="card p-3 border-0 shadow-sm h-100">
+            <h6 class="fw-bold mb-2">Top 15 คำศัพท์ยอดฮิต</h6>
+            <canvas id="toolkitWordChart"></canvas>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="card p-3 border-0 shadow-sm h-100">
+            <h6 class="fw-bold mb-2">Top 10 ครูผู้ใช้งาน</h6>
+            <div class="table-responsive">
+              <table class="table table-sm table-hover align-middle">
+                <thead class="table-light">
+                  <tr><th>ชื่อครู</th><th class="text-center">สร้าง (ครั้ง)</th></tr>
+                </thead>
+                <tbody id="toolkitTeacherTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Monitoring -->
+  <div class="admin-card mt-4">
+    <div class="header" style="background: #f59e0b;">
+      <h2 class="mb-0">💬 ข้อเสนอแนะและแจ้งปัญหาจากผู้ใช้</h2>
+      <p class="mb-0 opacity-75">ข้อมูลล่าสุดที่ส่งมาจากหน้า Dashboard</p>
+    </div>
+    <div class="p-4">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 150px;">วัน/เวลา</th>
+              <th style="width: 150px;">ระบบ</th>
+              <th>ข้อความ / ปัญหา</th>
+              <th style="width: 200px;">ผู้แจ้ง / ติดต่อ</th>
+            </tr>
+          </thead>
+          <tbody id="feedbackTableBody">
+            <tr><td colspan="4" class="text-center py-4 text-muted">กำลังโหลดข้อมูล...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-card mt-4 mb-5">
+    <div class="header" style="background: #334155;">
+      <h2 class="mb-0">🔍 บทวิเคราะห์เชิงลึกรายระบบอื่น</h2>
+      <p class="mb-0 opacity-75">ดูรายละเอียดของมอดูลอื่นๆ</p>
+    </div>
+    <div class="p-4 text-center">
+      <div class="row g-3">
+        <div class="col-md-12">
+          <button onclick="window.top.location.href='<?= url ?>?page=assessment'" class="btn btn-info text-white w-100 py-3 fw-bold shadow-sm">
+            📊 วิเคราะห์ผลสอบรายบุคคล (Assessment)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const systems = [
+      { key: 'toolkit', name: '1. NAN1 RT Toolkit', desc: 'ระบบสร้างใบงานอัตโนมัติ' },
+      { key: 'assessment', name: '2. คลังข้อสอบ RT Online ย้อนหลัง', desc: 'ระบบประเมินผลออนไลน์' },
+      { key: 'management', name: '3. RT-NT Management', desc: 'ระบบบริหารจัดการและสรุปผล' },
+      { key: 'meeting', name: '4. ระบบกิจกรรมประชุมออนไลน์', desc: 'ระบบเช็คอินและประชุม' },
+      { key: 'system5', name: '5. เพื่อนคู่คิด ครูพละ น่าน 1', desc: 'ระบบสนับสนุนและคลังความรู้สำหรับครูพลศึกษา' },
+      { key: 'system6', name: '6. นิเทศออนไลน์ By SV.GOLF', desc: 'ระบบนิเทศและติดตามผลการจัดการศึกษาออนไลน์' },
+      { key: 'onet_bank', name: '7. คลังข้อสอบ O-NET อัจฉริยะ', desc: 'ระบบคลังข้อสอบและวิเคราะห์ผลการสอบ O-NET อัจฉริยะ' }
+    ];
+
+    function loadStatuses() {
+      google.script.run.withSuccessHandler(statuses => {
+        renderSystems(statuses);
+      }).getSystemStatuses();
+      
+      google.script.run.withSuccessHandler(stats => {
+        renderStats(stats);
+      }).getUsageStats();
+
+      google.script.run.withSuccessHandler(urls => {
+        renderManualLinks(urls);
+      }).getManualUrls();
+
+      google.script.run.withSuccessHandler(data => {
+        renderToolkitStats(data);
+      }).getToolkitStats();
+
+      google.script.run
+        .withSuccessHandler(data => {
+          renderFeedback(data);
+        })
+        .withFailureHandler(err => {
+          document.getElementById('feedbackTableBody').innerHTML = `<tr><td colspan="4" class="text-center py-4 text-danger">⚠️ เกิดข้อผิดพลาด: ${err.message}</td></tr>`;
+        })
+        .getFeedbackData();
+
+      google.script.run.withSuccessHandler(data => {
+        renderExecutionStats(data);
+      }).getExecutionStats();
+    }
+
+    function renderExecutionStats(data) {
+      if (data.status === 'success') {
+        document.getElementById('exec-total-seconds').innerText = data.totalSeconds;
+        
+        let h = '';
+        const modes = Object.keys(data.modes).sort((a,b) => data.modes[b] - data.modes[a]);
+        
+        if (modes.length === 0) {
+           h = '<tr><td colspan="3" class="text-center text-muted py-3">ยังไม่มีข้อมูลการประมวลผล</td></tr>';
+        } else {
+           let totalMs = 0;
+           modes.forEach(m => totalMs += data.modes[m]);
+           
+           modes.forEach(m => {
+             const ms = data.modes[m];
+             const sec = (ms / 1000).toFixed(2);
+             const percent = totalMs > 0 ? ((ms / totalMs) * 100).toFixed(1) : 0;
+             h += `<tr>
+                     <td class="fw-medium text-capitalize">${m}</td>
+                     <td class="text-end text-success fw-bold">${sec}</td>
+                     <td class="text-end"><span class="badge bg-light text-dark border">${percent}%</span></td>
+                   </tr>`;
+           });
+        }
+        document.getElementById('exec-stats-table-body').innerHTML = h;
+      } else {
+        document.getElementById('exec-stats-table-body').innerHTML = `<tr><td colspan="3" class="text-center text-danger py-3">เกิดข้อผิดพลาด: ${data.message}</td></tr>`;
+      }
+    }
+
+    function renderFeedback(data) {
+      const tbody = document.getElementById('feedbackTableBody');
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">ยังไม่มีข้อเสนอแนะใหม่</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(f => `
+        <tr>
+          <td class="small text-muted">${f.timestamp}</td>
+          <td><span class="badge bg-warning text-dark">${f.system}</span></td>
+          <td class="fw-medium">${f.message}</td>
+          <td class="small">${f.contact || '-'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderManualLinks(urls) {
+      const container = document.getElementById('manual-links-container');
+      container.innerHTML = '';
+      
+      systems.concat({key: 'dashboard', name: 'Dashboard หลัก'}).forEach(sys => {
+        const url = urls[sys.key] || '#';
+        const row = document.createElement('div');
+        row.className = 'mb-3';
+        row.innerHTML = `
+          <label class="form-label small fw-bold">${sys.name}</label>
+          <div class="input-group">
+            <input type="text" id="manual-url-${sys.key}" class="form-control" value="${url}" placeholder="ใส่ลิงก์คู่มือที่นี่">
+            <button class="btn btn-primary" onclick="saveManualLink('${sys.key}')">บันทึก</button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function saveManualLink(key) {
+      const url = document.getElementById('manual-url-' + key).value;
+      google.script.run.withSuccessHandler(res => {
+        if (res.success) {
+          Swal.fire({
+            toast: true, position: 'top-end', icon: 'success', title: 'บันทึกลิงก์คู่มือเรียบร้อย', showConfirmButton: false, timer: 1500
+          });
+        }
+      }).updateManualUrl(key, url);
+    }
+
+    function renderStats(stats) {
+      const tbody = document.getElementById('stats-table-body');
+      tbody.innerHTML = '';
+      
+      const chartLabels = [];
+      const chartData = [];
+      const chartColors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#6366f1', '#94a3b8'];
+
+      systems.concat({key: 'dashboard', name: 'Dashboard หลัก'}).forEach((sys, index) => {
+        const count = stats[sys.key] ? stats[sys.key].count : 0;
+        const lastVisit = stats[sys.key] && stats[sys.key].lastVisit ? new Date(stats[sys.key].lastVisit).toLocaleString('th-TH') : '-';
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><div style="font-weight: 600;">${sys.name}</div><div style="font-size: 0.7rem; color: #94a3b8;">ล่าสุด: ${lastVisit}</div></td>
+          <td class="text-center"><b>${count}</b></td>
+        `;
+        tbody.appendChild(row);
+        
+        chartLabels.push(sys.name.split(' ')[1] || sys.name);
+        chartData.push(count);
+      });
+
+      document.getElementById('total-overall-count').innerText = stats.totalOverall || 0;
+
+      // Render Chart
+      const ctx = document.getElementById('usageChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: chartLabels,
+          datasets: [{
+            label: 'จำนวนการเข้าใช้งาน (ครั้ง)',
+            data: chartData,
+            backgroundColor: chartColors,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { beginAtZero: true, grid: { display: false } },
+            y: { grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    function renderSystems(statuses) {
+      const container = document.getElementById('system-list');
+      container.innerHTML = '';
+      
+      systems.forEach(sys => {
+        const status = statuses[sys.key] || 'open';
+        const item = document.createElement('div');
+        item.className = 'system-item';
+        item.innerHTML = `
+          <div class="system-info">
+            <h3>${sys.name} <span class="status-badge ${status === 'open' ? 'status-open' : 'status-closed'}">${status.toUpperCase()}</span></h3>
+            <p>${sys.desc}</p>
+          </div>
+          <button class="btn toggle-btn ${status === 'open' ? 'btn-danger' : 'btn-success'}" 
+                  onclick="toggle('${sys.key}', '${status === 'open' ? 'closed' : 'open'}')">
+            ${status === 'open' ? 'ปิดระบบ' : 'เปิดระบบ'}
+          </button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderToolkitStats(data) {
+      document.getElementById('stat-total-toolkit').innerText = data.total;
+      
+      // Template Chart
+      new Chart(document.getElementById('toolkitTemplateChart'), {
+        type: 'pie',
+        data: {
+          labels: data.templates.map(t => t.name),
+          datasets: [{ data: data.templates.map(t => t.count), backgroundColor: ['#1e3a8a', '#34a853', '#f59e0b'] }]
+        },
+        options: { plugins: { legend: { position: 'right' } } }
+      });
+
+      // Word Chart
+      new Chart(document.getElementById('toolkitWordChart'), {
+        type: 'bar',
+        data: {
+          labels: data.words.map(w => w.word),
+          datasets: [{ label: 'จำนวนครั้งที่ถูกเลือก', data: data.words.map(w => w.count), backgroundColor: '#0369a1' }]
+        },
+        options: { indexAxis: 'y', plugins: { legend: { display: false } } }
+      });
+
+      // Teacher Table
+      let h = '';
+      data.teachers.slice(0, 10).forEach(t => h += `<tr><td>${t.name}</td><td class="text-center fw-bold">${t.count}</td></tr>`);
+      document.getElementById('toolkitTeacherTableBody').innerHTML = h || '<tr><td colspan="2">ไม่มีข้อมูล</td></tr>';
+    }
+
+    function toggle(key, newStatus) {
+      Swal.fire({
+        title: 'ยืนยันการดำเนินการ',
+        text: `ยืนยันการ${newStatus === 'open' ? 'เปิด' : 'ปิด'}ระบบนี้?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#1e3a8a',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ตกลง',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          google.script.run.withSuccessHandler(() => {
+            Swal.fire({
+              title: 'สำเร็จ!',
+              text: `ดำเนินการ${newStatus === 'open' ? 'เปิด' : 'ปิด'}ระบบเรียบร้อยแล้ว`,
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false
+            });
+            loadStatuses();
+          }).toggleSystemStatus(key, newStatus);
+        }
+      });
+    }
+
+    window.onload = loadStatuses;
+  </script>
+</body>
+</html>

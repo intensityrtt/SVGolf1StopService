@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #f0f2f5;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .card {
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-width: 450px;
+      width: 90%;
+      background: white;
+    }
+
+    .check-icon {
+      font-size: 70px;
+      color: #28a745;
+      margin-bottom: 20px;
+    }
+
+    /* Home Button Styles */
+    .home-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 9999;
+      background: #1e3a8a; /* primary blue */
+      color: white !important;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .home-btn:hover {
+      transform: scale(1.1);
+      background: #3b82f6; /* primary-light */
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    }
+    .home-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Floating Home Button -->
+  <a href="<?= url ?>" target="_top" class="home-btn" title="กลับหน้าหลัก">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
+  </a>
+  <div class="card">
+    <div class="check-icon">✓</div>
+    <h3 class="text-success fw-bold mb-3">ดำเนินการเสร็จสิ้น!</h3>
+    <p class="text-muted mb-4">ท่านได้ปฏิบัติภารกิจครบทั้ง 3 ขั้นตอนแล้ว ระบบได้บันทึกการเข้าร่วมประชุมของท่านเรียบร้อย
+      ขอบพระคุณทุกการติดตาม</p>
+
+    <? 
+       var fText = config.finishText || config.finishLink || '';
+       if (fText) { 
+         var isUrl = /^https?:\/\//i.test(fText.trim());
+    ?>
+    <div class="mb-4">
+       <? if (isUrl) { ?>
+         <a href="<?= fText.trim() ?>" target="_blank" class="text-primary fw-bold text-decoration-underline" style="font-size: 1.1rem;"><?= fText.trim() ?></a>
+       <? } else { ?>
+         <div class="text-primary fw-bold" style="font-size: 1.1rem;"><?= fText ?></div>
+       <? } ?>
+    </div>
+    <? } ?>
+
+    <div class="d-grid gap-2">
+      <button class="btn btn-success btn-lg" style="border-radius: 15px;" onclick="finishAndLogout()">เสร็จสิ้นภารกิจ และออกจากระบบ</button>
+    </div>
+  </div>
+
+  <script>
+    function finishAndLogout() {
+      Swal.fire({
+        title: 'ออกจากระบบ',
+        text: 'ขอบคุณที่เข้าร่วมการประชุม กำลังกลับสู่หน้าหลัก...',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      }).then(() => {
+        window.top.location.href = "<?= url ?>";
+      });
+    }
+  </script>
+</body>
+
+</html>
